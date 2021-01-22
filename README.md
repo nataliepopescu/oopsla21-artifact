@@ -9,5 +9,5 @@ $ docker build --tag repo .
 ## Run Container
 
 ```sh
-$ docker run -it --name test repo
+$ docker run -it -p 8050:8050 --name test repo
 ```
