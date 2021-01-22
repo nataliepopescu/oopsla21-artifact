@@ -1,5 +1,5 @@
 FROM ubuntu
-ENV WD=/artifact
+ENV WD=/root
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update
 RUN apt-get -y install cmake
@@ -16,9 +16,10 @@ RUN pip3 install pandas
 WORKDIR ${WD}
 RUN git clone https://github.com/nataliepopescu/llvm-project.git
 WORKDIR ${WD}/llvm-project
+RUN git checkout match-version-from-rust
 RUN mkdir -p build
 WORKDIR ${WD}/llvm-project/build
-RUN cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="./llvm" \
+RUN cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="/root/.llvm" \
 -DLLVM_ENABLE_PROJECTS="clang" -DCMAKE_BUILD_TYPE=Release ../llvm
 RUN make install-llvm-headers && make -j$(nproc)
 
@@ -27,6 +28,8 @@ WORKDIR ${WD}
 RUN git clone https://github.com/nataliepopescu/rust.git
 COPY ["config.toml", "./rust"]
 WORKDIR ${WD}/rust
+RUN apt-get -y install pkg-config
+RUN apt-get -y install libssl-dev
 RUN python3 x.py build && python3 x.py install && \
 python3 x.py install cargo && python3 x.py doc
 
@@ -34,4 +37,5 @@ python3 x.py install cargo && python3 x.py doc
 WORKDIR ${WD}
 RUN git clone https://github.com/nataliepopescu/bencher_scrape.git
 WORKDIR ${WD}/bencher_scrape
+ENV PATH="/root/.cargo/bin:$PATH"
 RUN cargo install cargo-edit
