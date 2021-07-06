@@ -1,4 +1,4 @@
-# osdi21-artifact
+# oopsla21-artifact
 
 ## Build Docker image
 
@@ -11,7 +11,7 @@ a few hours to complete.
 
 TODO publish image so reviewers just have to download it. 
 
-## Run Corvair in Container
+## Run NADER in Container
 
 ```sh
 $ docker run -it -p 8050:8050 --name <container-name> <image-tag>
