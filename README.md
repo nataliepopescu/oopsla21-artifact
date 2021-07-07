@@ -10,7 +10,7 @@
 sudo dockerd
 ```
 
-3. Build the docker image (TODO publish image so it can just be downloaded here): 
+3. Build the docker image (TODO publish image so it can just be downloaded in this step): 
 
 ```sh
 docker build --tag oopsla21 .
@@ -30,15 +30,17 @@ Once in the docker container you can begin using the artifact.
 
 1. To reproduce Figure 1...
 
-2. To reproduce Table 1... 
+1. To reproduce Table 1... 
 
-3. To reproduce Figure 5...
+1. To reproduce Figure 5...
 
-4. To reproduce Figure 7 (TODO and Table 3?)
+1. To reproduce Figure 7 (TODO and Table 3?)
+   1. Hello
+   1. World
 
-5. To reproduce Table 4... 
+1. To reproduce Table 4... 
 
-6. To reproduce Figure 9...
+1. To reproduce Figure 9...
 
 ### Paper claims _not_ supported by artifact
 
