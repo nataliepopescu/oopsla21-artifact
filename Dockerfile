@@ -39,16 +39,4 @@ WORKDIR ${WD}
 RUN git clone https://github.com/nataliepopescu/bencher_scrape.git
 WORKDIR ${WD}/bencher_scrape
 ENV PATH="/root/.cargo/bin:$PATH"
-RUN cargo install cargo-edit
-
-# Download libraries for Figure 1
-ENV CRD=criterion_rev_deps
-RUN mkdir ${CRD}
-WORKDIR ${WD}/bencher_scrape/${CRD}
-
-# glam-0.14.0
-RUN wget www.crates.io/api/v1/crates/glam/0.14.0/download
-RUN tar -xzf download
-RUN rm download
-
-WORKDIR ${WD}/bencher_scrape
+#RUN cargo install cargo-edit
