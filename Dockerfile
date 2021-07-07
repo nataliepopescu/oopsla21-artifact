@@ -42,10 +42,28 @@ ENV PATH="/root/.cargo/bin:$PATH"
 #RUN cargo install cargo-edit
 
 # Download libraries for Figure 1
-#ENV F1=fig1
-#RUN mkdir ${F1}
-#WORKDIR ${WD}/bencher_scrape/${F1}
+ENV F1=fig1
+RUN mkdir ${F1}
+WORKDIR ${WD}/bencher_scrape/${F1}
+# combine-4.5.2
+RUN wget www.crates.io/api/v1/crates/combine/4.5.2/download
+RUN tar -xzf download && rm download
+# string-interner-0.12.2
+RUN wget www.crates.io/api/v1/crates/string-interner/0.12.2/download
+RUN tar -xzf download && rm download
+# prost-0.7.0
+RUN wget www.crates.io/api/v1/crates/prost/0.7.0/download
+RUN tar -xzf download && rm download
 # glam-0.14.0
-#RUN wget www.crates.io/api/v1/crates/glam/0.14.0/download
-#RUN tar -xzf download && rm download
-#WORKDIR ${WD}/bencher_scrape
+RUN wget www.crates.io/api/v1/crates/glam/0.14.0/download
+RUN tar -xzf download && rm download
+# primal-sieve-0.3.1
+RUN wget www.crates.io/api/v1/crates/primal-sieve/0.3.1/download
+RUN tar -xzf download && rm download
+# euc-0.5.3
+RUN wget www.crates.io/api/v1/crates/euc/0.5.3/download
+RUN tar -xzf download && rm download
+# roaring-0.6.5
+RUN wget www.crates.io/api/v1/crates/roaring/0.6.5/download
+RUN tar -xzf download && rm download
+WORKDIR ${WD}/bencher_scrape
