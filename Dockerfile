@@ -14,6 +14,8 @@ RUN pip3 install pandas
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+
+# Install cargo-edit
 ENV PATH="~/.cargo/bin:${PATH}"
 ENV OPENSSL_DIR="/usr/bin/openssl"
 ENV OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
