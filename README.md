@@ -8,13 +8,13 @@ docker daemon, either
 or through the 
 [system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities).
 
-1. Build the docker image (TODO publish image so it can just be downloaded in this step): 
+2. Build the docker image (TODO publish image so it can just be downloaded in this step): 
 
 ```sh
 docker build --tag oopsla21-nader .
 ```
 
-1. Run a docker container using the image you just built: 
+3. Run a docker container using the image you just built: 
 
 ```sh
 docker run -it -p 8050:8050 --name artifact oopsla21-nader
