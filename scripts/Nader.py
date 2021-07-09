@@ -6,8 +6,8 @@ import pickle
 import time
 import argparse
 import random
-from regexify import convertFile
-from ExpStats import runExpWithName
+from .regexify import convertFile
+from .ExpStats import runExpWithName
 
 cargo_root=""
 EXP_ARG=""
@@ -25,6 +25,41 @@ def getUnsafeLines(fname):
             line_nums.append(idx + 1)
 
     return line_nums
+
+
+# for multiple file, actually modify the file in place
+def genSourceExp(cargo_root, explore_name, exp_num, fnames, line_nums):
+    os.chdir(cargo_root) # go to cargo_root
+
+    # compile to original.bc
+    dir_name = os.path.join(cargo_root, explore_name, "exp-" + str(exp_num))
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
+    
+
+    fname_lines = {}
+    for (old_fname, line) in line_nums:
+        if old_fname not in fname_lines:
+            fname_lines[old_fname] = [line]
+        else:
+            fname_lines[old_fname].append(line)
+
+    for old_fname in fnames:
+        new_fname = old_fname[:-7] # remove .unsafe
+        if old_fname in fname_lines:
+            bcs = convertFile(old_fname, new_fname, fname_lines[old_fname])
+        else:
+            bcs = convertFile(old_fname, new_fname, [])
+        print(len(bcs))
+
+    p = subprocess.Popen([ROOT_PATH + "/oneGenFromSource_multifile.sh", "test_bc", CLANG_ARGS]) #, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    p.wait()
+    os.chdir(dir_name)
+    os.rename("../../exp.exe", "./exp.exe")
+
+    # dump the unsafe lines
+    with open("unsafe_lines.txt", "w") as fd:
+        fd.writelines([fname + str(num) + "\n" for (fname, num) in line_nums])
 
 
 def genSourceExpNB(cargo_root, explore_name, old_fname, new_fname, exp_num, line_nums):
