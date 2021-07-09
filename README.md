@@ -2,17 +2,18 @@
 
 ## Getting Started Guide
 
-1. [Install Docker](https://docs.docker.com/engine/install/).
+1. [Install Docker](https://docs.docker.com/engine/install/) and start up the 
+docker daemon, either through the 
+[system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities) 
+or [manually](https://docs.docker.com/config/daemon/#start-the-daemon-manually).
 
-2. Start up the docker daemon, either through the [system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities) or [manually](https://docs.docker.com/config/daemon/#start-the-daemon-manually).
-
-3. Build the docker image (TODO publish image so it can just be downloaded in this step): 
+1. Build the docker image (TODO publish image so it can just be downloaded in this step): 
 
 ```sh
 docker build --tag oopsla21-nader .
 ```
 
-4. Run a docker container using the image you just built: 
+1. Run a docker container using the image you just built: 
 
 ```sh
 docker run -it -p 8050:8050 --name artifact oopsla21-nader
