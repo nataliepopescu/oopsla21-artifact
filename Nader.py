@@ -10,6 +10,7 @@ from regexify import convertFile
 from ExpStats import runExpWithName
 
 cargo_root=""
+EXP_ARG=""
 CLANG_ARGS=""
 ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -207,7 +208,7 @@ def argParse():
 def iterativeExplore(threshold, inital_unsafe_list, test_time=3, sensitivity=0.001):
 
     cur_unsafe = inital_unsafe_list.copy()
-    cur_baseline = quickTestBrotli(cur_unsafe, test_times=test_time)[1]
+    cur_baseline = quickTestBrotli(cur_unsafe, arg=EXP_ARG, test_times=test_time)[1]
     print("Initial baseline:", cur_baseline)
     runs_cnt = 0
     round_cnt = 0
@@ -249,17 +250,16 @@ def iterativeExplore(threshold, inital_unsafe_list, test_time=3, sensitivity=0.0
 
         cur_unsafe = next_unsafe
         # remeasure the baseline, using the best count
-        cur_baseline = quickTestBrotli(cur_unsafe, test_times=test_time)[1]
+        cur_baseline = quickTestBrotli(cur_unsafe, arg=EXP_ARG, test_times=test_time)[1]
 
         print("### Round", round_cnt, ": ", runs_count_this_round, "runs,", len(cur_unsafe), "get_unchecked left"  )
         print("### New baseline:", cur_baseline)
 
     return cur_unsafe, cur_baseline
 
-def quickTestBrotli(unsafe_lines, arg="/u/ziyangx/bounds-check/BoundsCheckExplorer/brotli-exp/silesia-5.brotli", test_times=5):
+def quickTestBrotli(unsafe_lines, arg, test_times=5):
     old_fname = "src/lib-unsafe.rs"
     new_fname = "src/lib.rs"
-    cargo_root = "/scratch/ziyangx/BoundsCheckExplorer/brotli-expand"
 
     p = genSourceExpNB(cargo_root, "baseline", old_fname, new_fname, "quick-test", unsafe_lines)
     p.wait()
@@ -274,7 +274,6 @@ def quickTestBrotli(unsafe_lines, arg="/u/ziyangx/bounds-check/BoundsCheckExplor
 def quickTestBrotliGenAllRoundExp(all_line_nums):
     old_fname = "src/lib-unsafe.rs"
     new_fname = "src/lib.rs"
-    cargo_root = "/scratch/ziyangx/BoundsCheckExplorer/brotli-expand"
     explore_abs = os.path.join(cargo_root, "explore-src-quick-test")
 
     child_processes = []
@@ -289,8 +288,7 @@ def quickTestBrotliGenAllRoundExp(all_line_nums):
 
 # Get the impact of combined bounds check
 def quickTestExpWithName(idx, test_times=5, option=0):
-    cargo_root = "/scratch/ziyangx/BoundsCheckExplorer/brotli-expand"
-    arg = "/u/ziyangx/bounds-check/BoundsCheckExplorer/brotli-exp/silesia-5.brotli"
+    arg = EXP_ARG
     dir_name = os.path.join(cargo_root, "explore-src-quick-test", "exp-" + str(idx))
     exp_name = os.path.join(dir_name, "exp.exe")
     os.chdir(dir_name)
@@ -304,6 +302,7 @@ if __name__ == "__main__":
     old_fname = "src/lib-unsafe.rs"
     new_fname = "src/lib.rs"
     cargo_root, arg, pickle_name, clang_arg, p2_src, test_times, calout_fname = argParse()
+    EXP_ARG = arg
 
     if not pickle_name.endswith("pkl"):
         pickle_name += ".pkl"
