@@ -3,9 +3,10 @@
 ## Getting Started Guide
 
 1. [Install Docker](https://docs.docker.com/engine/install/) and start up the 
-docker daemon, either through the 
-[system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities) 
-or [manually](https://docs.docker.com/config/daemon/#start-the-daemon-manually).
+docker daemon, either 
+[manually](https://docs.docker.com/config/daemon/#start-the-daemon-manually)
+or through the 
+[system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities).
 
 1. Build the docker image (TODO publish image so it can just be downloaded in this step): 
 
