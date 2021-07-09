@@ -102,4 +102,6 @@ def endToEnd(bmark_path, arg=None, threshold=0.05):
     genHotness(bmark_path, "test_bc", arg)
 
 if __name__ == "__main__":
-    endToEnd("/scratch/ziyangx/oopsla21-artifact/brotli-expanded/", "/scratch/ziyangx/oopsla21-artifact/data/silesia-5.brotli")
+    cwd = os.getcwd()
+    #endToEnd("/scratch/ziyangx/oopsla21-artifact/brotli-expanded/", "/scratch/ziyangx/oopsla21-artifact/data/silesia-5.brotli")
+    endToEnd("{}/brotli-expanded/".format(cwd), "{}/data/silesia-5.brotli".format(cwd))
