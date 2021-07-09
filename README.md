@@ -4,22 +4,18 @@
 
 1. [Install Docker](https://docs.docker.com/engine/install/).
 
-2. Start up the docker daemon, either through the [system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities) or manually like so: 
-
-```sh
-sudo dockerd
-```
+2. Start up the docker daemon, either through the [system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities) or [manually](https://docs.docker.com/config/daemon/#start-the-daemon-manually).
 
 3. Build the docker image (TODO publish image so it can just be downloaded in this step): 
 
 ```sh
-docker build --tag oopsla21 .
+docker build --tag oopsla21-nader .
 ```
 
 4. Run a docker container using the image you just built: 
 
 ```sh
-docker run -it -p 8050:8050 --name artifact oopsla21
+docker run -it -p 8050:8050 --name artifact oopsla21-nader
 ```
 
 Once in the docker container you can begin using the artifact.
