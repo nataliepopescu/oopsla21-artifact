@@ -36,7 +36,7 @@ $ cd figure1 && python3 tool.py --dir crates --compile --bench {num_runs} --loca
 ```
 
 Where the expected durations are as follows: 
-   * compilation: 20-25 minutes
+   * compilation: 50 minutes
    * benchmarking with {num_runs} == 1: 10 minutes
    * result aggregation: 5 minutes [FIXME]
 
