@@ -26,14 +26,12 @@ Once in the docker container you can begin using the artifact.
 
 ### Paper claims supported by artifact
 
-All of the following commands will assume that you start in the root directory
-of this repository. Run: 
+All of the following commands should be run in `~/nader/`. 
+To print out options for running the script, run: 
 
 ```sh
 $ python3 ExpDriver.py --help
 ```
-
-To print out options for running the script. 
 
 1. To reproduce Figure 1: 
 
