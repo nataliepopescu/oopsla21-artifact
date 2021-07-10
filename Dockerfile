@@ -1,16 +1,24 @@
 FROM ubuntu
 ENV ROOT=/root
 SHELL ["/bin/bash", "-c"]
+
 RUN apt-get update
 RUN apt-get -y install git
 RUN apt-get -y install curl
 RUN apt-get -y install wget
 RUN apt-get -y install python3-pip
 RUN apt-get -y install libssl-dev
+RUN apt-get -y install unzip
 RUN pip3 install numpy
 RUN pip3 install dash
 RUN pip3 install pandas
 RUN pip3 install Brotli
+
+WORKDIR ${ROOT}
+ENV NADER=nader
+RUN mkdir ${NADER}
+WORKDIR ${ROOT}/${NADER}
+COPY . .
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
@@ -22,19 +30,22 @@ ENV OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
 ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
 RUN cargo install cargo-edit
 
-# Setup
-WORKDIR ${ROOT}
-ENV NADER=nader
-RUN mkdir ${NADER}
-WORKDIR ${ROOT}/${NADER}
-COPY . .
-
-# Download libraries for Figure 1
+##### Figure 1 Setup #####
 ENV F1=figure1
-ENV CRATES=crates
+ENV CRATES_QUICK=crates_quick
+ENV CRATES_FULL=crates_full
 WORKDIR ${ROOT}/${NADER}/${F1}
-RUN mkdir ${CRATES}
-WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES}
+RUN mkdir ${CRATES_QUICK}
+RUN mkdir ${CRATES_FULL}
+
+# Quick run
+WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES_QUICK}
+
+RUN wget www.crates.io/api/v1/crates/combine/4.5.2/download
+RUN tar -xzf download && rm download
+
+# Full run
+WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES_FULL}
 
 RUN wget www.crates.io/api/v1/crates/combine/4.5.2/download
 RUN tar -xzf download && rm download
@@ -52,12 +63,23 @@ RUN wget www.crates.io/api/v1/crates/roaring/0.6.5/download
 RUN tar -xzf download && rm download
 WORKDIR ${ROOT}/bencher_scrape
 
-# Download applications for Figure 7
+##### Figure 7 Setup #####
 ENV F7=figure7
-ENV APPS=apps
+ENV APPS_QUICK=apps_quick
+ENV APPS_FULL=apps_full
 WORKDIR ${ROOT}/${NADER}/${F7}
-RUN mkdir ${APPS}
-WORKDIR ${ROOT}/${NADER}/${F7}/${APPS}
+RUN mkdir ${APPS_QUICK}
+RUN mkdir ${APPS_FULL}
+
+# Quick run
+WORKDIR ${ROOT}/${NADER}/${F7}/${APPS_QUICK}
+
+ENV SHA=6e2595a191f2dd72a91a632e51b66b1cf5187083
+RUN wget https://github.com/getzola/zola/archive/${SHA}.tar.gz
+RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
+
+# Full run
+WORKDIR ${ROOT}/${NADER}/${F7}/${APPS_FULL}
 
 ENV SHA=965cd00b2f971518f7326e12f317ba893eae3a6e
 RUN wget https://github.com/dropbox/rust-brotli-decompressor/archive/${SHA}.tar.gz

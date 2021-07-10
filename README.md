@@ -63,6 +63,14 @@ which should take about 10 minutes to complete.
 
 1. To reproduce Table 4... 
 
+```sh
+cd data && ./create_silesia.sh
+```
+
+```sh
+cd .. && python3 ExpDriver.py
+```
+
 1. To reproduce Figure 9...
 
 ### Paper claims _not_ supported by artifact

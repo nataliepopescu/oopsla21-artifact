@@ -17,8 +17,8 @@ EXPLORE_OG = "explore"
 EXPLORE_RX = "explore_regex"
 RESULTS = "results"
 
-COMPILE = os.path.join("../", "scripts", "make_onebc.sh")
-RUN = os.path.join("../", "scripts", "gen_and_run_regex_exp.sh")
+#COMPILE = os.path.join("../", "scripts", "make_onebc.sh")
+#RUN = os.path.join("../", "scripts", "gen_and_run_regex_exp.sh")
 REGEX_PY = os.path.join("../", "scripts", "regexify.py")
 
 UNMOD = "UNMOD"
