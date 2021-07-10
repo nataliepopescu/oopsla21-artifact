@@ -242,7 +242,7 @@ class State:
             direct = self.direct_uses.get(app)
             all_deps = self.num_deps.get(app)
             unchecked_deps = self.indirect_deps.get(app)
-            summ_total_uses.write("{} & {} & {} & {} & {}\n" 
+            summ_total_uses.write("{} {} {} {} {}\n" 
                     .format(app, direct, indirect, all_deps, unchecked_deps))
 
 def arg_parse():
