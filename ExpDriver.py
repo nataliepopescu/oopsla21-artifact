@@ -1,5 +1,6 @@
 from scripts.ExpStats import runExpWithName
 from scripts.Nader import genSourceExp
+from scripts.Nader import runNader
 import subprocess
 import os
 import filecmp
@@ -31,6 +32,9 @@ def genHotness(bmark_path, bin_name, arg):
     out, _  =out.communicate()
     out = out.decode("utf-8")  # convert to string from bytes
 
+    return bmark_path + "baseline/exp-genHotness/cal.out"
+
+
 def genUncheckedReport(bmark_path):
     # get all lines with unsafe
     os.chdir(bmark_path)
@@ -48,9 +52,9 @@ def convertAndCompareBinaries(bmark_path, line_nums):
 
     # Generate unsafe version
     fnames = set([i for i, _ in line_nums])
-    genSourceExp(bmark_path, "baseline", "unsafe", fnames, [])
+    genSourceExp(bmark_path, "baseline", "unsafe", fnames, line_nums)
     
-    genSourceExp(bmark_path, "baseline", "safe", fnames, line_nums)
+    genSourceExp(bmark_path, "baseline", "safe", fnames, [])
 
     # Compare binary
     ret = filecmp.cmp(bmark_path + "/baseline/exp-unsafe/exp.exe", bmark_path + "/baseline/exp-safe/exp.exe")
@@ -68,7 +72,7 @@ def getPerfDiff(bmark_path, arg):
     return (time_exp_safe - time_exp_unsafe) / time_exp_unsafe
 
 
-def endToEnd(bmark_path, arg=None, threshold=0.05):
+def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
     print("Step 1: Generating unchecked report")
     line_nums = genUncheckedReport(bmark_path)
 
@@ -79,7 +83,6 @@ def endToEnd(bmark_path, arg=None, threshold=0.05):
         print(len(line_nums), " unsafe usages, continue")
 
     print("Step 2: Convert unsafe to safe and compare binaries")
-    print(len(line_nums))
     ret = convertAndCompareBinaries(bmark_path, line_nums)
 
     if ret:
@@ -96,12 +99,17 @@ def endToEnd(bmark_path, arg=None, threshold=0.05):
     else:
         print("Performance difference higher than threshold: ", threshold, ", continue!")
 
-
     print("Step 4: Running Nader")
-    print("preparing hotness file")
-    genHotness(bmark_path, "test_bc", arg)
+
+    if skip_callgrind:
+        calout_fname = ROOT_PATH + "/example-results/cal.out.original"
+    else:
+        print("preparing hotness file")
+        calout_fname = genHotness(bmark_path, "test_bc", arg)
+
+    print("Running Nader on", bmark_path)
+    runNader(cargo_root_=bmark_path, arg=arg, pickle_name="test.pkl", clang_arg=None, p2_src=None, test_times=5, calout_fname=calout_fname)
 
 if __name__ == "__main__":
     cwd = os.getcwd()
-    #endToEnd("/scratch/ziyangx/oopsla21-artifact/brotli-expanded/", "/scratch/ziyangx/oopsla21-artifact/data/silesia-5.brotli")
     endToEnd("{}/brotli-expanded/".format(cwd), "{}/data/silesia-5.brotli".format(cwd))

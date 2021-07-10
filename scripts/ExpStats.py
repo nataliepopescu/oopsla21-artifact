@@ -69,10 +69,10 @@ def runExpWithName(exp_name, arg=None, test_time=10, getAllList=False):
     median_run = median(time_list)
     shortest_run = time_list[0]
     longest_run = time_list[-1]
-    print("Median: ", median_run)
-    print("Long: ", longest_run)
-    print("Short: ", shortest_run)
-    print("All: ", time_list)
+    # print("Median: ", median_run)
+    # print("Long: ", longest_run)
+    # print("Short: ", shortest_run)
+    # print("All: ", time_list)
 
     if getAllList:
         return median_run, shortest_run, longest_run, time_list # sum(time_list) / len(time_list)

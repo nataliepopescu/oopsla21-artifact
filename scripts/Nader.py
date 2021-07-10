@@ -50,7 +50,6 @@ def genSourceExp(cargo_root, explore_name, exp_num, fnames, line_nums):
             bcs = convertFile(old_fname, new_fname, fname_lines[old_fname])
         else:
             bcs = convertFile(old_fname, new_fname, [])
-        print(len(bcs))
 
     p = subprocess.Popen([ROOT_PATH + "/oneGenFromSource_multifile.sh", "test_bc", CLANG_ARGS]) #, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     p.wait()
@@ -293,7 +292,7 @@ def iterativeExplore(threshold, inital_unsafe_list, test_time=3, sensitivity=0.0
     return cur_unsafe, cur_baseline
 
 def quickTestBrotli(unsafe_lines, arg, test_times=5):
-    old_fname = "src/lib-unsafe.rs"
+    old_fname = "src/lib.rs.unsafe"
     new_fname = "src/lib.rs"
 
     p = genSourceExpNB(cargo_root, "baseline", old_fname, new_fname, "quick-test", unsafe_lines)
@@ -307,7 +306,7 @@ def quickTestBrotli(unsafe_lines, arg, test_times=5):
 
 # keep everything unsafe, try one safe
 def quickTestBrotliGenAllRoundExp(all_line_nums):
-    old_fname = "src/lib-unsafe.rs"
+    old_fname = "src/lib.rs.unsafe"
     new_fname = "src/lib.rs"
     explore_abs = os.path.join(cargo_root, "explore-src-quick-test")
 
@@ -333,17 +332,22 @@ def quickTestExpWithName(idx, test_times=5, option=0):
     return time_exp[option]
 
 
-if __name__ == "__main__":
-    old_fname = "src/lib-unsafe.rs"
-    new_fname = "src/lib.rs"
-    cargo_root, arg, pickle_name, clang_arg, p2_src, test_times, calout_fname = argParse()
-    EXP_ARG = arg
+def runNader(cargo_root_, arg, pickle_name, clang_arg, p2_src, test_times, calout_fname):
+    global cargo_root
+    global EXP_ARG
+    global CLANG_ARGS
 
+    cargo_root = cargo_root_
+
+    EXP_ARG = arg
     if not pickle_name.endswith("pkl"):
         pickle_name += ".pkl"
 
     if clang_arg is not None:
         CLANG_ARGS = clang_arg
+
+    old_fname = "src/lib.rs.unsafe"
+    new_fname = "src/lib.rs"
 
     impact_obj = {}
     if p2_src is not None:
@@ -372,7 +376,7 @@ if __name__ == "__main__":
 
     # remove cold baseline
     hot_lines = line_nums.copy()
-    from ParseCallgrind import getColdLines
+    from scripts.ParseCallgrind import getColdLines
     rs_fname = "src/lib.rs"
     cold_lines = getColdLines(hot_lines, calout_fname, 1, single_file=rs_fname)
     if cold_lines is None:
@@ -469,7 +473,7 @@ if __name__ == "__main__":
         print(", ".join([str(e) for e in final_tuple[idx][0]]))
 
     # sorted by hotness
-    from ParseCallgrind import sortByHot
+    from scripts.ParseCallgrind import sortByHot
     hot_lines = sortByHot(hot_lines, calout_fname, single_file=rs_fname)
     hot_lines.extend(cold_lines)
     sorted_line_nums = hot_lines
@@ -528,4 +532,10 @@ if __name__ == "__main__":
 
     with open(pickle_name, "wb") as fd:
         pickle.dump(results, fd)
+
+
+if __name__ == "__main__":
+    cargo_root, arg, pickle_name, clang_arg, p2_src, test_times, calout_fname = argParse()
+
+    runNader(cargo_root, arg, pickle_name, clang_arg, p2_src, test_times, calout_fname)
 
