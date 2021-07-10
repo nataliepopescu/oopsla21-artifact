@@ -236,7 +236,10 @@ fn now() -> SystemTime {
 fn elapsed(start: SystemTime) -> (Duration, bool) {
   match start.elapsed() {
     Ok(delta) => return (delta, false),
-    _ => return (Duration::new(0, 0), true),
+    Err(e) => {
+      println("Error: {:?}", e);
+      return (Duration::new(0, 0), true);
+    }
   }
 }
 
