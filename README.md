@@ -32,7 +32,7 @@ of this repository.
 1. To reproduce Figure 1: 
 
 ```sh
-$ cd figure1/ && python3 tool.py --dir crates --compile --bench {num_runs} --local
+$ cd figure1 && python3 tool.py --dir crates --compile --bench {num_runs} --local
 ```
 
 Where we suggest that {num_runs} = 2 or 3 ({num_runs} == 1 takes about X time to finish). [TODO maybe 1 run is enough...]
@@ -51,7 +51,7 @@ and opening the listed webpage in your browser.
 1. To reproduce Figure 7 and all but the last column of Table 3, run: 
 
 ```sh
-$ cd figure7/ && python3 uncover_uncheckeds.py --root apps
+$ cd figure7 && python3 uncover_uncheckeds.py --root apps
 ```
 
 which should take about 10 minutes to complete. 
