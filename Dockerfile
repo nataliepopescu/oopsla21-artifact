@@ -41,7 +41,7 @@ RUN mkdir ${CRATES_FULL}
 # Quick run
 WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES_QUICK}
 
-RUN wget www.crates.io/api/v1/crates/combine/4.5.2/download
+RUN wget www.crates.io/api/v1/crates/prost/0.7.0/download
 RUN tar -xzf download && rm download
 
 # Full run
