@@ -2,7 +2,6 @@ FROM ubuntu
 ENV ROOT=/root
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update
-#RUN apt-get -y install cmake
 RUN apt-get -y install git
 RUN apt-get -y install curl
 RUN apt-get -y install wget
@@ -23,15 +22,19 @@ ENV OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
 ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
 RUN cargo install cargo-edit
 
-# Set up benchmarking framework
+# Setup
 WORKDIR ${ROOT}
-RUN git clone https://github.com/nataliepopescu/bencher_scrape.git
-WORKDIR ${ROOT}/bencher_scrape
+ENV NADER=nader
+RUN mkdir ${NADER}
+WORKDIR ${ROOT}/${NADER}
+COPY . .
 
 # Download libraries for Figure 1
-ENV F1=fig1
-RUN mkdir ${F1}
-WORKDIR ${ROOT}/bencher_scrape/${F1}
+ENV F1=figure1
+ENV CRATES=crates
+WORKDIR ${ROOT}/${NADER}/${F1}
+RUN mkdir ${CRATES}
+WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES}
 
 RUN wget www.crates.io/api/v1/crates/combine/4.5.2/download
 RUN tar -xzf download && rm download
@@ -50,9 +53,11 @@ RUN tar -xzf download && rm download
 WORKDIR ${ROOT}/bencher_scrape
 
 # Download applications for Figure 7
-ENV F7=fig7
-RUN mkdir ${F7}
-WORKDIR ${ROOT}/bencher_scrape/${F7}
+ENV F7=figure7
+ENV APPS=apps
+WORKDIR ${ROOT}/${NADER}/${F7}
+RUN mkdir ${APPS}
+WORKDIR ${ROOT}/${NADER}/${F7}/${APPS}
 
 ENV SHA=965cd00b2f971518f7326e12f317ba893eae3a6e
 RUN wget https://github.com/dropbox/rust-brotli-decompressor/archive/${SHA}.tar.gz
@@ -158,11 +163,4 @@ RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 #RUN wget https://github.com/mozilla/gecko-dev/archive/${SHA}.tar.gz
 #RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 
-WORKDIR ${ROOT}/bencher_scrape
-
-# Setup for Figures 5 and 9
-WORKDIR ${ROOT}
-ENV NADER=nader
-RUN mkdir ${NADER}
 WORKDIR ${ROOT}/${NADER}
-COPY . .

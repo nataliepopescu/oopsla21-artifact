@@ -26,13 +26,17 @@ Once in the docker container you can begin using the artifact.
 
 ### Paper claims supported by artifact
 
+All of the following commands will assume that you start in the root directory
+of this repository. 
+
 1. To reproduce Figure 1: 
 
 ```sh
-$ python3 tool.py --dir fig1 --compile --bench {num_runs} --local
+$ cd figure1/ && python3 tool.py --dir fig1 --compile --bench {num_runs} --local
 ```
 
-When the above command has finished, you can visualize the results by running: 
+Where we suggest that {num_runs} = 2 or 3 ({num_runs} == 1 takes about X time to finish). 
+Then you can visualize the results by running: 
 
 ```sh
 $ python3 result_presenter.py
@@ -44,9 +48,13 @@ and opening the listed webpage in your browser.
 
 1. To reproduce Figure 5...
 
-1. To reproduce Figure 7...
+1. To reproduce Figure 7 and all but the last column of Table 3, run: 
 
-1. To reproduce Table 3...
+```sh
+$ cd figure7/ && python3 uncover_uncheckeds.py --root apps
+```
+
+which should take about 10 minutes to complete. 
 
 1. To reproduce Table 4... 
 
@@ -56,4 +64,6 @@ and opening the listed webpage in your browser.
 
 1. "Different Architecture" column in Table 1...
 
-2. Figure 8...
+1. Last column of Table 3...
+
+1. Figure 8...
