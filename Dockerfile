@@ -38,18 +38,18 @@ RUN cargo install cargo-edit
 
 ##### Figure 1 Setup #####
 ENV F1=figure1
-ENV CRATES_QUICK=crates_quick
+ENV CRATES_FAST=crates_fast
 ENV CRATES_FULL=crates_full
 WORKDIR ${ROOT}/${NADER}/${F1}
-RUN mkdir ${CRATES_QUICK}
+RUN mkdir ${CRATES_FAST}
 RUN mkdir ${CRATES_FULL}
 
 # for euc
 RUN apt-get install -y libxkbcommon-dev
 ENV PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig"
 
-# Quick run
-WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES_QUICK}
+# Fast run
+WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES_FAST}
 
 RUN wget www.crates.io/api/v1/crates/glam/0.14.0/download
 RUN tar -xzf download && rm download
@@ -90,14 +90,14 @@ WORKDIR ${ROOT}/bencher_scrape
 
 ##### Figure 7 Setup #####
 ENV F7=figure7
-ENV APPS_QUICK=apps_quick
+ENV APPS_FAST=apps_fast
 ENV APPS_FULL=apps_full
 WORKDIR ${ROOT}/${NADER}/${F7}
-RUN mkdir ${APPS_QUICK}
+RUN mkdir ${APPS_FAST}
 RUN mkdir ${APPS_FULL}
 
 # Quick run
-WORKDIR ${ROOT}/${NADER}/${F7}/${APPS_QUICK}
+WORKDIR ${ROOT}/${NADER}/${F7}/${APPS_FAST}
 
 ENV SHA=6e2595a191f2dd72a91a632e51b66b1cf5187083
 RUN wget https://github.com/getzola/zola/archive/${SHA}.tar.gz

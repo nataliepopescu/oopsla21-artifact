@@ -29,25 +29,52 @@ Once in the docker container you can begin using the artifact.
 All of the following commands will assume that you start in the root directory
 of this repository. 
 
+```sh
+$ python3 ExpDriver.py --help
+```
+
+prints out options for running the script. 
+
 1. To reproduce Figure 1: 
+
+Old command: 
 
 ```sh
 $ cd figure1 && python3 tool.py --dir crates --compile --bench {num_runs} --local
 ```
 
-Where the expected durations are as follows: 
-   * compilation: 50 minutes
-   * benchmarking with {num_runs} == 1: 10 minutes
-   * result aggregation: 5 minutes [FIXME]
+New command: 
+
+```sh
+$ python3 ExpDriver.py --genf1 --{fast/full} --bench {num_runs}
+```
+
+Where the expected durations for generating results for one library [fast] are as follows: 
+   * 8 minutes to compile two versions of the library's benchmarks
+   * 2 minutes to run one round of benchmarks x {num_runs}
+   * 2 minutes to aggregate results
+
+And the expected durations for generating all results [full] are as follows: 
+   * 50 minutes to compile two versions of each library's benchmarks
+   * 10 minutes to run one round of benchmarks for all 7 libraries x {num_runs}
+   * 5 minutes to aggregate results
 
 We suggest that {num_runs} == 2 or 3 to balance completion speed and precision. 
-Then visualize the results by running: 
+Visualize the results by running: 
+
+Old command: 
 
 ```sh
 $ python3 result_presenter.py
 ```
 
-and opening the listed webpage in your browser.
+New command: 
+
+```sh
+$ python3 ExpDriver --viewf1 --{fast/full} --port 8050
+```
+
+and opening the listed webpage in your browser. The specified port should be the same as the one you passed to the `docker run` command earlier. 
 
 1. To reproduce Table 1... 
 

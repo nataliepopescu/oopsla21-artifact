@@ -8,4 +8,4 @@ rm silesia.zip
 cd ..
 tar -cvf silesia.tar silesia
 rm -r silesia
-python silesia_gen.py
+python3 silesia_gen.py

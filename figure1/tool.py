@@ -264,50 +264,50 @@ class State:
         self.get_bmark_names()
         for r in range(self.bench):
             for d in self.dirlist:
-                if "rage" not in d: 
-                    continue
-                if "regex" in d: 
-                    continue
-                regexd = "{}_regex".format(d)
-                if "flux" in d:
-                    newd = os.path.join(d, "libflux", "flux")
-                    newregexd = os.path.join(regexd, "libflux", "flux")
-                else: 
-                    newd = d
-                    newregexd = regexd
+                #if "rage" not in d: 
+                #    continue
+                #if "regex" in d: 
+                #    continue
+                #regexd = "{}_regex".format(d)
+                #if "flux" in d:
+                #    newd = os.path.join(d, "libflux", "flux")
+                #    newregexd = os.path.join(regexd, "libflux", "flux")
+                #else: 
+                #    newd = d
+                #    newregexd = regexd
                 #os.chdir(d)
                 #for b in self.bnames.get(d):
                 #    unmodres = os.path.join(d, RESULTS, str(r), "{}_{}.out".format(b, UNMOD))
                 #    regexres = os.path.join(d, RESULTS, str(r), "{}_{}.out".format(b, REGEX))
-                unmodres = os.path.join(newd, RESULTS, str(r), "{}.out".format(UNMOD))
-                regexres = os.path.join(newregexd, RESULTS, str(r), "{}.out".format(UNMOD))
-                outfile = os.path.join(newd, RESULTS, str(r), BENCH_DATA)
-                if "blake3" in newd or "boringtun" in newd: 
+                unmodres = os.path.join(d, RESULTS, str(r), "{}.out".format(UNMOD))
+                regexres = os.path.join(d, RESULTS, str(r), "{}.out".format(REGEX))
+                outfile = os.path.join(d, RESULTS, str(r), BENCH_DATA)
+                #if "blake3" in newd or "boringtun" in newd: 
                     # bencher format
-                    dump_benchmark(outfile, unmodres, regexres, 0)
-                else: 
-                    # criterion format
-                    dump_benchmark(outfile, unmodres, regexres, 1)
+                #    dump_benchmark(outfile, unmodres, regexres, 0)
+                #else: 
+                # criterion format
+                dump_benchmark(outfile, unmodres, regexres, 1)
                 os.chdir(self.root)
 
     # summarize data for all runs of each crate on current node 
     # (assuming all data is on this node)
     def crunch_local(self, from_remote=False):
         for d in self.dirlist: 
-            if "regex" in d: 
-                continue
-            if "flux" in d: 
-                aggdir = os.path.join(d, "libflux", "flux", RESULTS)
-            else: 
-                aggdir = os.path.join(d, RESULTS)
+            #if "regex" in d: 
+            #    continue
+            #if "flux" in d: 
+            #    aggdir = os.path.join(d, "libflux", "flux", RESULTS)
+            #else: 
+            aggdir = os.path.join(d, RESULTS)
             outfile = os.path.join(aggdir, CRUNCHED_DATA)
             path_wrangle(outfile, headers)
 
-            if from_remote == True: 
-                sample_file = os.path.join(aggdir, "0", 
-                        "{}_{}".format(BENCH_DATA, self.nodes[0]))
-            else: 
-                sample_file = os.path.join(aggdir, "0", BENCH_DATA)
+            #if from_remote == True: 
+            #    sample_file = os.path.join(aggdir, "0", 
+            #            "{}_{}".format(BENCH_DATA, self.nodes[0]))
+            #else: 
+            sample_file = os.path.join(aggdir, "0", BENCH_DATA)
 
             # count number of distinctly captured benchmarks
             runs = self.bench if self.bench else sum(os.path.isdir(os.path.join(aggdir, i)) for i in os.listdir(aggdir))
