@@ -17,8 +17,6 @@ EXPLORE_OG = "explore"
 EXPLORE_RX = "explore_regex"
 RESULTS = "results"
 
-#COMPILE = os.path.join("../", "scripts", "make_onebc.sh")
-#RUN = os.path.join("../", "scripts", "gen_and_run_regex_exp.sh")
 REGEX_PY = os.path.join("../", "scripts", "regexify.py")
 
 UNMOD = "UNMOD"
@@ -563,6 +561,7 @@ if __name__ == "__main__":
         s.run_tests()
         s.crunch_test_results()
     if s.cmpl == True:
+        s.revert_criterion_version()
         s.compile_benchmarks()
         print("Converting source code with regexify.py")
         subprocess.run(["python3", REGEX_PY, "--root", s.ctgrydir])
