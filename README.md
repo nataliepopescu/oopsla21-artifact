@@ -35,8 +35,13 @@ of this repository.
 $ cd figure1 && python3 tool.py --dir crates --compile --bench {num_runs} --local
 ```
 
-Where we suggest that {num_runs} = 2 or 3 ({num_runs} == 1 takes about X time to finish). [TODO maybe 1 run is enough...]
-Then you can visualize the results by running: 
+Where the expected durations are as follows: 
+    1. compile: 20-25 minutes
+    1. benchmark with {num_runs} == 1: 10 minutes
+    1. result aggregation: 5 minutes [FIXME]
+
+We suggest that {num_runs} == 2 or 3 to balance completion speed and precision. 
+Then visualize the results by running: 
 
 ```sh
 $ python3 result_presenter.py
