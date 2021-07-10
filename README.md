@@ -32,10 +32,10 @@ of this repository.
 1. To reproduce Figure 1: 
 
 ```sh
-$ cd figure1/ && python3 tool.py --dir fig1 --compile --bench {num_runs} --local
+$ cd figure1/ && python3 tool.py --dir crates --compile --bench {num_runs} --local
 ```
 
-Where we suggest that {num_runs} = 2 or 3 ({num_runs} == 1 takes about X time to finish). 
+Where we suggest that {num_runs} = 2 or 3 ({num_runs} == 1 takes about X time to finish). [TODO maybe 1 run is enough...]
 Then you can visualize the results by running: 
 
 ```sh
