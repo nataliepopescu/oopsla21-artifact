@@ -26,7 +26,19 @@ Once in the docker container you can begin using the artifact.
 
 ### Paper claims supported by artifact
 
-1. To reproduce Figure 1...
+1. To reproduce Figure 1: 
+
+```sh
+$ python3 tool.py --dir fig1 --compile --bench {num_runs} --local
+```
+
+When the above command has finished, you can visualize the results by running: 
+
+```sh
+$ python3 result_presenter.py
+```
+
+and opening the listed webpage in your browser.
 
 1. To reproduce Table 1... 
 
