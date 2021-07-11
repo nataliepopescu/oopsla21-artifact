@@ -6,8 +6,10 @@ import pickle
 import time
 import argparse
 import random
-from .regexify import convertFile
-from .ExpStats import runExpWithName
+from scripts.regexify import convertFile
+from scripts.ExpStats import runExpWithName
+from scripts.ParseCallgrind import sortByHot
+from tqdm.auto import tqdm
 
 cargo_root=""
 EXP_ARG=""
@@ -129,19 +131,18 @@ def genAllSecondRoundExp(cargo_root, old_fname, new_fname, sorted_line_nums):
         p.wait()
 
 # Get the impact of each bounds check, different method
-def oneUnsafeExp(cargo_root, old_fname, new_fname, all_line_nums, arg=None, test_times=5):
+def oneUncheckedExp(cargo_root, old_fname, new_fname, all_line_nums, arg=None, test_times=5):
     genAllOneUncheckRoundExp(cargo_root, old_fname, new_fname, all_line_nums)
 
     time_list = []
-    for idx, line_num in enumerate(all_line_nums):
+    for idx, line_num in enumerate(tqdm(all_line_nums, leave=True)):
         dir_name = os.path.join(cargo_root, "explore-src-one-uncheck", "exp-" + str(idx))
         exp_name = os.path.join(dir_name, "exp.exe")
         os.chdir(dir_name)
-        time_exp, _, _ = runExpWithName(exp_name, arg, test_time=test_times)
+        time_exp, _, _ = runExpWithName(exp_name, arg, test_times=test_times)
         if time_exp is None:
             exit()
 
-        print("Exp", idx, ",line: ", line_num, ":", time_exp)
         time_list.append(time_exp)
 
     impact_tuple = list(zip(all_line_nums, time_list))
@@ -152,19 +153,18 @@ def oneUnsafeExp(cargo_root, old_fname, new_fname, all_line_nums, arg=None, test
     return impact_tuple
 
 # Get the impact of each bounds check
-def firstRoundExp(cargo_root, old_fname, new_fname, all_line_nums, arg=None, test_times=5):
+def oneCheckedExp(cargo_root, old_fname, new_fname, all_line_nums, arg=None, test_times=5):
     genAllFirstRoundExp(cargo_root, old_fname, new_fname, all_line_nums)
 
     time_list = []
-    for idx, line_num in enumerate(all_line_nums):
+    for idx, line_num in enumerate(tqdm(all_line_nums, leave=True)):
         dir_name = os.path.join(cargo_root, "explore-src-r1", "exp-" + str(idx))
         exp_name = os.path.join(dir_name, "exp.exe")
         os.chdir(dir_name)
-        time_exp, _, _ = runExpWithName(exp_name, arg, test_time=test_times)
+        time_exp, _, _ = runExpWithName(exp_name, arg, test_times=test_times)
         if time_exp is None:
             exit()
 
-        print("Exp", idx, ",line: ", line_num, ":", time_exp)
         time_list.append(time_exp)
 
     impact_tuple = list(zip(all_line_nums, time_list))
@@ -186,15 +186,14 @@ def secondRoundExp(cargo_root, old_fname, new_fname, sorted_line_nums, arg=None,
     bottom_error_list = [] # shorter
     time_list_list = []
 
-    for idx, line_num in enumerate(sorted_line_nums):
+    for idx, line_num in enumerate(tqdm(sorted_line_nums, leave=True)):
         dir_name = os.path.join(cargo_root, "explore-src-r2", "exp-" + str(idx))
         exp_name = os.path.join(dir_name, "exp.exe")
         os.chdir(dir_name)
-        time_exp, shortest_run, longest_run, all_time_list = runExpWithName(exp_name, arg, test_time=test_times, getAllList=True)
+        time_exp, shortest_run, longest_run, all_time_list = runExpWithName(exp_name, arg, test_times=test_times, getAllList=True)
         if time_exp is None:
             exit()
 
-        print("Exp", idx, ":", time_exp)
         cur_lines.append(line_num)
         time_list.append(time_exp)
         top_error_list.append(longest_run - time_exp)
@@ -223,9 +222,6 @@ def argParse():
     parser.add_argument("--clang-arg", "-c",
             type=str,
             help="additional clang args")
-    parser.add_argument("--p2-src", "-s",
-            type=str,
-            help="the pkl file with impact tuple, and only execute phase 2")
     parser.add_argument("--test-times", "-t",
             metavar="path",
             type=int,
@@ -236,13 +232,13 @@ def argParse():
             type=str,
             help="times to run the experiment")
     args = parser.parse_args()
-    return args.cargo_root, args.arg, args.output, args.clang_arg, args.p2_src, args.test_times, args.calout_fname
+    return args.cargo_root, args.arg, args.output, args.clang_arg, args.test_times, args.calout_fname
 
 
-def iterativeExplore(threshold, inital_unsafe_list, test_time=3, sensitivity=0.001):
+def iterativeExplore(threshold, inital_unsafe_list, test_times=3, sensitivity=0.001):
 
     cur_unsafe = inital_unsafe_list.copy()
-    cur_baseline = quickTestBrotli(cur_unsafe, arg=EXP_ARG, test_times=test_time)[1]
+    cur_baseline = quickTestBrotli(cur_unsafe, arg=EXP_ARG, test_times=test_times)[1]
     print("Initial baseline:", cur_baseline)
     runs_cnt = 0
     round_cnt = 0
@@ -253,16 +249,16 @@ def iterativeExplore(threshold, inital_unsafe_list, test_time=3, sensitivity=0.0
         next_unsafe = cur_unsafe.copy()
 
         # generating exps
-        print("Generating", len(cur_unsafe), "exps")
+        # print("Generating", len(cur_unsafe), "exps")
         quickTestBrotliGenAllRoundExp(cur_unsafe)
 
         # run exps
         min_time = -1
         min_idx = -1
         for idx, line in enumerate(cur_unsafe):
-            print("Testing with", len(cur_unsafe) - 1, "get_unchecked, with", line, "removed")
+            # print("Testing with", len(cur_unsafe) - 1, "get_unchecked, with", line, "removed")
             exp_time = quickTestExpWithName(idx, test_times, 1)
-            print(exp_time)
+            # print(exp_time)
             if min_time == -1 or exp_time < min_time:
                 min_time = exp_time
                 min_idx = idx
@@ -284,7 +280,7 @@ def iterativeExplore(threshold, inital_unsafe_list, test_time=3, sensitivity=0.0
 
         cur_unsafe = next_unsafe
         # remeasure the baseline, using the best count
-        cur_baseline = quickTestBrotli(cur_unsafe, arg=EXP_ARG, test_times=test_time)[1]
+        cur_baseline = quickTestBrotli(cur_unsafe, arg=EXP_ARG, test_times=test_times)[1]
 
         print("### Round", round_cnt, ": ", runs_count_this_round, "runs,", len(cur_unsafe), "get_unchecked left"  )
         print("### New baseline:", cur_baseline)
@@ -300,7 +296,7 @@ def quickTestBrotli(unsafe_lines, arg, test_times=5):
     print("binary generated")
     exp_name = os.path.join(cargo_root, "baseline", "exp-quick-test/exp.exe")
 
-    quick_result= runExpWithName(exp_name, arg, test_time=test_times)
+    quick_result= runExpWithName(exp_name, arg, test_times=test_times)
     return quick_result
 
 
@@ -326,13 +322,30 @@ def quickTestExpWithName(idx, test_times=5, option=0):
     dir_name = os.path.join(cargo_root, "explore-src-quick-test", "exp-" + str(idx))
     exp_name = os.path.join(dir_name, "exp.exe")
     os.chdir(dir_name)
-    time_exp = runExpWithName(exp_name, arg, test_time=test_times)
-    # time_exp, shortest_run, longest_run = runExpWithName(exp_name, arg, test_time=test_times)
+    time_exp = runExpWithName(exp_name, arg, test_times=test_times)
+    # time_exp, shortest_run, longest_run = runExpWithName(exp_name, arg, test_times=test_times)
     # option 0, median, option 1, shortest, option 2 longest
     return time_exp[option]
 
 
-def runNader(cargo_root_, arg, pickle_name, clang_arg, p2_src, test_times, calout_fname):
+# explorer
+def explore(unsafe_time, initial_threshold, step, initial_unsafe_lines):
+
+    final_unsafe = initial_unsafe_lines
+    threshold = initial_threshold
+
+    threshold_unsafe_map = {}
+    while len(final_unsafe) > 0:
+        threshold_time = unsafe_time[0] * (1 + threshold)
+        final_unsafe, final_baseline = iterativeExplore(threshold_time, final_unsafe)
+        print("{:.2f}".format(threshold * 100) + "%", final_unsafe, final_baseline)
+        threshold_unsafe_map[threshold] = final_unsafe.copy()
+        threshold += step
+    
+    return threshold_unsafe_map
+
+
+def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname, quick_run=False):
     global cargo_root
     global EXP_ARG
     global CLANG_ARGS
@@ -349,11 +362,6 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, p2_src, test_times, calou
     old_fname = "src/lib.rs.unsafe"
     new_fname = "src/lib.rs"
 
-    impact_obj = {}
-    if p2_src is not None:
-        with open(p2_src, 'rb') as fd:
-            impact_obj = pickle.load(fd)
-
     # get all lines with unsafe
     os.chdir(cargo_root)
     line_nums = getUnsafeLines(old_fname)
@@ -361,17 +369,19 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, p2_src, test_times, calou
     print("Running Nader on ", len(line_nums), " bounds checks")
 
     # all safe baseline
+    print("Prep 1/4: Getting safe baseline (several minutes)")
     p = genSourceExpNB(cargo_root, "baseline", old_fname, new_fname, "safe", [])
     p.wait()
     exp_name = os.path.join(cargo_root, "baseline", "exp-safe/exp.exe")
-    safe_time = runExpWithName(exp_name, arg, test_time=test_times)
+    safe_time = runExpWithName(exp_name, arg, test_times=test_times)
     print("Safe baseline:", safe_time)
 
     # all unsafe baseline
+    print("Prep 2/4: Getting unsafe baseline (several minutes)")
     p = genSourceExpNB(cargo_root, "baseline", old_fname, new_fname, "unsafe", line_nums)
     p.wait()
     exp_name = os.path.join(cargo_root, "baseline", "exp-unsafe/exp.exe")
-    unsafe_time = runExpWithName(exp_name, arg, test_time=test_times)
+    unsafe_time = runExpWithName(exp_name, arg, test_times=test_times)
     print("Unsafe baseline:", unsafe_time)
 
     # remove cold baseline
@@ -386,156 +396,87 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, p2_src, test_times, calou
     for i in cold_lines:
         hot_lines.remove(i)
 
-    print("Hot code has", len(hot_lines))
-    p = genSourceExpNB(cargo_root, "baseline", old_fname, new_fname, "hot", hot_lines)
-    p.wait()
-    exp_name = os.path.join(cargo_root, "baseline", "exp-hot/exp.exe")
-    hot_time = runExpWithName(exp_name, arg, test_time=test_times)
-    print("Hot baseline:", hot_time)
+    hot_lines = sortByHot(hot_lines, calout_fname, single_file=rs_fname)
+    hot_lines.extend(cold_lines)
+    # print("Hot code has", len(hot_lines))
+    # p = genSourceExpNB(cargo_root, "baseline", old_fname, new_fname, "hot", hot_lines)
+    # p.wait()
+    # exp_name = os.path.join(cargo_root, "baseline", "exp-hot/exp.exe")
+    # hot_time = runExpWithName(exp_name, arg, test_times=test_times)
+    # print("Hot baseline:", hot_time)
 
-    # do P1, other wise the impact tuple is loaded from the pickle file
-    if p2_src is None:
-        # start the experiment
-        impact_tuple_one_check = firstRoundExp(cargo_root, old_fname, new_fname, line_nums, arg, test_times)
+    if quick_run:
+        hot_lines = hot_lines[:10] 
+        line_nums = hot_lines
 
-        print("Top 10 Impact (one checked)")
-        for idx in range(min(10, len(impact_tuple_one_check))):
-            print("Line ", impact_tuple_one_check[idx][0], ": ", impact_tuple_one_check[idx][1])
-    else:
-        try:
-            impact_tuple_one_check = impact_obj['impact_tuple']
-        except Exception as e:
-            print("Cannot load the impact tuple")
-            print(e)
-            exit()
+    # Get one-checked priority
+    print("Prep 3/4: Getting one-checked priority (~30 mins)")
+    impact_tuple_one_check = oneCheckedExp(cargo_root, old_fname, new_fname, line_nums, arg, test_times)
 
-    # start the experiment, all but one unsafe
-    impact_tuple_one_uncheck = oneUnsafeExp(cargo_root, old_fname, new_fname, line_nums, arg, test_times)
-
-    print("Top 10 Impact (one unchecked)")
-    for idx in range(min(10, len(impact_tuple_one_uncheck))):
-        print("Line ", impact_tuple_one_uncheck[idx][0], ": ", impact_tuple_one_uncheck[idx][1])
-    # end of one uncheck
-
-    # saved
-    results = {"impact_tuple": impact_tuple_one_check, "impact_tuple_one_uncheck": impact_tuple_one_uncheck,
-            "unsafe_baseline": unsafe_time, "safe_baseline": safe_time, "hot_baseline": hot_time}
+    results = {"impact_tuple": impact_tuple_one_check,
+            "unsafe_baseline": unsafe_time, "safe_baseline": safe_time}
     os.chdir(cargo_root)
 
     with open("INTER-" + pickle_name, "wb") as fd:
         pickle.dump(results, fd)
-    print("Partial result dumped")
+    print("Partial result dumped (one unchecked)")
+    # end of one checked
 
-    #sorted by from sequential
-    sorted_line_nums = line_nums.copy() 
-    final_tuple_by_sequential = secondRoundExp(cargo_root, old_fname, new_fname, sorted_line_nums, arg, test_times)
+    # Get one-unchecked priority
+    print("Prep 4/4: Getting one-unchecked priority (~30 mins)")
+    impact_tuple_one_uncheck = oneUncheckedExp(cargo_root, old_fname, new_fname, line_nums, arg, test_times)
 
-    final_tuple = final_tuple_by_sequential
-    print("Top 10 Combined (Sequential)")
-    for idx in range(min(10, len(final_tuple))):
-        print(idx + 1, ": ", final_tuple[idx][1])
-        print(", ".join([str(e) for e in final_tuple[idx][0]]))
+    results = {"impact_tuple": impact_tuple_one_check, "impact_tuple_one_uncheck": impact_tuple_one_uncheck,
+            "unsafe_baseline": unsafe_time, "safe_baseline": safe_time}
+    os.chdir(cargo_root)
 
-    #sorted by from random
+    with open("INTER-" + pickle_name, "wb") as fd:
+        pickle.dump(results, fd)
+    print("Partial result dumped (one unchecked)")
+    # end of one uncheck
+
+    # Exp 1: sorted by from random
+    print("Exp 1/4: Get random performance (might take up to 2 hours)")
     sorted_line_nums = line_nums.copy() 
     random.shuffle(sorted_line_nums)
     final_tuple_by_random = secondRoundExp(cargo_root, old_fname, new_fname, sorted_line_nums, arg, test_times)
 
-    final_tuple = final_tuple_by_random
-    print("Top 10 Combined (Random)")
-    for idx in range(min(10, len(final_tuple))):
-        print(idx + 1, ": ", final_tuple[idx][1])
-        print(", ".join([str(e) for e in final_tuple[idx][0]]))
-
-    #sorted by from one checked
+    # Exp 2: sorted by from one checked
+    print("Exp 2/4: Get one-checked performance (might take up to 2 hours)")
     sorted_line_nums = [x[0] for x in impact_tuple_one_check]
-
     final_tuple_by_one_checked = secondRoundExp(cargo_root, old_fname, new_fname, sorted_line_nums, arg, test_times)
 
-    final_tuple = final_tuple_by_one_checked
-    print("Top 10 Combined (one-checked)")
-    for idx in range(min(10, len(final_tuple))):
-        print(idx + 1, ": ", final_tuple[idx][1])
-        print(", ".join([str(e) for e in final_tuple[idx][0]]))
 
-
-    #sorted by from one unchecked
+    # Exp 3: sorted by from one unchecked
+    print("Exp 3/4: Get one-unchecked performance (might take up to 2 hours)")
     impact_lines = [i[0] for i in impact_tuple_one_uncheck]
     impact_lines.reverse()
     sorted_line_nums = impact_lines
-
     final_tuple_by_one_unchecked = secondRoundExp(cargo_root, old_fname, new_fname, sorted_line_nums, arg, test_times)
 
-    final_tuple = final_tuple_by_one_unchecked
-    print("Top 10 Combined (one-unchecked)")
-    for idx in range(min(10, len(final_tuple))):
-        print(idx + 1, ": ", final_tuple[idx][1])
-        print(", ".join([str(e) for e in final_tuple[idx][0]]))
-
-    # sorted by hotness
-    from scripts.ParseCallgrind import sortByHot
-    hot_lines = sortByHot(hot_lines, calout_fname, single_file=rs_fname)
-    hot_lines.extend(cold_lines)
+    # Exp 4: sorted by hotness
+    print("Exp 4/4: Get hotness performance (might take up to 2 hours)")
     sorted_line_nums = hot_lines
-
     final_tuple_by_hotness = secondRoundExp(cargo_root, old_fname, new_fname, sorted_line_nums, arg, test_times)
 
-    final_tuple = final_tuple_by_hotness
-    print("Top 10 Combined (hotness)")
-    for idx in range(min(10, len(final_tuple))):
-        print(idx + 1, ": ", final_tuple[idx][1])
-        print(", ".join([str(e) for e in final_tuple[idx][0]]))
-
-    # explorer
-    threshold = unsafe_time[0] * 1.005
-    final_unsafe, final_baseline = iterativeExplore(threshold, hot_lines[:41])
-    print("0.5%", final_unsafe, final_baseline)
-
-    threshold = unsafe_time[0] * 1.01
-    final_unsafe, final_baseline = iterativeExplore(threshold, final_unsafe)
-    print("1%", final_unsafe, final_baseline)
-
-    threshold = unsafe_time[0] * 1.02
-    final_unsafe, final_baseline = iterativeExplore(threshold, final_unsafe)
-    print("2%", final_unsafe, final_baseline)
-
-    threshold = unsafe_time[0] * 1.03
-    final_unsafe, final_baseline = iterativeExplore(threshold, final_unsafe)
-    print("3%", final_unsafe, final_baseline)
-
-    threshold = unsafe_time[0] * 1.04
-    final_unsafe, final_baseline = iterativeExplore(threshold, final_unsafe)
-    print("4%", final_unsafe, final_baseline)
-
-    threshold = unsafe_time[0] * 1.05
-    final_unsafe, final_baseline = iterativeExplore(threshold, final_unsafe)
-    print("5%", final_unsafe, final_baseline)
-
-    threshold = unsafe_time[0] * 1.06
-    final_unsafe, final_baseline = iterativeExplore(threshold, final_unsafe)
-    print("6%", final_unsafe, final_baseline)
-
-    threshold = unsafe_time[0] * 1.07
-    final_unsafe, final_baseline = iterativeExplore(threshold, final_unsafe)
-    print("7%", final_unsafe, final_baseline)
-
-    threshold = unsafe_time[0] * 1.08
-    final_unsafe, final_baseline = iterativeExplore(threshold, final_unsafe)
-    print("8%", final_unsafe, final_baseline)
-    
+    # Dump Final Result
     results = {"impact_tuple": impact_tuple_one_check, "impact_tuple_one_uncheck": impact_tuple_one_uncheck,
-            "final_tuple": final_tuple_by_one_checked, "final_tuple_one_unchecked": final_tuple_by_one_unchecked,
-            "final_tuple_hotness": final_tuple_by_hotness, "final_tuple_sequential": final_tuple_by_sequential,
-            "final_tuple_random": final_tuple_by_random,
-            "unsafe_baseline": unsafe_time, "safe_baseline": safe_time, "hot_baseline": hot_time}
+            "final_tuple_one_checked": final_tuple_by_one_checked, "final_tuple_one_unchecked": final_tuple_by_one_unchecked,
+            "final_tuple_hotness": final_tuple_by_hotness, "final_tuple_random": final_tuple_by_random,
+            "unsafe_baseline": unsafe_time, "safe_baseline": safe_time}
     os.chdir(cargo_root)
 
     with open(pickle_name, "wb") as fd:
         pickle.dump(results, fd)
 
+    threshold_unsafe_map = explore(unsafe_time, initial_threshold=0.005, step=0.005, initial_unsafe_lines=hot_lines[:41])
+    with open("threshold_unsafe_map.pkl", "wb") as fd:
+        pickle.dump(threshold_unsafe_map, fd)
+
+
 
 if __name__ == "__main__":
-    cargo_root, arg, pickle_name, clang_arg, p2_src, test_times, calout_fname = argParse()
+    cargo_root, arg, pickle_name, clang_arg, test_times, calout_fname = argParse()
 
-    runNader(cargo_root, arg, pickle_name, clang_arg, p2_src, test_times, calout_fname)
+    runNader(cargo_root, arg, pickle_name, clang_arg, test_times, calout_fname)
 

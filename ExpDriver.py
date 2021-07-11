@@ -71,6 +71,17 @@ def getPerfDiff(bmark_path, arg):
 
     return (time_exp_safe - time_exp_unsafe) / time_exp_unsafe
 
+## Generate brotli figs (Fig5 and Fig9)
+def genFig5and9():
+    print("Running Nader on brotli, generating fig 5 and 9")
+    bmark_path = ROOT_PATH + "/brotli-expanded/"
+    arg = ROOT_PATH + "/data/silesia-5.brotli"
+    calout_fname = ROOT_PATH + "/example-results/cal.out.original"
+    runNader(cargo_root_=bmark_path, arg=arg, pickle_name="test.pkl", clang_arg=None, test_times=5, calout_fname=calout_fname, quick_run=True)
+
+    print("Generating plots")
+    # use test.pkl to generate Fig 5
+
 
 def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
     print("Step 1: Generating unchecked report")
@@ -107,9 +118,8 @@ def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
         print("preparing hotness file")
         calout_fname = genHotness(bmark_path, "test_bc", arg)
 
-    print("Running Nader on", bmark_path)
-    runNader(cargo_root_=bmark_path, arg=arg, pickle_name="test.pkl", clang_arg=None, p2_src=None, test_times=5, calout_fname=calout_fname)
 
 if __name__ == "__main__":
     cwd = os.getcwd()
-    endToEnd("{}/brotli-expanded/".format(cwd), "{}/data/silesia-5.brotli".format(cwd))
+    #endToEnd("{}/brotli-expanded/".format(cwd), "{}/data/silesia-5.brotli".format(cwd))
+    genFig5and9()
