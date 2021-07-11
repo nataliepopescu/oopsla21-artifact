@@ -329,8 +329,8 @@ def quickTestExpWithName(idx, test_times=5, option=0):
 
 
 # explorer
-def explore(unsafe_time, initial_threshold, step, initial_unsafe_lines):
-    total_unsafe_count = len(initial_unsafe_lines)
+def explore(unsafe_time, initial_threshold, step, initial_unsafe_lines, total_unsafe_count):
+    initial_unsafe_baseline  = unsafe_time
     final_unsafe = initial_unsafe_lines
     threshold = initial_threshold
 
@@ -341,7 +341,7 @@ def explore(unsafe_time, initial_threshold, step, initial_unsafe_lines):
         final_unsafe, final_baseline = iterativeExplore(threshold_time, final_unsafe)
         print("{:.2f}".format(threshold * 100) + "%", final_unsafe, final_baseline)
         threshold_unsafe_map[threshold] = final_unsafe.copy()
-        safecount_speed_map[total_unsafe_count- len(final_unsafe)] = final_baseline
+        safecount_speed_map[total_unsafe_count- len(final_unsafe)] = (initial_unsafe_baseline / final_baseline) - 1
         threshold += step
 
     return threshold_unsafe_map, safecount_speed_map
@@ -472,7 +472,7 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname,
     with open(pickle_name, "wb") as fd:
         pickle.dump(results, fd)
 
-    threshold_unsafe_map, safecount_speed_map = explore(unsafe_time, initial_threshold=0.005, step=0.005, initial_unsafe_lines=hot_lines[:41])
+    threshold_unsafe_map, safecount_speed_map = explore(unsafe_time, initial_threshold=0.005, step=0.005, initial_unsafe_lines=hot_lines[:41], total_unsafe_count=total_unsafe_count)
 
     os.chdir(cargo_root)
     with open("threshold_unsafe_map.pkl", "wb") as fd:
