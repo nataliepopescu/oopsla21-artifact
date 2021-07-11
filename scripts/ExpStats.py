@@ -31,10 +31,10 @@ def runOneTest(bc_fname, arg=None):
     return result
 
 
-def runExpWithName(exp_name, arg=None, test_time=10, getAllList=False):
+def runExpWithName(exp_name, arg=None, test_times=10, getAllList=False):
 
     time_list = []
-    for i in range(test_time):
+    for i in range(test_times):
         if arg is not None:
             out = subprocess.Popen([ROOT_PATH + '/runExp.sh',  exp_name, arg], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         else:
