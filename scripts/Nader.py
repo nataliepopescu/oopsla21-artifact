@@ -330,19 +330,21 @@ def quickTestExpWithName(idx, test_times=5, option=0):
 
 # explorer
 def explore(unsafe_time, initial_threshold, step, initial_unsafe_lines):
-
+    total_unsafe_count = len(initial_unsafe_lines)
     final_unsafe = initial_unsafe_lines
     threshold = initial_threshold
 
     threshold_unsafe_map = {}
+    safecount_speed_map = {}
     while len(final_unsafe) > 0:
         threshold_time = unsafe_time[0] * (1 + threshold)
         final_unsafe, final_baseline = iterativeExplore(threshold_time, final_unsafe)
         print("{:.2f}".format(threshold * 100) + "%", final_unsafe, final_baseline)
         threshold_unsafe_map[threshold] = final_unsafe.copy()
+        safecount_speed_map[total_unsafe_count- len(final_unsafe)] = final_baseline
         threshold += step
-    
-    return threshold_unsafe_map
+
+    return threshold_unsafe_map, safecount_speed_map
 
 
 def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname, quick_run=False):
@@ -366,7 +368,8 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname,
     os.chdir(cargo_root)
     line_nums = getUnsafeLines(old_fname)
 
-    print("Running Nader on ", len(line_nums), " bounds checks")
+    total_unsafe_count = len(line_nums)
+    print("Running Nader on ", total_unsafe_count, " bounds checks")
 
     # all safe baseline
     print("Prep 1/4: Getting safe baseline (several minutes)")
@@ -406,7 +409,7 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname,
     # print("Hot baseline:", hot_time)
 
     if quick_run:
-        hot_lines = hot_lines[:10] 
+        hot_lines = hot_lines[:10]
         line_nums = hot_lines
 
     # Get one-checked priority
@@ -417,7 +420,7 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname,
             "unsafe_baseline": unsafe_time, "safe_baseline": safe_time}
     os.chdir(cargo_root)
 
-    with open("INTER-" + pickle_name, "wb") as fd:
+    with open(pickle_name + ".tmp", "wb") as fd:
         pickle.dump(results, fd)
     print("Partial result dumped (one unchecked)")
     # end of one checked
@@ -430,7 +433,7 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname,
             "unsafe_baseline": unsafe_time, "safe_baseline": safe_time}
     os.chdir(cargo_root)
 
-    with open("INTER-" + pickle_name, "wb") as fd:
+    with open(pickle_name + ".tmp", "wb") as fd:
         pickle.dump(results, fd)
     print("Partial result dumped (one unchecked)")
     # end of one uncheck
@@ -469,10 +472,11 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname,
     with open(pickle_name, "wb") as fd:
         pickle.dump(results, fd)
 
-    threshold_unsafe_map = explore(unsafe_time, initial_threshold=0.005, step=0.005, initial_unsafe_lines=hot_lines[:41])
-    with open("threshold_unsafe_map.pkl", "wb") as fd:
-        pickle.dump(threshold_unsafe_map, fd)
+    threshold_unsafe_map, safecount_speed_map = explore(unsafe_time, initial_threshold=0.005, step=0.005, initial_unsafe_lines=hot_lines[:41])
 
+    os.chdir(cargo_root)
+    with open("threshold_unsafe_map.pkl", "wb") as fd:
+        pickle.dump({"threshold_unsafe": threshold_unsafe_map, "safecount_speed": safecount_speed_map}, fd)
 
 
 if __name__ == "__main__":

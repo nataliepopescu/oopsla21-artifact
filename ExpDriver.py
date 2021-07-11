@@ -1,9 +1,11 @@
 from scripts.ExpStats import runExpWithName
 from scripts.Nader import genSourceExp
 from scripts.Nader import runNader
+from scripts.ResultPresenter import genFig5, genFig9
 import subprocess
 import os
 import filecmp
+import shutil
 
 ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -72,15 +74,24 @@ def getPerfDiff(bmark_path, arg):
     return (time_exp_safe - time_exp_unsafe) / time_exp_unsafe
 
 ## Generate brotli figs (Fig5 and Fig9)
-def genFig5and9():
-    print("Running Nader on brotli, generating fig 5 and 9")
+def genFig5and9(quick_run=False):
+    #print("Running Nader on brotli, generating fig 5 and 9")
     bmark_path = ROOT_PATH + "/brotli-expanded/"
     arg = ROOT_PATH + "/data/silesia-5.brotli"
     calout_fname = ROOT_PATH + "/example-results/cal.out.original"
-    runNader(cargo_root_=bmark_path, arg=arg, pickle_name="test.pkl", clang_arg=None, test_times=5, calout_fname=calout_fname, quick_run=True)
+    runNader(cargo_root_=bmark_path, arg=arg, pickle_name="brotli.pkl", clang_arg=None, test_times=5, calout_fname=calout_fname, quick_run=quick_run)
+    if not os.path.exists(ROOT_PATH + "/exp-results"):
+        os.mkdir(ROOT_PATH + "/exp-results")
+    shutil.move(bmark_path + "brotli.pkl", ROOT_PATH + "/exp-results/brotli.pkl")
+    shutil.move(bmark_path + "threshold_unsafe_map.pkl", ROOT_PATH + "/exp-results/brotli-map.pkl")
 
+    if not os.path.exists(ROOT_PATH + "/images"):
+        os.mkdir(ROOT_PATH + "/images")
     print("Generating plots")
+    genFig5(ROOT_PATH + "/exp-results", "brotli", ROOT_PATH + "/images/fig5.pdf")
+
     # use test.pkl to generate Fig 5
+    genFig9(ROOT_PATH + "/exp-results", "brotli", ROOT_PATH + "/images/fig9.pdf")
 
 
 def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
@@ -122,4 +133,4 @@ def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
 if __name__ == "__main__":
     cwd = os.getcwd()
     #endToEnd("{}/brotli-expanded/".format(cwd), "{}/data/silesia-5.brotli".format(cwd))
-    genFig5and9()
+    genFig5and9(quick_run=False)
