@@ -11,19 +11,19 @@ or through the
 2. Build the docker image (TODO publish image so it can just be downloaded in this step): 
 
 ```sh
-$ docker build --tag oopsla21-nader .
+docker build --tag oopsla21-nader .
 ```
 
 3. If the image builds successfully, start a docker container like so: 
 
 ```sh
-$ docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact oopsla21-nader
+docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact oopsla21-nader
 ```
 
 4. Test that the artifact works by running: 
 
 ```sh
-$ python3 ExpDriver.py --all
+python3 ExpDriver.py --all
 ```
 
 This command should complete in under an hour. We explain what it does in more 
@@ -41,26 +41,26 @@ Our driver runs the fast path by default, so to run the full version of experime
 run: 
 
 ```sh
-$ python3 ExpDriver.py [OPTIONS] --full
+python3 ExpDriver.py [OPTIONS] --full
 ```
 
 To run the __fast__ path on _all_ experiments, run: 
 
 ```sh
-$ python3 ExpDriver.py --all
+python3 ExpDriver.py --all
 ```
 
 To run the __full__ path on _all_ experiments, run: 
 
 ```sh
-$ python3 ExpDriver.py --all --full
+python3 ExpDriver.py --all --full
 ```
 
 To run individual experiments, simply replace `--all` with the flag corresponding 
 to the desired experiment, found by running: 
 
 ```sh
-$ python3 ExpDriver.py --help
+python3 ExpDriver.py --help
 
   ...
   --figure1           generate figure 1
@@ -75,7 +75,7 @@ $ python3 ExpDriver.py --help
 To generate Figure 7 and Table 3, for example, run the following: 
 
 ```sh
-$ python3 ExpDriver --figure7table3 [--full]
+python3 ExpDriver --figure7table3 [--full]
 ```
 
 Expected running times for all experiments on a 
