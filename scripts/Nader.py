@@ -330,7 +330,7 @@ def quickTestExpWithName(idx, test_times=5, option=0):
 
 # explorer
 def explore(unsafe_time, initial_threshold, step, initial_unsafe_lines, total_unsafe_count):
-    initial_unsafe_baseline  = unsafe_time
+    initial_unsafe_baseline  = unsafe_time[0]
     final_unsafe = initial_unsafe_lines
     threshold = initial_threshold
 
