@@ -1,0 +1,161 @@
+[package]
+name = "zola"
+version = "0.13.0"
+authors = ["Vincent Prouillet <hello@vincentprouillet.com>"]
+edition = "2018"
+license = "MIT"
+readme = "README.md"
+description = "A fast static site generator with everything built-in"
+homepage = "https://www.getzola.org"
+repository = "https://github.com/getzola/zola"
+keywords = ["static", "site", "generator", "blog"]
+
+include = ["src/**/*", "LICENSE", "README.md"]
+
+[build-dependencies]
+clap = "2"
+
+[[bin]]
+name = "zola"
+
+[dependencies]
+atty = "0.2.11"
+clap = { version = "2", default-features = false }
+chrono = "0.4"
+lazy_static = "1.1"
+termcolor = "1.0.4"
+# Used in init to ensure the url given as base_url is a valid one
+url = "2"
+# Below is for the serve cmd
+hyper = { version = "0.14.1", default-features = false, features = ["runtime", "server", "http2", "http1"] }
+tokio = { version = "1.0.1", default-features = false, features = ["rt", "fs"] }
+percent-encoding = "2"
+notify = "4"
+ws = "0.9"
+ctrlc = "3"
+open = "1.2"
+globset = "0.4"
+relative-path = "1"
+serde_json = "1.0"
+
+site = { path = "components/site" }
+errors = { path = "components/errors" }
+front_matter = { path = "components/front_matter" }
+utils = { path = "components/utils" }
+
+[workspace]
+members = [
+    "components/config",
+    "components/errors",
+    "components/front_matter",
+    "components/rendering",
+    "components/site",
+    "components/templates",
+    "components/utils",
+    "components/search",
+    "components/imageproc",
+    "components/link_checker",
+    "components/library",
+]
+
+[profile.release]
+lto = true
+codegen-units = 1
+[patch.crates-io.generic-array]
+path = "vendor/generic-array"
+
+[patch.crates-io.generic-array01]
+path = "vendor/generic-array-0.12.3"
+package = "generic-array"
+
+[patch.crates-io.rand_core]
+path = "vendor/rand_core"
+
+[patch.crates-io.rand_core01]
+path = "vendor/rand_core-0.5.1"
+package = "rand_core"
+
+[patch.crates-io.rand_hc]
+path = "vendor/rand_hc-0.2.0"
+package = "rand_hc"
+
+[patch.crates-io.deflate]
+path = "vendor/deflate"
+package = "deflate"
+
+[patch.crates-io.minify-html]
+path = "vendor/minify-html"
+package = "minify-html"
+
+[patch.crates-io.bytecount]
+path = "vendor/bytecount"
+package = "bytecount"
+
+[patch.crates-io.tendril]
+path = "vendor/tendril"
+package = "tendril"
+
+[patch.crates-io.ryu]
+path = "vendor/ryu"
+package = "ryu"
+
+[patch.crates-io.dtoa]
+path = "vendor/dtoa"
+package = "dtoa"
+
+[patch.crates-io.pulldown-cmark]
+path = "vendor/pulldown-cmark"
+package = "pulldown-cmark"
+
+[patch.crates-io.thread_local]
+path = "vendor/thread_local"
+package = "thread_local"
+
+[patch.crates-io.regex]
+path = "vendor/regex"
+package = "regex"
+
+[patch.crates-io.bstr]
+path = "vendor/bstr"
+package = "bstr"
+
+[patch.crates-io.image]
+path = "vendor/image"
+package = "image"
+
+[patch.crates-io.rayon]
+path = "vendor/rayon"
+package = "rayon"
+
+[patch.crates-io.crossbeam-deque]
+path = "vendor/crossbeam-deque"
+package = "crossbeam-deque"
+
+[patch.crates-io.futf]
+path = "vendor/futf"
+package = "futf"
+
+[patch.crates-io.http]
+path = "vendor/http"
+package = "http"
+
+[patch.crates-io.bumpalo]
+path = "vendor/bumpalo"
+package = "bumpalo"
+
+[patch.crates-io.siphasher]
+path = "vendor/siphasher"
+package = "siphasher"
+
+[patch.crates-io.httparse]
+path = "vendor/httparse"
+package = "httparse"
+
+[patch.crates-io.encoding_rs]
+path = "vendor/encoding_rs"
+package = "encoding_rs"
+
+[patch.crates-io.crossbeam-channel]
+path = "vendor/crossbeam-channel"
+package = "crossbeam-channel"
+

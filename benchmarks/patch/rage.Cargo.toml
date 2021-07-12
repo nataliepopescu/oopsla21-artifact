@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "age",
+    "age-core",
+    "age-plugin",
+    "rage",
+]

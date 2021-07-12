@@ -1,0 +1,236 @@
+name: Cargo
+
+on: [push, pull_request]
+#on:
+#  push:
+#    # Ignore commits created by bors
+#    branches-ignore:
+#      - 'staging'
+#      - 'trying'
+#  pull_request:
+#    branches-ignore:
+#      - 'staging'
+#      - 'trying'
+
+env:
+  CARGO_INCREMENTAL: 0
+  RUST_LOG: "debug"
+
+jobs:
+  check-license:
+    name: Check license
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+
+      - name: Install required tools
+        run: |
+          cargo install cargo-deny
+
+      - name: Check licenses
+        run: |
+          cargo deny check
+
+  fmt:
+    name: fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # We explicitly do this to cache properly.
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          components: rustfmt
+
+      - name: Run cargo fmt
+        run: cargo fmt --all -- --check
+
+  check:
+    name: Check
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-10.15
+          - windows-2019
+    steps:
+      - uses: actions/checkout@v2
+
+      # We explicitly do this to cache properly.
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/
+            target
+          key: ${{ runner.os }}-cargo-v3
+      # Ensure that all components are compilable.
+      - name: Run cargo check for all targets
+        run: cargo check --color always --all --all-targets
+  test:
+    name: Test
+    needs:
+      - check
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-10.15
+          - windows-2019
+        crate:
+          - ast_node
+          - enum_kind
+          - from_variant
+          - jsdoc
+          - spack
+          - string_enum
+          - swc
+          - swc_atoms
+          - swc_bundler
+          - swc_common
+          - swc_ecma_ast
+          - swc_ecma_codegen
+          - swc_ecma_codegen_macros
+          - swc_ecma_dep_graph
+          - swc_ecma_ext_transforms
+          - swc_ecma_loader
+          - swc_ecma_parser
+          - swc_ecma_preset_env
+          - swc_ecma_transforms
+          - swc_ecma_transforms_base
+          - swc_ecma_transforms_compat
+          - swc_ecma_transforms_macros
+          - swc_ecma_transforms_module
+          - swc_ecma_transforms_optimization
+          - swc_ecma_transforms_proposal
+          - swc_ecma_transforms_react
+          - swc_ecma_transforms_testing
+          - swc_ecma_transforms_typescript
+          - swc_ecma_utils
+          - swc_ecma_visit
+          - swc_ecmascript
+          - swc_eq_ignore_macros
+          - swc_macros_common
+          - swc_visit
+          - swc_visit_macros
+          - testing
+          - testing_macros
+        exclude:
+          - os: windows-2019
+            crate: spack
+
+    steps:
+      - name: Handle line endings
+        shell: bash
+        if: runner.os == 'Windows'
+        run: |
+          git config --system core.autocrlf false
+          git config --system core.eol lf
+
+      - uses: actions/checkout@v2
+
+      # We explicitly do this to cache properly.
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - uses: denolib/setup-deno@v2
+        with:
+          deno-version: v1.x
+
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          auth_header="$(git config --local --get http.https://github.com/.extraheader)"
+          git submodule sync --recursive
+          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+
+      - name: Install node dependencies
+        shell: bash
+        run: |
+          # This does not have any effect on windows.
+          npm config set prefix $HOME/npm
+          npm i browserslist regenerator-runtime sourcemap-validator progress
+          npm i -g jest
+          echo $HOME
+          echo $HOME/npm/bin >> $GITHUB_PATH
+
+      - name: Configure path (windows)
+        shell: bash
+        if: runner.os == 'Windows'
+        run: |
+          echo 'C:\\npm\\prefix' >> $GITHUB_PATH
+
+      - name: Verify dependencies
+        shell: bash
+        run: |
+          jest -v
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/
+            target
+          key: ${{ runner.os }}-cargo-v3
+
+      - name: Run cargo test
+        run: |
+          jest -v
+          cargo test --color always -p ${{ matrix.crate }}
+
+  deploy-docs:
+    name: Docs
+    runs-on: ubuntu-latest
+    # if: github.ref == 'refs/heads/master'
+    # needs:
+    #   - test
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly-2021-03-30
+
+      - name: Create rustdoc
+        run: cargo +nightly-2021-03-30 doc
+
+      - name: Create CNAME
+        run: |
+          echo 'rustdoc.swc.rs' > target/doc/CNAME
+
+      - name: Deploy
+        if: github.ref == 'refs/heads/master'
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          branch: gh-pages
+          folder: target/doc
+          clean: true
+          git-config-email: kdy1997.dev@gmail.com
+          repository-name: swc-project/rustdoc
+          commit-message: "Update"
+          single-commit: true

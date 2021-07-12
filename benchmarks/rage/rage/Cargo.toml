@@ -1,0 +1,89 @@
+[package]
+name = "rage"
+description = "[BETA] A simple, secure, and modern encryption tool."
+version = "0.5.1"
+authors = ["Jack Grigg <thestr4d@gmail.com>"]
+repository = "https://github.com/str4d/rage"
+readme = "../README.md"
+keywords = ["age", "cli", "encryption"]
+categories = ["command-line-utilities", "cryptography"]
+license = "MIT OR Apache-2.0"
+edition = "2018"
+default-run = "rage"
+
+[package.metadata.deb]
+name = "rage"
+extended-description = """\
+age is a simple, modern, and secure encryption format with small explicit keys, \
+no config options, and UNIX-style composability. rage is a Rust implementation \
+of the age specification."""
+section = "utils"
+assets = [
+    ["target/release/rage", "usr/bin/", "755"],
+    ["target/release/rage-keygen", "usr/bin/", "755"],
+    ["target/release/rage-mount", "usr/bin/", "755"],
+    ["../target/completions/rage.bash", "usr/share/bash-completion/completions/rage", "644"],
+    ["../target/completions/rage-keygen.bash", "usr/share/bash-completion/completions/rage-keygen", "644"],
+    ["../target/completions/rage-mount.bash", "usr/share/bash-completion/completions/rage-mount", "644"],
+    ["../target/completions/rage.fish", "usr/share/fish/completions/", "644"],
+    ["../target/completions/rage-keygen.fish", "usr/share/fish/completions/", "644"],
+    ["../target/completions/rage-mount.fish", "usr/share/fish/completions/", "644"],
+    ["../target/completions/rage.zsh", "usr/share/zsh/functions/Completion/Debian/", "644"],
+    ["../target/completions/rage-keygen.zsh", "usr/share/zsh/functions/Completion/Debian/", "644"],
+    ["../target/completions/rage-mount.zsh", "usr/share/zsh/functions/Completion/Debian/", "644"],
+    ["../target/manpages/rage.1.gz", "usr/share/man/man1/", "644"],
+    ["../target/manpages/rage-keygen.1.gz", "usr/share/man/man1/", "644"],
+    ["../target/manpages/rage-mount.1.gz", "usr/share/man/man1/", "644"],
+    ["../README.md", "usr/share/doc/rage/README.md", "644"],
+]
+features = ["mount"]
+
+[badges]
+maintenance = { status = "experimental" }
+
+[dependencies]
+# rage and rage-keygen dependencies
+age = { version = "0.5.0", path = "../age", features = ["armor", "cli-common", "plugin"] }
+chrono = "0.4"
+console = "0.14"
+env_logger = "0.8"
+gumdrop = "0.8"
+i18n-embed = { version = "0.12", features = ["desktop-requester", "fluent-system"] }
+i18n-embed-fl = "0.5"
+lazy_static = "1"
+log = "0.4"
+pinentry = "0.3"
+rust-embed = "5"
+secrecy = "0.7"
+
+# rage-mount dependencies
+fuse_mt = { version = "0.5.1", optional = true }
+libc = { version = "0.2", optional = true }
+tar = { version = "0.4", optional = true }
+time = { version = "0.1", optional = true }
+zip = { version = "0.5.9", optional = true }
+
+[dev-dependencies]
+clap = "3.0.0-beta.1"
+clap_generate = "3.0.0-beta.1"
+flate2 = "1"
+man = "0.3"
+
+[features]
+default = ["ssh"]
+mount = ["fuse_mt", "libc", "tar", "time", "zip"]
+ssh = ["age/ssh"]
+unstable = ["age/unstable"]
+
+[[bin]]
+name = "rage"
+bench = false
+
+[[bin]]
+name = "rage-keygen"
+bench = false
+
+[[bin]]
+name = "rage-mount"
+required-features = ["mount"]
+bench = false

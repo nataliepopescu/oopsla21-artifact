@@ -1,0 +1,66 @@
+[workspace]
+members = [
+    "age",
+    "age-core",
+    "age-plugin",
+    "rage",
+]
+[patch.crates-io.rand_core]
+path = "age/vendor/rand_core"
+
+[patch.crates-io.rand_core01]
+path = "age/vendor/rand_core-0.5.1"
+package = "rand_core"
+
+[patch.crates-io.rand_hc]
+path = "age/vendor/rand_hc-0.2.0"
+package = "rand_hc"
+
+[patch.crates-io.criterion]
+path = "age/vendor/criterion"
+package = "criterion"
+
+[patch.crates-io.dashmap]
+path = "age/vendor/dashmap"
+package = "dashmap"
+
+[patch.crates-io.ryu]
+path = "age/vendor/ryu"
+package = "ryu"
+
+[patch.crates-io.regex]
+path = "age/vendor/regex"
+package = "regex"
+
+[patch.crates-io.bstr]
+path = "age/vendor/bstr"
+package = "bstr"
+
+[patch.crates-io.rayon]
+path = "age/vendor/rayon"
+package = "rayon"
+
+[patch.crates-io.crossbeam-deque]
+path = "age/vendor/crossbeam-deque"
+package = "crossbeam-deque"
+
+[patch.crates-io.bumpalo]
+path = "age/vendor/bumpalo"
+package = "bumpalo"
+
+[patch.crates-io.libm]
+path = "age/vendor/libm"
+package = "libm"
+
+[patch.crates-io.generic-array]
+path = "age/vendor/generic-array"
+package = "generic-array"
+
+[patch.crates-io.encode_unicode]
+path = "age/vendor/encode_unicode"
+package = "encode_unicode"
+
+[patch.crates-io.crossbeam-channel]
+path = "age/vendor/crossbeam-channel"
+package = "crossbeam-channel"
+
