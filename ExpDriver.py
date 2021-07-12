@@ -165,17 +165,12 @@ def arg_parse():
         action="store_true",
         required=False,
         help="run the full version of plot generation instead of the fast version")
-    parser.add_argument("--port", "-p", 
-        metavar="num",
-        type=str,
-        required=True,
-        help="port on which Dash server should run; should be the same as that to which the docker container is connected")
     args = parser.parse_args()
-    return args.all, args.figure1, args.table1, args.figure59, args.figure7table3, args.table4, args.figure8, args.full, args.port
+    return args.all, args.figure1, args.table1, args.figure59, args.figure7table3, args.table4, args.figure8, args.full
 
 
 if __name__ == "__main__":
-    gen_all, gen_f1, gen_t1, gen_f59, gen_f7t3, gen_t4, gen_f8, full_run, port = arg_parse()
+    gen_all, gen_f1, gen_t1, gen_f59, gen_f7t3, gen_t4, gen_f8, full_run = arg_parse()
     rootdir = os.getcwd()
 
     if not os.path.exists(os.path.join("data", "silesia-5.brotli")):
