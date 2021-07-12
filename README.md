@@ -30,7 +30,7 @@ All of the following commands should be run from the `~/nader/` directory.
 Running all experiments fully takes almost two days to complete. 
 We have therefore implemented a fast path that can run all experiments 
 (on fewer libraries and applications) and finishes in under an hour. 
-Our driver runs the fast path by default, so to run the full set of experiments, 
+Our driver runs the fast path by default, so to run the full version of experiments, 
 run: 
 
 ```sh
