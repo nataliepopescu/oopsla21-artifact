@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>My site - a-category</title>
+	<link href="https://replace-this-with-your-url.com/categories/a-category/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://replace-this-with-your-url.com"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2017-01-01T00:00:00+00:00</updated>
+	<id>https://replace-this-with-your-url.com/categories/a-category/atom.xml</id>
+	<entry xml:lang="en">
+		<title>first</title>
+		<published>2017-01-01T00:00:00+00:00</published>
+		<updated>2017-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/rebuild/first/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/rebuild/first/</id>
+		<content type="html">&lt;h1 id=&quot;a-title&quot;&gt;A title&lt;&#x2F;h1&gt;
+</content>
+	</entry>
+</feed>

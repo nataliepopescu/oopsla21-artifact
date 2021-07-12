@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>My site</title>
+	<link href="https://replace-this-with-your-url.com/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://replace-this-with-your-url.com"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2018-10-10T00:00:00+00:00</updated>
+	<id>https://replace-this-with-your-url.com/atom.xml</id>
+	<entry xml:lang="en">
+		<title>A transparent page</title>
+		<published>2018-10-10T00:00:00+00:00</published>
+		<updated>2018-10-10T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/2018/transparent-page/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/2018/transparent-page/</id>
+		<content type="html"></content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Extra Syntax</title>
+		<published>2018-08-14T00:00:00+00:00</published>
+		<updated>2018-08-14T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/extra-syntax/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/extra-syntax/</id>
+		<content type="html">&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code class=&quot;language-mylang&quot; data-lang=&quot;mylang&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; (int i = 0; ; i++ ) {
+    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt; (i &amp;lt; 10) 
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;&lt;pre style=&quot;background-color:#2b303b;&quot;&gt;
+&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span style=&quot;color:#c0c5ce;&quot;&gt;for (int i = 0; ; i++ ) {
+    if (i &amp;lt; 10) 
+}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Simple article with shortcodes</title>
+		<published>2017-04-01T00:00:00+00:00</published>
+		<updated>2017-04-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/simple/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/simple/</id>
+		<content type="html">&lt;p&gt;A simple page&lt;&#x2F;p&gt;
+&lt;div &gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.youtube-nocookie.com&#x2F;embed&#x2F;e1C9kpMV2e8&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+&lt;div &gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.youtube-nocookie.com&#x2F;embed&#x2F;e1C9kpMV2e8?autoplay=1&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+&lt;div &gt;
+    &lt;iframe src=&quot;&#x2F;&#x2F;player.vimeo.com&#x2F;video&#x2F;210073083&quot; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+&lt;div &gt;
+    &lt;iframe src=&quot;https:&#x2F;&#x2F;www.streamable.com&#x2F;e&#x2F;c0ic&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; allowfullscreen mozallowfullscreen webkitallowfullscreen&gt;&lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+&lt;div &gt;
+    &lt;script src=&quot;https:&amp;#x2F;&amp;#x2F;gist.github.com&amp;#x2F;Keats&amp;#x2F;32d26f699dcc13ebd41b.js&quot;&gt;&lt;&#x2F;script&gt;
+&lt;&#x2F;div&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Python in posts</title>
+		<published>2017-03-01T00:00:00+00:00</published>
+		<updated>2017-03-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/python/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/python/</id>
+		<content type="html">&lt;p&gt;Same filename but different path&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;&lt;h4&gt;Basic shortcode&lt;&#x2F;h4&gt;
+Arrrh Bob
+Arrrh Bob_Sponge
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Fixed URL</title>
+		<published>2017-02-01T00:00:00+00:00</published>
+		<updated>2017-02-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/a-fixed-url/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/a-fixed-url/</id>
+		<content type="html">&lt;p&gt;A simple page with fixed url&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Fixed slug</title>
+		<published>2017-01-01T00:00:00+00:00</published>
+		<updated>2017-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/something-else/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/something-else/</id>
+		<content type="html">&lt;p&gt;A simple page with a slug defined&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;title&quot;&gt;&lt;a class=&quot;zola-anchor&quot; href=&quot;#title&quot; aria-label=&quot;Anchor link for: title&quot;&gt;🔗&lt;&#x2F;a&gt;Title&lt;&#x2F;h1&gt;
+&lt;p&gt;Hey&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Top level alias</title>
+		<published>2017-01-01T00:00:00+00:00</published>
+		<updated>2017-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/top-level-alias/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/top-level-alias/</id>
+		<content type="html">&lt;p&gt;Simple page&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Docker</title>
+		<published>2017-01-01T00:00:00+00:00</published>
+		<updated>2017-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/tutorials/devops/docker/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/tutorials/devops/docker/</id>
+		<content type="html">&lt;p&gt;A simple page&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Nix</title>
+		<published>2017-01-01T00:00:00+00:00</published>
+		<updated>2017-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/tutorials/devops/nix/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/tutorials/devops/nix/</id>
+		<content type="html">&lt;p&gt;A simple page&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Python tutorial</title>
+		<published>2017-01-01T00:00:00+00:00</published>
+		<updated>2017-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/tutorials/programming/python/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/tutorials/programming/python/</id>
+		<content type="html">&lt;p&gt;A simple page&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Rust</title>
+		<published>2017-01-01T00:00:00+00:00</published>
+		<updated>2017-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/tutorials/programming/rust/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/tutorials/programming/rust/</id>
+		<content type="html">&lt;p&gt;A simple page&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
+&lt;p&gt;Link to some rust-lang &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;rust-lang&#x2F;rust&#x2F;blob&#x2F;c772948b687488a087356cb91432425662e034b9&#x2F;src&#x2F;librustc_back&#x2F;target&#x2F;mod.rs#L194-L214&quot;&gt;source code&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Internal web server &lt;a href=&quot;http:&#x2F;&#x2F;%5B2001:db8::%5D&#x2F;path&quot;&gt;http:&#x2F;&#x2F;[2001:db8::]&#x2F;path&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>first</title>
+		<published>2017-01-01T00:00:00+00:00</published>
+		<updated>2017-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/rebuild/first/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/rebuild/first/</id>
+		<content type="html">&lt;h1 id=&quot;a-title&quot;&gt;A title&lt;&#x2F;h1&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>A post with dates</title>
+		<published>2016-10-08T00:00:00+00:00</published>
+		<updated>2016-10-08T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/a-post-with-dates/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/a-post-with-dates/</id>
+		<content type="html"></content>
+	</entry>
+	<entry xml:lang="en">
+		<title>second</title>
+		<published>2016-01-01T00:00:00+00:00</published>
+		<updated>2016-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/rebuild/second/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/rebuild/second/</id>
+		<content type="html">&lt;h1 id=&quot;a-title&quot;&gt;A title&lt;&#x2F;h1&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>With assets</title>
+		<published>2015-03-01T00:00:00+00:00</published>
+		<updated>2015-03-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/with-assets/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/with-assets/</id>
+		<content type="html">&lt;p&gt;Hello world &lt;a href=&quot;https:&#x2F;&#x2F;replace-this-with-your-url.com&#x2F;posts&#x2F;with-assets&#x2F;with.js&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>
