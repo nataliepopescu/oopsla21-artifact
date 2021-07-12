@@ -19,6 +19,8 @@ RUN pip3 install dash==1.13.4
 RUN pip3 install Brotli==1.0.9
 RUN pip3 install tqdm
 RUN pip3 install scipy
+RUN pip3 install psutil
+RUN pip3 install requests
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y

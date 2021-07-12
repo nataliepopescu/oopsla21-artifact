@@ -1,3 +1,5 @@
+import sys
+sys.path.append('./scripts')
 from scripts.ExpStats import runExpWithName
 from scripts.Nader import genSourceExp
 from scripts.Nader import runNader
@@ -89,10 +91,10 @@ def genFig5and9(quick_run=False):
     if not os.path.exists(ROOT_PATH + "/images"):
         os.mkdir(ROOT_PATH + "/images")
     print("Generating plots")
-    genFig5(ROOT_PATH + "/exp-results", "brotli", ROOT_PATH + "/images/fig5.pdf")
+    genFig5(ROOT_PATH + "/exp-results", "brotli", ROOT_PATH + "/images/figure5.pdf")
 
     # use test.pkl to generate Fig 5
-    genFig9(ROOT_PATH + "/exp-results", "brotli", ROOT_PATH + "/images/fig9.pdf")
+    genFig9(ROOT_PATH + "/exp-results", "brotli", ROOT_PATH + "/images/figure9.pdf")
 
 
 def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
@@ -178,7 +180,8 @@ if __name__ == "__main__":
         subprocess.run(["./create_silesia.sh"])
         os.chdir(rootdir)
     
-    os.mkdir("results")
+    if not os.path.isdir("images"):
+        os.mkdir("images")
 
     if full_run: 
         # Figure 1
@@ -186,7 +189,7 @@ if __name__ == "__main__":
             os.chdir(os.path.join(rootdir, "figure1"))
             subprocess.run(["python3", "tool.py", "--dir", "crates_full", 
                     "--compile", "--bench", "3", "--local"])
-            subprocess.run(["mv", "figure1*", os.path.join(rootdir, "results/")]) 
+            subprocess.run(["mv", "figure1*", os.path.join(rootdir, "images/")]) 
             os.chdir(rootdir)
         
         
@@ -200,8 +203,8 @@ if __name__ == "__main__":
             os.chdir(os.path.join(rootdir, "figure7"))
             subprocess.run(["python3", "uncover_uncheckeds.py", "--root", 
                     "apps_full"])
-            subprocess.run(["mv", "figure7.pdf", os.path.join(rootdir, "results", "figure7_full.pdf")]) 
-            subprocess.run(["mv", "table3.pdf", os.path.join(rootdir, "results", "table3_full.pdf")]) 
+            subprocess.run(["mv", "figure7.pdf", os.path.join(rootdir, "images", "figure7_full.pdf")]) 
+            subprocess.run(["mv", "table3.pdf", os.path.join(rootdir, "images", "table3_full.pdf")]) 
             os.chdir(rootdir)
         
         # Figure 8
@@ -214,7 +217,7 @@ if __name__ == "__main__":
             os.chdir(os.path.join(rootdir, "figure1"))
             subprocess.run(["python3", "tool.py", "--dir", "crates_fast", 
                     "--compile", "--bench", "3", "--local", "-g"])
-            subprocess.run(["mv", "figure1*", os.path.join(rootdir, "results/")]) 
+            subprocess.run(["mv", "figure1*", os.path.join(rootdir, "images/")]) 
             os.chdir(rootdir)
         
         # Figure 5 and 9
@@ -226,8 +229,8 @@ if __name__ == "__main__":
             os.chdir(os.path.join(rootdir, "figure7"))
             subprocess.run(["python3", "uncover_uncheckeds.py", "--root", 
                     "apps_fast"])
-            subprocess.run(["mv", "figure7.pdf", os.path.join(rootdir, "results", "figure7_fast.pdf")]) 
-            subprocess.run(["mv", "table3.pdf", os.path.join(rootdir, "results", "table3_fast.pdf")]) 
+            subprocess.run(["mv", "figure7.pdf", os.path.join(rootdir, "images", "figure7_fast.pdf")]) 
+            subprocess.run(["mv", "table3.pdf", os.path.join(rootdir, "images", "table3_fast.pdf")]) 
             os.chdir(rootdir)
         
         # Figure 8
