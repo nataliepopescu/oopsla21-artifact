@@ -57,35 +57,35 @@ RUN tar -xzf download && rm download
 COPY ./locks/prost-0.7.0_Cargo.lock prost-0.7.0/Cargo.lock
 
 # Full run
-#WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES_FULL}
-#
-#RUN wget www.crates.io/api/v1/crates/combine/4.5.2/download
-#RUN tar -xzf download && rm download
-#COPY ./locks/combine-4.5.2_Cargo.lock combine-4.5.2/Cargo.lock
-#
-#RUN wget www.crates.io/api/v1/crates/string-interner/0.12.2/download
-#RUN tar -xzf download && rm download
-#COPY ./locks/string-interner-0.12.2_Cargo.lock string-interner-0.12.2/Cargo.lock
-#
-#RUN wget www.crates.io/api/v1/crates/prost/0.7.0/download
-#RUN tar -xzf download && rm download
-#COPY ./locks/prost-0.7.0_Cargo.lock prost-0.7.0/Cargo.lock
-#
-#RUN wget www.crates.io/api/v1/crates/glam/0.14.0/download
-#RUN tar -xzf download && rm download
-#COPY ./locks/glam-0.14.0_Cargo.lock glam-0.14.0/Cargo.lock
-#
-#RUN wget www.crates.io/api/v1/crates/primal-sieve/0.3.1/download
-#RUN tar -xzf download && rm download
-#COPY ./locks/primal-sieve-0.3.1_Cargo.lock primal-sieve-0.3.1/Cargo.lock
-#
-#RUN wget www.crates.io/api/v1/crates/euc/0.5.3/download
-#RUN tar -xzf download && rm download
-#COPY ./locks/euc-0.5.3_Cargo.lock euc-0.5.3/Cargo.lock
-#
-#RUN wget www.crates.io/api/v1/crates/roaring/0.6.5/download
-#RUN tar -xzf download && rm download
-#COPY ./locks/roaring-0.6.5_Cargo.lock roaring-0.6.5/Cargo.lock
+WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES_FULL}
+
+RUN wget www.crates.io/api/v1/crates/combine/4.5.2/download
+RUN tar -xzf download && rm download
+COPY ./locks/combine-4.5.2_Cargo.lock combine-4.5.2/Cargo.lock
+
+RUN wget www.crates.io/api/v1/crates/string-interner/0.12.2/download
+RUN tar -xzf download && rm download
+COPY ./locks/string-interner-0.12.2_Cargo.lock string-interner-0.12.2/Cargo.lock
+
+RUN wget www.crates.io/api/v1/crates/prost/0.7.0/download
+RUN tar -xzf download && rm download
+COPY ./locks/prost-0.7.0_Cargo.lock prost-0.7.0/Cargo.lock
+
+RUN wget www.crates.io/api/v1/crates/glam/0.14.0/download
+RUN tar -xzf download && rm download
+COPY ./locks/glam-0.14.0_Cargo.lock glam-0.14.0/Cargo.lock
+
+RUN wget www.crates.io/api/v1/crates/primal-sieve/0.3.1/download
+RUN tar -xzf download && rm download
+COPY ./locks/primal-sieve-0.3.1_Cargo.lock primal-sieve-0.3.1/Cargo.lock
+
+RUN wget www.crates.io/api/v1/crates/euc/0.5.3/download
+RUN tar -xzf download && rm download
+COPY ./locks/euc-0.5.3_Cargo.lock euc-0.5.3/Cargo.lock
+
+RUN wget www.crates.io/api/v1/crates/roaring/0.6.5/download
+RUN tar -xzf download && rm download
+COPY ./locks/roaring-0.6.5_Cargo.lock roaring-0.6.5/Cargo.lock
 
 ##### Figure 7 Setup #####
 ENV F7=figure7
@@ -246,5 +246,16 @@ RUN printf '#!/bin/bash \nxvfb-run --auto-servernum --server-args "-screen 0 640
 
 RUN chmod 777 /usr/bin/orca
 RUN chmod -R 777 squashfs-root/
+
+##### Table 4 Setup #####
+WORKDIR ${ROOT}/${NADER}
+ENV SHA=a211dd5a7050b1f9e8a9870b95513060e72ac4a0
+RUN wget https://github.com/wg/wrk/archive/${SHA}.tar.gz
+RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
+WORKDIR ${ROOT}/${NADER}/wrk-${SHA}
+RUN make
+RUN mv wrk ${ROOT}/${NADER}/benchmarks
+WORKDIR ${ROOT}/${NADER}
+RUN rm -rf wrk-${SHA}
 
 WORKDIR ${ROOT}/${NADER}
