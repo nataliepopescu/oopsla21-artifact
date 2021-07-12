@@ -1,3 +1,5 @@
+#!/bin/bash
+
 BMARK_DIRS=("tantivy" "rage" "swc" "warp" "iron" "RustPython" "zola" "COST")
 BIN_NAMES=("test_bc" "test_bc" "test_bc" "hello" "hello" "test_bc" "zola" "test_bc")
 
