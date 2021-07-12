@@ -1,5 +1,4 @@
 FROM ubuntu
-ENV ROOT=/root
 SHELL ["/bin/bash", "-c"]
 
 # Squash timezone promting
@@ -22,9 +21,6 @@ RUN pip3 install scipy
 RUN pip3 install psutil
 RUN pip3 install requests
 
-RUN useradd --create-home --shell /bin/bash oopsla21ae
-USER oopsla21ae
-
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="~/.cargo/bin:${PATH}"
@@ -36,18 +32,22 @@ ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
 RUN cargo install cargo-edit
 
 # Copy over artifact dir
-WORKDIR ${ROOT}
+RUN useradd --create-home --shell /bin/bash oopsla21ae
+USER oopsla21ae
+
+ENV HOME=/home
 ENV NADER=nader
+WORKDIR ${HOME}
 RUN mkdir ${NADER}
-WORKDIR ${ROOT}/${NADER}
-COPY . .
+WORKDIR ${HOME}/${NADER}
+COPY --chown=oopsla21ae . .
 RUN mkdir -p images
 
 ##### Figure 1 Setup #####
 ENV F1=figure1
 ENV CRATES_FAST=crates_fast
 ENV CRATES_FULL=crates_full
-WORKDIR ${ROOT}/${NADER}/${F1}
+WORKDIR ${HOME}/${NADER}/${F1}
 RUN mkdir ${CRATES_FAST}
 RUN mkdir ${CRATES_FULL}
 
@@ -56,14 +56,14 @@ RUN apt-get install -y libxkbcommon-dev
 ENV PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig"
 
 # Fast run
-WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES_FAST}
+WORKDIR ${HOME}/${NADER}/${F1}/${CRATES_FAST}
 
 RUN wget www.crates.io/api/v1/crates/prost/0.7.0/download
 RUN tar -xzf download && rm download
 COPY ./locks/prost-0.7.0_Cargo.lock prost-0.7.0/Cargo.lock
 
 # Full run
-WORKDIR ${ROOT}/${NADER}/${F1}/${CRATES_FULL}
+WORKDIR ${HOME}/${NADER}/${F1}/${CRATES_FULL}
 
 RUN wget www.crates.io/api/v1/crates/combine/4.5.2/download
 RUN tar -xzf download && rm download
@@ -97,14 +97,14 @@ COPY ./locks/roaring-0.6.5_Cargo.lock roaring-0.6.5/Cargo.lock
 ENV F7=figure7
 ENV APPS_FAST=apps_fast
 ENV APPS_FULL=apps_full
-WORKDIR ${ROOT}/${NADER}/${F7}
+WORKDIR ${HOME}/${NADER}/${F7}
 RUN mkdir ${APPS_FAST}
 RUN mkdir ${APPS_FULL}
 
 # Quick run
-WORKDIR ${ROOT}/${NADER}/${F7}/${APPS_FAST}
+WORKDIR ${HOME}/${NADER}/${F7}/${APPS_FAST}
 
-RUN cp -r ${ROOT}/${NADER}/brotli-expanded brotli-decompressor
+RUN cp -r ${HOME}/${NADER}/brotli-expanded brotli-decompressor
 RUN mv brotli-decompressor/src/lib.rs.unsafe brotli-decompressor/src/lib.rs
 
 ENV SHA=ba4bc6d7c35677a3731bd89f95ed9c9e2dac0c4b
@@ -128,9 +128,9 @@ RUN wget https://github.com/utah-scs/splinter/archive/${SHA}.tar.gz
 RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 
 # Full run
-#WORKDIR ${ROOT}/${NADER}/${F7}/${APPS_FULL}
+#WORKDIR ${HOME}/${NADER}/${F7}/${APPS_FULL}
 #
-#RUN cp -r ${ROOT}/${NADER}/brotli-expanded brotli-decompressor
+#RUN cp -r ${HOME}/${NADER}/brotli-expanded brotli-decompressor
 #RUN mv brotli-decompressor/src/lib.rs.unsafe brotli-decompressor/src/lib.rs
 #
 #ENV SHA=be39ddaf7d5f017da9597a94f6fd66e17e7df2e3
@@ -234,7 +234,7 @@ RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 #RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 
 # For orca (dumping figures)
-WORKDIR ${ROOT}
+WORKDIR ${HOME}
 
 RUN apt-get -y install xvfb \
     libgtk2.0-0 \
@@ -254,16 +254,16 @@ RUN chmod 777 /usr/bin/orca
 RUN chmod -R 777 squashfs-root/
 
 ##### Table 4 Setup #####
-WORKDIR ${ROOT}/${NADER}
+WORKDIR ${HOME}/${NADER}
 ENV SHA=a211dd5a7050b1f9e8a9870b95513060e72ac4a0
 RUN wget https://github.com/wg/wrk/archive/${SHA}.tar.gz
 RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
-WORKDIR ${ROOT}/${NADER}/wrk-${SHA}
+WORKDIR ${HOME}/${NADER}/wrk-${SHA}
 RUN make
-RUN mv wrk ${ROOT}/${NADER}/benchmarks
-WORKDIR ${ROOT}/${NADER}
+RUN mv wrk ${HOME}/${NADER}/benchmarks
+WORKDIR ${HOME}/${NADER}
 RUN rm -rf wrk-${SHA}
 
-WORKDIR ${ROOT}/${NADER}/data
+WORKDIR ${HOME}/${NADER}/data
 RUN ./create_silesia.sh
-WORKDIR ${ROOT}/${NADER}
+WORKDIR ${HOME}/${NADER}
