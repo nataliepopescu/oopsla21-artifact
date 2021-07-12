@@ -1,7 +1,5 @@
-BMARK_DIRS=("RustPython")
-BIN_NAMES=("test_bc")
-#BMARK_DIRS=("tantivy" "rage" "swc" "warp" "iron" "RustPython" "zola" "COST")
-#BIN_NAMES=("test_bc" "test_bc" "test_bc" "hello" "hello" "test_bc" "zola" "test_bc")
+BMARK_DIRS=("tantivy" "rage" "swc" "warp" "iron" "RustPython" "zola" "COST")
+BIN_NAMES=("test_bc" "test_bc" "test_bc" "hello" "hello" "test_bc" "zola" "test_bc")
 
 script_path=`realpath $0`
 SCRIPT_ROOT=`dirname $script_path`/
