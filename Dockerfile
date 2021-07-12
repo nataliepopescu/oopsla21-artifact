@@ -31,15 +31,40 @@ ENV OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
 ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
 RUN cargo install cargo-edit
 
-# Copy over artifact dir
-RUN useradd --create-home --shell /bin/bash oopsla21ae
-USER oopsla21ae
+# For orca (dumping figures)
+WORKDIR ${HOME}
 
+RUN apt-get -y install xvfb \
+    libgtk2.0-0 \
+    libxtst6 \
+    libxss1 \
+    libgconf-2-4 \
+    libnss3
+
+RUN wget https://github.com/plotly/orca/releases/download/v1.1.1/orca-1.1.1-x86_64.AppImage
+RUN chmod 777 orca-1.1.1-x86_64.AppImage
+
+RUN ./orca-1.1.1-x86_64.AppImage --appimage-extract
+RUN rm orca-1.1.1-x86_64.AppImage
+RUN printf '#!/bin/bash \nxvfb-run --auto-servernum --server-args "-screen 0 640x480x24" ~/squashfs-root/app/orca "$@"' > /usr/bin/orca
+
+RUN chmod 777 /usr/bin/orca
+RUN chmod -R 777 squashfs-root/
+
+# For euc
+RUN apt-get install -y libxkbcommon-dev
+ENV PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig"
+
+# Create new user and copy over artifact dir
 ENV HOME=/home
 ENV NADER=nader
 WORKDIR ${HOME}
 RUN mkdir ${NADER}
 WORKDIR ${HOME}/${NADER}
+
+RUN useradd --create-home --shell /bin/bash oopsla21ae
+RUN chown oopsla21ae ${HOME}/${NADER}
+USER oopsla21ae
 COPY --chown=oopsla21ae . .
 RUN mkdir -p images
 
@@ -50,10 +75,6 @@ ENV CRATES_FULL=crates_full
 WORKDIR ${HOME}/${NADER}/${F1}
 RUN mkdir ${CRATES_FAST}
 RUN mkdir ${CRATES_FULL}
-
-# for euc
-RUN apt-get install -y libxkbcommon-dev
-ENV PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig"
 
 # Fast run
 WORKDIR ${HOME}/${NADER}/${F1}/${CRATES_FAST}
@@ -232,26 +253,6 @@ RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 #ENV SHA=f90389736b755ff0063b6abfeeeaedeaeec08acd
 #RUN wget https://github.com/mozilla/gecko-dev/archive/${SHA}.tar.gz
 #RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
-
-# For orca (dumping figures)
-WORKDIR ${HOME}
-
-RUN apt-get -y install xvfb \
-    libgtk2.0-0 \
-    libxtst6 \
-    libxss1 \
-    libgconf-2-4 \
-    libnss3
-
-RUN wget https://github.com/plotly/orca/releases/download/v1.1.1/orca-1.1.1-x86_64.AppImage
-RUN chmod 777 orca-1.1.1-x86_64.AppImage
-
-RUN ./orca-1.1.1-x86_64.AppImage --appimage-extract
-RUN rm orca-1.1.1-x86_64.AppImage
-RUN printf '#!/bin/bash \nxvfb-run --auto-servernum --server-args "-screen 0 640x480x24" ~/squashfs-root/app/orca "$@"' > /usr/bin/orca
-
-RUN chmod 777 /usr/bin/orca
-RUN chmod -R 777 squashfs-root/
 
 ##### Table 4 Setup #####
 WORKDIR ${HOME}/${NADER}
