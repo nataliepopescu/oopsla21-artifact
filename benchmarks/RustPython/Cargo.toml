@@ -1,0 +1,152 @@
+[package]
+name = "rustpython"
+version = "0.1.2"
+authors = ["RustPython Team"]
+edition = "2018"
+description = "A python interpreter written in rust."
+repository = "https://github.com/RustPython/RustPython"
+license = "MIT"
+include = ["LICENSE", "Cargo.toml", "src/**/*.rs"]
+
+[workspace]
+members = [
+    ".", "ast", "bytecode", "common", "compiler", "compiler/porcelain",
+    "derive", "jit", "parser", "vm", "vm/pylib-crate", "wasm/lib",
+]
+
+[features]
+default = ["threading", "pylib", "zlib"]
+flame-it = ["rustpython-vm/flame-it", "flame", "flamescope"]
+freeze-stdlib = ["rustpython-vm/freeze-stdlib"]
+jit = ["rustpython-vm/jit"]
+threading = ["rustpython-vm/threading"]
+zlib = ["rustpython-vm/zlib"]
+
+ssl = ["rustpython-vm/ssl"]
+
+[dependencies]
+log = "0.4"
+env_logger = "0.8.3"
+clap = "2.33"
+rustpython-compiler = { path = "compiler/porcelain", version = "0.1.1" }
+rustpython-parser = { path = "parser", version = "0.1.1" }
+rustpython-vm = { path = "vm", version = "0.1.1", default-features = false, features = ["compile-parse"] }
+pylib = { package = "rustpython-pylib", path = "vm/pylib-crate", version = "0.1.0", default-features = false, optional = true }
+dirs = { package = "dirs-next", version = "2.0.0" }
+num-traits = "0.2.8"
+cfg-if = "1.0"
+libc = "0.2"
+
+flame = { version = "0.2", optional = true }
+flamescope = { version = "0.1", optional = true }
+
+[target.'cfg(not(target_os = "wasi"))'.dependencies]
+rustyline = "8.0"
+
+[dev-dependencies]
+cpython = "0.5.0"
+python3-sys = "0.5.0"
+criterion = "0.3"
+
+[[bench]]
+name = "execution"
+harness = false
+
+[[bench]]
+name = "microbenchmarks"
+harness = false
+
+[[bin]]
+name = "rustpython"
+path = "src/main.rs"
+
+[[bin]]
+name = "test_bc"
+path = "bin/test_bc.rs"
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.bench]
+lto = true
+codegen-units = 1
+opt-level = 3
+[patch.crates-io.rand_core]
+path = "vendor/rand_core"
+
+[patch.crates-io.rand_core01]
+path = "vendor/rand_core-0.5.1"
+package = "rand_core"
+
+[patch.crates-io.rand_hc]
+path = "vendor/rand_hc-0.2.0"
+package = "rand_hc"
+
+[patch.crates-io.criterion]
+path = "vendor/criterion"
+package = "criterion"
+
+[patch.crates-io.sre-engine]
+path = "vendor/sre-engine"
+package = "sre-engine"
+
+[patch.crates-io.fixedbitset]
+path = "vendor/fixedbitset"
+package = "fixedbitset"
+
+[patch.crates-io.ryu]
+path = "vendor/ryu"
+package = "ryu"
+
+[patch.crates-io.dtoa]
+path = "vendor/dtoa"
+package = "dtoa"
+
+[patch.crates-io.thread_local]
+path = "vendor/thread_local"
+package = "thread_local"
+
+[patch.crates-io.regex]
+path = "vendor/regex"
+package = "regex"
+
+[patch.crates-io.bstr]
+path = "vendor/bstr"
+package = "bstr"
+
+[patch.crates-io.timsort]
+path = "vendor/timsort"
+package = "timsort"
+
+[patch.crates-io.rayon]
+path = "vendor/rayon"
+package = "rayon"
+
+[patch.crates-io.crossbeam-deque]
+path = "vendor/crossbeam-deque"
+package = "crossbeam-deque"
+
+[patch.crates-io.bumpalo]
+path = "vendor/bumpalo"
+package = "bumpalo"
+
+[patch.crates-io.siphasher]
+path = "vendor/siphasher"
+package = "siphasher"
+
+[patch.crates-io.lz4_flex]
+path = "vendor/lz4_flex"
+package = "lz4_flex"
+
+[patch.crates-io.generic-array]
+path = "vendor/generic-array"
+package = "generic-array"
+
+[patch.crates-io.encode_unicode]
+path = "vendor/encode_unicode"
+package = "encode_unicode"
+
+[patch.crates-io.crossbeam-channel]
+path = "vendor/crossbeam-channel"
+package = "crossbeam-channel"
+

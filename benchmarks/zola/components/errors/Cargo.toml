@@ -1,0 +1,11 @@
+[package]
+name = "errors"
+version = "0.1.0"
+authors = ["Vincent Prouillet <prouillet.vincent@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+tera = "1"
+toml = "0.5"
+image = "0.23"
+syntect = "4.4"

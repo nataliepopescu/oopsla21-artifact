@@ -1,0 +1,19 @@
+[package]
+
+name = "COST"
+version = "0.0.1"
+authors = ["Frank McSherry <fmcsherry@me.com>"]
+
+[[bin]]
+name="test_bc"
+path="src/bin/pagerank.rs"
+
+[dependencies]
+docopt="*"
+byteorder="*"
+memmap="0.5"
+lz4="*"
+[patch.crates-io.regex]
+path = "vendor/regex"
+package = "regex"
+

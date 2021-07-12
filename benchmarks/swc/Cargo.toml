@@ -1,0 +1,137 @@
+cargo-features = ["strip"]
+
+[workspace]
+members = ["ecmascript", "ecmascript/jsdoc", "native", "spack", "wasm"]
+
+[package]
+authors = ["강동윤 <kdy1997.dev@gmail.com>"]
+description = "Speedy web compiler"
+documentation = "https://rustdoc.swc.rs/swc/"
+edition = "2018"
+license = "Apache-2.0/MIT"
+name = "swc"
+repository = "https://github.com/swc-project/swc.git"
+version = "0.15.2"
+
+[[bin]]
+name="test_bc"
+path="bin/test_bc.rs"
+
+[lib]
+name = "swc"
+
+[dependencies]
+anyhow = "1"
+base64 = "0.12.0"
+dashmap = "3"
+either = "1"
+log = {version = "0.4", features = ["release_max_level_info"]}
+once_cell = "1"
+regex = "1"
+serde = {version = "1", features = ["derive"]}
+serde_json = "1"
+sourcemap = "6"
+swc_atoms = {version = "0.2", path = "./atoms"}
+swc_common = {version = "0.10.16", path = "./common", features = ["sourcemap", "concurrent"]}
+swc_ecma_ast = {version = "0.43.1", path = "./ecmascript/ast"}
+swc_ecma_codegen = {version = "0.52.2", path = "./ecmascript/codegen"}
+swc_ecma_ext_transforms = {version = "0.12.1", path = "./ecmascript/ext-transforms"}
+swc_ecma_parser = {version = "0.54.2", path = "./ecmascript/parser"}
+swc_ecma_preset_env = {version = "0.15.2", path = "./ecmascript/preset_env"}
+swc_ecma_transforms = {version = "0.45.2", path = "./ecmascript/transforms", features = [
+  "compat",
+  "module",
+  "optimization",
+  "proposal",
+  "react",
+  "typescript",
+]}
+swc_ecma_utils = {version = "0.34.1", path = "./ecmascript/utils"}
+swc_ecma_visit = {version = "0.29.1", path = "./ecmascript/visit"}
+swc_visit = {version = "0.2.3", path = "./visit"}
+
+[dev-dependencies]
+rayon = "1"
+testing = {version = "0.10.5", path = "./testing"}
+walkdir = "2"
+
+[[example]]
+name = "usage"
+
+[profile.release]
+codegen-units = 1
+lto = true
+strip = 'symbols'
+# debug = true
+# opt-level = 'z'
+[patch.crates-io.dashmap]
+path = "vendor/dashmap"
+
+[patch.crates-io.dashmap01]
+path = "vendor/dashmap-3.11.10"
+package = "dashmap"
+
+[patch.crates-io.rand_core]
+path = "vendor/rand_core-0.3.1"
+package = "rand_core"
+
+[patch.crates-io.rand_core01]
+path = "vendor/rand_core-0.4.2"
+package = "rand_core"
+
+[patch.crates-io.rand_hc]
+path = "vendor/rand_hc-0.1.0"
+package = "rand_hc"
+
+[patch.crates-io.fixedbitset]
+path = "vendor/fixedbitset"
+package = "fixedbitset"
+
+[patch.crates-io.ryu]
+path = "vendor/ryu"
+package = "ryu"
+
+[patch.crates-io.regex]
+path = "vendor/regex"
+package = "regex"
+
+[patch.crates-io.rayon]
+path = "vendor/rayon"
+package = "rayon"
+
+[patch.crates-io.crossbeam-deque]
+path = "vendor/crossbeam-deque"
+package = "crossbeam-deque"
+
+[patch.crates-io.http]
+path = "vendor/http"
+package = "http"
+
+[patch.crates-io.rand]
+path = "vendor/rand"
+package = "rand"
+
+[patch.crates-io.bumpalo]
+path = "vendor/bumpalo"
+package = "bumpalo"
+
+[patch.crates-io.siphasher]
+path = "vendor/siphasher"
+package = "siphasher"
+
+[patch.crates-io.generic-array]
+path = "vendor/generic-array"
+package = "generic-array"
+
+[patch.crates-io.httparse]
+path = "vendor/httparse"
+package = "httparse"
+
+[patch.crates-io.encoding_rs]
+path = "vendor/encoding_rs"
+package = "encoding_rs"
+
+[patch.crates-io.crossbeam-channel]
+path = "vendor/crossbeam-channel"
+package = "crossbeam-channel"
+
