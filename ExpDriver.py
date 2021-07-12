@@ -132,10 +132,6 @@ def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
 
 def arg_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--prep",
-        action="store_true",
-        required=False,
-        help="run once before generating any tables or figures")
     parser.add_argument("--all", "-a",
         action="store_true",
         required=False,
@@ -174,14 +170,14 @@ def arg_parse():
         required=True,
         help="port on which Dash server should run; should be the same as that to which the docker container is connected")
     args = parser.parse_args()
-    return args.prep, args.all, args.full, args.port
+    return args.all, args.figure1, args.table1, args.figure59, args.figure7table3, args.table4, args.figure8, args.full, args.port
 
 
 if __name__ == "__main__":
-    prep, gen_all, full_run, port = arg_parse()
+    gen_all, gen_f1, gen_t1, gen_f59, gen_f7t3, gen_t4, gen_f8, full_run, port = arg_parse()
     rootdir = os.getcwd()
 
-    if prep: 
+    if not os.path.exists(os.path.join("data", "silesia-5.brotli")):
         os.chdir("data")
         subprocess.run(["./create_silesia.sh"])
         os.chdir(rootdir)
@@ -205,7 +201,7 @@ if __name__ == "__main__":
             genFig5and9()
         
         # Figure 7 and Table 3
-        if gen_all or gen_f7t1: 
+        if gen_all or gen_f7t3: 
             os.chdir(os.path.join(rootdir, "figure7"))
             subprocess.run(["python3", "uncover_uncheckeds.py", "--root", 
                     "apps_full"])
@@ -239,7 +235,7 @@ if __name__ == "__main__":
             genFig5and9(quick_run=True)
         
         # Figure 7 and Table 3
-        if gen_all or gen_f7t1: 
+        if gen_all or gen_f7t3: 
             os.chdir(os.path.join(rootdir, "figure7"))
             subprocess.run(["python3", "uncover_uncheckeds.py", "--root", 
                     "apps_fast"])
