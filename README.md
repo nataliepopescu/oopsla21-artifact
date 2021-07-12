@@ -39,13 +39,13 @@ $ python3 ExpDriver.py --full [OPTIONS] --port <portB>
 
 Where <portB> should be the same as the second one passed to `docker run`.
 
-To run the *fast* path on _all_ experiments, run: 
+To run the __fast__ path on _all_ experiments, run: 
 
 ```sh
 $ python3 ExpDriver.py --all --port <portB>
 ```
 
-To run the *full* path on _all_ experiments, run: 
+To run the __full__ path on _all_ experiments, run: 
 
 ```sh
 $ python3 ExpDriver.py --all --full --port <portB>
