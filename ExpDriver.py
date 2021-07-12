@@ -130,7 +130,129 @@ def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
         calout_fname = genHotness(bmark_path, "test_bc", arg)
 
 
+def arg_parse():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--prep",
+        action="store_true",
+        required=False,
+        help="run once before generating any tables or figures")
+    parser.add_argument("--all", "-a",
+        action="store_true",
+        required=False,
+        help="generate all tables and figures")
+    parser.add_argument("--figure1",
+        action="store_true",
+        required=False,
+        help="generate figure 1")
+    parser.add_argument("--table1",
+        action="store_true",
+        required=False,
+        help="generate table 1")
+    parser.add_argument("--figure59",
+        action="store_true",
+        required=False,
+        help="generate figures 5 and 9")
+    parser.add_argument("--figure7table3",
+        action="store_true",
+        required=False,
+        help="generate figure 7 and table 3")
+    parser.add_argument("--table4",
+        action="store_true",
+        required=False,
+        help="generate table 4")
+    parser.add_argument("--figure8",
+        action="store_true",
+        required=False,
+        help="generate figure 8")
+    parser.add_argument("--full", "-f",
+        action="store_true",
+        required=False,
+        help="run the full version of plot generation instead of the fast version")
+    parser.add_argument("--port", "-p", 
+        metavar="num",
+        type=str,
+        required=True,
+        help="port on which Dash server should run; should be the same as that to which the docker container is connected")
+    args = parser.parse_args()
+    return args.prep, args.all, args.full, args.port
+
+
 if __name__ == "__main__":
-    cwd = os.getcwd()
-    #endToEnd("{}/brotli-expanded/".format(cwd), "{}/data/silesia-5.brotli".format(cwd))
-    genFig5and9(quick_run=False)
+    prep, gen_all, full_run, port = arg_parse()
+    rootdir = os.getcwd()
+
+    if prep: 
+        os.chdir("data")
+        subprocess.run(["./create_silesia.sh"])
+        os.chdir(rootdir)
+
+    if full_run: 
+        # Figure 1
+        if gen_all or gen_f1: 
+            os.chdir(os.path.join(rootdir, "figure1"))
+            subprocess.run(["python3", "tool.py", "--dir", "crates_full", 
+                    "--compile", "--bench", "3", "--local"])
+            subprocess.run(["python3", "result_presenter.py", "--port", port,
+                    "--root", "crates_full"])
+            os.chdir(rootdir)
+        
+        # Table 1
+        if gen_all or gen_t1: 
+            print("T1 full not implemented")
+        
+        # Figure 5 and 9
+        if gen_all or gen_f59: 
+            genFig5and9()
+        
+        # Figure 7 and Table 3
+        if gen_all or gen_f7t1: 
+            os.chdir(os.path.join(rootdir, "figure7"))
+            subprocess.run(["python3", "uncover_uncheckeds.py", "--root", 
+                    "apps_full"])
+            subprocess.run(["python3", "result_presenter.py", "--port", port, 
+                    "--root", "apps_full"])
+            os.chdir(rootdir)
+        
+        # Table 4
+        if gen_all or gen_t4: 
+            print("T4 full not implemented")
+        
+        # Figure 8
+        if gen_all or gen_f8: 
+            print("F8 full not implemented")
+    else: 
+        # Figure 1
+        if gen_all or gen_f1: 
+            os.chdir(os.path.join(rootdir, "figure1"))
+            subprocess.run(["python3", "tool.py", "--dir", "crates_fast", 
+                    "--compile", "--bench", "3", "--local"])
+            subprocess.run(["python3", "result_presenter.py", "--port", port,
+                    "--root", "crates_fast"])
+            os.chdir(rootdir)
+        
+        # Table 1
+        if gen_all or gen_t1: 
+            print("T1 fast not implemented")
+        
+        # Figure 5 and 9
+        if gen_all or gen_f59: 
+            genFig5and9(quick_run=True)
+        
+        # Figure 7 and Table 3
+        if gen_all or gen_f7t1: 
+            os.chdir(os.path.join(rootdir, "figure7"))
+            subprocess.run(["python3", "uncover_uncheckeds.py", "--root", 
+                    "apps_fast"])
+            subprocess.run(["python3", "result_presenter.py", "--port", port, 
+                    "--root", "apps_fast"])
+            os.chdir(rootdir)
+        
+        # Table 4
+        if gen_all or gen_t4: 
+            print("T4 fast not implemented")
+        
+        # Figure 8
+        if gen_all or gen_f8: 
+            print("F8 fast not implemented")
+
+    #endToEnd("{}/brotli-expanded/".format(rootdir), "{}/data/silesia-5.brotli".format(rootdir))
