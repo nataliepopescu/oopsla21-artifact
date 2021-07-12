@@ -182,6 +182,8 @@ if __name__ == "__main__":
         os.chdir("data")
         subprocess.run(["./create_silesia.sh"])
         os.chdir(rootdir)
+    
+    os.mkdir("results")
 
     if full_run: 
         # Figure 1
@@ -191,12 +193,14 @@ if __name__ == "__main__":
                     "--compile", "--bench", "3", "--local"])
             subprocess.run(["python3", "result_presenter.py", "--port", port,
                     "--root", "crates_full"])
+            subprocess.run(["mv", "figure1.pdf", os.path.join(rootdir, "results", "figure1_full.pdf")]) 
             os.chdir(rootdir)
         
         
         # Figure 5 and 9
         if gen_all or gen_f59: 
             genFig5and9()
+            # TODO mv plot
         
         # Figure 7 and Table 3
         if gen_all or gen_f7t3: 
@@ -205,11 +209,14 @@ if __name__ == "__main__":
                     "apps_full"])
             subprocess.run(["python3", "result_presenter.py", "--port", port, 
                     "--root", "apps_full"])
+            subprocess.run(["mv", "figure7.pdf", os.path.join(rootdir, "results", "figure7_full.pdf")]) 
+            subprocess.run(["mv", "table3.pdf", os.path.join(rootdir, "results", "table3_full.pdf")]) 
             os.chdir(rootdir)
         
         # Figure 8
         if gen_all or gen_f8: 
             print("F8 full not implemented")
+            # TODO mv plot
     else: 
         # Figure 1
         if gen_all or gen_f1: 
@@ -218,6 +225,7 @@ if __name__ == "__main__":
                     "--compile", "--bench", "3", "--local"])
             subprocess.run(["python3", "result_presenter.py", "--port", port,
                     "--root", "crates_fast"])
+            subprocess.run(["mv", "figure1.pdf", os.path.join(rootdir, "results", "figure1_fast.pdf")]) 
             os.chdir(rootdir)
         
         # Figure 5 and 9
@@ -231,18 +239,21 @@ if __name__ == "__main__":
                     "apps_fast"])
             subprocess.run(["python3", "result_presenter.py", "--port", port, 
                     "--root", "apps_fast"])
+            subprocess.run(["mv", "figure7.pdf", os.path.join(rootdir, "results", "figure7_fast.pdf")]) 
+            subprocess.run(["mv", "table3.pdf", os.path.join(rootdir, "results", "table3_fast.pdf")]) 
             os.chdir(rootdir)
         
         # Figure 8
         if gen_all or gen_f8: 
             print("F8 fast not implemented")
+            # TODO mv plot
 
     # Table 1 (no fast path)
     if gen_all or gen_t1: 
         print("T1 not implemented")
+        # TODO mv plot
 
     # Table 4 (no fast path)
     if gen_all or gen_t4: 
         subprocess.run(["./scripts/table4.sh"])
-
-    #endToEnd("{}/brotli-expanded/".format(rootdir), "{}/data/silesia-5.brotli".format(rootdir))
+        # TODO mv plot
