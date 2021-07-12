@@ -98,8 +98,8 @@ RUN mkdir ${APPS_FULL}
 # Quick run
 WORKDIR ${ROOT}/${NADER}/${F7}/${APPS_FAST}
 
-RUN mkdir brotli-decompressor
 RUN cp -r ${ROOT}/${NADER}/brotli-expanded brotli-decompressor
+RUN mv brotli-decompressor/src/lib.rs.unsafe brotli-decompressor/src/lib.rs
 
 ENV SHA=ba4bc6d7c35677a3731bd89f95ed9c9e2dac0c4b
 RUN wget https://github.com/tantivy-search/tantivy/archive/${SHA}.tar.gz
@@ -124,8 +124,8 @@ RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 # Full run
 #WORKDIR ${ROOT}/${NADER}/${F7}/${APPS_FULL}
 #
-#RUN mkdir brotli-decompressor
 #RUN cp -r ${ROOT}/${NADER}/brotli-expanded brotli-decompressor
+#RUN mv brotli-decompressor/src/lib.rs.unsafe brotli-decompressor/src/lib.rs
 #
 #ENV SHA=be39ddaf7d5f017da9597a94f6fd66e17e7df2e3
 #RUN wget https://github.com/gfx-rs/gfx/archive/${SHA}.tar.gz
