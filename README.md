@@ -84,18 +84,10 @@ Expected running times for all experiments on a
 2.3 GHz Dual-Core Intel Core i5 Macbook Pro
 are listed here:  
 
-   * Figure 1 [fast]: 20 minutes
-   * Figure 1 [full]: 7 hours
-   * Table 1: ?
-   * Figures 5 and 9 [fast]: ?
-   * Figures 5 and 9 [full]: ?
-   * Figure 7 and Table 3 [fast]: 2 minutes
-   * Figure 7 and Table 3 [full]: 20 minutes
-   * Table 4: ?
-   * Figure 8: ?
-
-   * [fast] total: 
-   * [full] total: 
+| | Figure 1 | Table 1 | Figures 5 and 9 | Figure 7 and Table 3 | Table 4 | Figure 8 | Total |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Fast | 20 min | | | 2 min | | | |
+| Full | 7 hrs | | 20 min | | | |
 
 TODO explain how to view results
 
