@@ -37,7 +37,7 @@ class ResultProvider:
         self.datafile = os.path.join(root, "summary_total_uses.txt")
 
     def get_unchecked_indexing(self):
-        if os.path.exists(self.datafile) or is_empty_datafile(self.datafile):
+        if not os.path.exists(self.datafile) or is_empty_datafile(self.datafile):
             exit("Datafile is empty, need to generate results for Figure 7/Table 3 before visualizing")
 
         df = open(self.datafile)
