@@ -412,7 +412,7 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname,
         line_nums = hot_lines
 
     # Get one-checked priority
-    print("Prep 3/4: Getting one-checked priority (~30 mins)")
+    print("Prep 3/4: Getting one-checked priority (~30 mins for full run)")
     impact_tuple_one_check = oneCheckedExp(cargo_root, old_fname, new_fname, line_nums, arg, test_times)
 
     results = {"impact_tuple": impact_tuple_one_check,
@@ -425,7 +425,7 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname,
     # end of one checked
 
     # Get one-unchecked priority
-    print("Prep 4/4: Getting one-unchecked priority (~30 mins)")
+    print("Prep 4/4: Getting one-unchecked priority (~30 mins for full run)")
     impact_tuple_one_uncheck = oneUncheckedExp(cargo_root, old_fname, new_fname, line_nums, arg, test_times)
 
     results = {"impact_tuple": impact_tuple_one_check, "impact_tuple_one_uncheck": impact_tuple_one_uncheck,
