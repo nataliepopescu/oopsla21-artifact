@@ -17,82 +17,66 @@ docker build --tag oopsla21-nader .
 3. Run a docker container using the image you just built: 
 
 ```sh
-docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact oopsla21-nader
+docker run -it -p <portA>:<portB> --cap-add=sys_nice --name artifact oopsla21-nader
 ```
 
-Once in the docker container you can begin using the artifact.
+Now you can begin using the artifact. 
 
 ## Step by Step Instructions
 
 ### Paper claims supported by artifact
 
 All of the following commands should be run from the `~/nader/` directory. 
-Running all experiments fully takes 1-2 days total. 
-We have therefore implemented a "fast path" that can run all experiments 
-on fewer libraries/applications, which finishes in under an hour. 
-Our driver will run the fast path by default, so if you wish to run the full 
-experiments, run: 
+Running all experiments fully takes almost two days to complete. 
+We have therefore implemented a fast path that can run all experiments 
+(on fewer libraries and applications) and finishes in under an hour. 
+Our driver runs the fast path by default, so to run the full set of experiments, 
+run: 
 
 ```sh
-$ python3 ExpDriver.py --full [OPTIONS] --port <port>
+$ python3 ExpDriver.py --full [OPTIONS] --port <portB>
 ```
 
-Where <port> should be the same as the one you passed to `docker run`.
+Where <portB> should be the same as the second one passed to `docker run`.
 
-To run the fast path on all experiments, run: 
+To run the *fast* path on _all_ experiments, run: 
 
 ```sh
-$ python3 ExpDriver.py --all --port <port>
+$ python3 ExpDriver.py --all --port <portB>
 ```
 
-To run the full path on all experiments, run: 
+To run the *full* path on _all_ experiments, run: 
 
 ```sh
-$ python3 ExpDriver.py --all --full --port <port>
+$ python3 ExpDriver.py --all --full --port <portB>
 ```
 
-We describe how to run each individual experiment below. 
-
-1. To reproduce Figure 1: 
+To run individual experiments, simply replace `--all` with the flag corresponding 
+to the desired experiment, found by running: 
 
 ```sh
-$ python3 ExpDriver.py --figure1 {--full} --port <port>
+$ python3 ExpDriver.py --help
+
+--TODO copy usage message--
 ```
 
-The figure 1 fast path should take around 20 minutes to complete. 
-TODO what to do with the generated plots...
-
-1. To reproduce Table 1: 
+For generating Figure 7 and Table 3, for example, run the following: 
 
 ```sh
-$ python3 ExpDriver.py --table1 {--full} --port <port>
+$ python3 ExpDriver --port <portB> [--full] --figure7table3
 ```
 
-1. To reproduce Figures 5 and 9: 
+Expected running times for all experiments are listed here:  
 
-```sh
-$ python3 ExpDriver.py --figure59 {--full} --port <port>
-```
-
-1. To reproduce Figure 7 and all but the last column of Table 3, run: 
-
-```sh
-$ python3 ExpDriver.py --figure7table3 {--full} --port <port>
-```
-
-This will only take a couple of minutes to complete. 
-
-1. To reproduce Table 4: 
-
-```sh
-$ python3 ExpDriver.py --table4 {--full} --port <port>
-```
-
-1. To reproduce Figure 8:
-
-```sh
-$ python3 ExpDriver.py --figure8 {--full} --port <port>
-```
+   * Figure 1 [fast]: 20 minutes
+   * Figure 1 [full]: ?
+   * Table 1: ?
+   * Figures 5 and 9 [fast]: ?
+   * Figures 5 and 9 [full]: ?
+   * Figure 7 and Table 3 [fast]: 2 minutes
+   * Figure 7 and Table 3 [full]: 20 minutes
+   * Table 4: ?
+   * Figure 8: ?
 
 ### Paper claims _not_ supported by artifact
 
