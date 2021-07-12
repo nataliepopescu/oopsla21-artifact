@@ -22,6 +22,9 @@ RUN pip3 install scipy
 RUN pip3 install psutil
 RUN pip3 install requests
 
+RUN useradd --create-home --shell /bin/bash oopsla21ae
+USER oopsla21ae
+
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="~/.cargo/bin:${PATH}"
