@@ -87,7 +87,7 @@ are listed here:
 | | Figure 1 | Table 1 | Figures 5 and 9 | Figure 7 and Table 3 | Table 4 | Figure 8 | Total |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Fast | 20 min | | | 2 min | | | |
-| Full | 7 hrs | | 20 min | | | |
+| Full | 7 hrs | | 5 hrs | 20 min | | | |
 
 TODO explain how to view results
 
