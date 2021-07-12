@@ -20,7 +20,14 @@ docker build --tag oopsla21-nader .
 docker run -it -p <portA>:<portB> --cap-add=sys_nice --name artifact oopsla21-nader
 ```
 
-Now you can begin using the artifact. 
+4. Test that the artifact works by running: 
+
+```sh
+$ python3 ExpDriver.py --all --port <portB>
+```
+
+This command should complete in under an hour. We explain what it does in more 
+detail in the next section. 
 
 ## Step by Step Instructions
 
@@ -57,7 +64,14 @@ to the desired experiment, found by running:
 ```sh
 $ python3 ExpDriver.py --help
 
---TODO copy usage message--
+  ...
+  --figure1           generate figure 1
+  --table1            generate table 1
+  --figure59          generate figures 5 and 9
+  --figure7table3     generate figure 7 and table 3
+  --table4            generate table 4
+  --figure8           generate figure 8
+  ...
 ```
 
 For generating Figure 7 and Table 3, for example, run the following: 
@@ -66,10 +80,12 @@ For generating Figure 7 and Table 3, for example, run the following:
 $ python3 ExpDriver --port <portB> [--full] --figure7table3
 ```
 
-Expected running times for all experiments are listed here:  
+Expected running times for all experiments on a 
+2.3 GHz Dual-Core Intel Core i5 Macbook Pro
+are listed here:  
 
    * Figure 1 [fast]: 20 minutes
-   * Figure 1 [full]: ?
+   * Figure 1 [full]: 7 hours
    * Table 1: ?
    * Figures 5 and 9 [fast]: ?
    * Figures 5 and 9 [full]: ?
@@ -78,8 +94,22 @@ Expected running times for all experiments are listed here:
    * Table 4: ?
    * Figure 8: ?
 
+   * [fast] total: 
+   * [full] total: 
+
+TODO explain how to view results
+
+TODO expected outputs? a.k.a. results we've already generated (examples)
+
+TODO any warnings that are safe to be ignored 
+
+TODO how to explain {claims} are supported by artifact? Explain how to interpret results
+- generated results are analogous to those in the paper
+
 ### Paper claims _not_ supported by artifact
 
 1. "Different Architecture" column in Table 1...
 
 1. Last column of Table 3...
+
+1. [Maybe] Figure 8...
