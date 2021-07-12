@@ -193,9 +193,6 @@ if __name__ == "__main__":
                     "--root", "crates_full"])
             os.chdir(rootdir)
         
-        # Table 1
-        if gen_all or gen_t1: 
-            print("T1 full not implemented")
         
         # Figure 5 and 9
         if gen_all or gen_f59: 
@@ -210,10 +207,6 @@ if __name__ == "__main__":
                     "--root", "apps_full"])
             os.chdir(rootdir)
         
-        # Table 4
-        if gen_all or gen_t4: 
-            print("T4 full not implemented")
-        
         # Figure 8
         if gen_all or gen_f8: 
             print("F8 full not implemented")
@@ -226,10 +219,6 @@ if __name__ == "__main__":
             subprocess.run(["python3", "result_presenter.py", "--port", port,
                     "--root", "crates_fast"])
             os.chdir(rootdir)
-        
-        # Table 1
-        if gen_all or gen_t1: 
-            print("T1 fast not implemented")
         
         # Figure 5 and 9
         if gen_all or gen_f59: 
@@ -244,12 +233,16 @@ if __name__ == "__main__":
                     "--root", "apps_fast"])
             os.chdir(rootdir)
         
-        # Table 4
-        if gen_all or gen_t4: 
-            print("T4 fast not implemented")
-        
         # Figure 8
         if gen_all or gen_f8: 
             print("F8 fast not implemented")
+
+    # Table 1 (no fast path)
+    if gen_all or gen_t1: 
+        print("T1 not implemented")
+
+    # Table 4 (no fast path)
+    if gen_all or gen_t4: 
+        subprocess.run(["./scripts/table4.sh"])
 
     #endToEnd("{}/brotli-expanded/".format(rootdir), "{}/data/silesia-5.brotli".format(rootdir))
