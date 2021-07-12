@@ -6,9 +6,9 @@ import pickle
 import time
 import argparse
 import random
-from scripts.regexify import convertFile
-from scripts.ExpStats import runExpWithName
-from scripts.ParseCallgrind import sortByHot
+from regexify import convertFile
+from ExpStats import runExpWithName
+from ParseCallgrind import sortByHot, getColdLines
 from tqdm.auto import tqdm
 
 cargo_root=""
@@ -389,7 +389,6 @@ def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname,
 
     # remove cold baseline
     hot_lines = line_nums.copy()
-    from scripts.ParseCallgrind import getColdLines
     rs_fname = "src/lib.rs"
     cold_lines = getColdLines(hot_lines, calout_fname, 1, single_file=rs_fname)
     if cold_lines is None:

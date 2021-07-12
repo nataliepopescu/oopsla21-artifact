@@ -65,7 +65,7 @@ codegen-units = 1
 path = "vendor/generic-array"
 
 [patch.crates-io.generic-array01]
-path = "vendor/generic-array-0.12.3"
+path = "vendor/generic-array-0.12.4"
 package = "generic-array"
 
 [patch.crates-io.rand_core]

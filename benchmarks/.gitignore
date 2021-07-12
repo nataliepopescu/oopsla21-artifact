@@ -1,0 +1,10 @@
+log
+*/regexify.py
+*/*/regexify.py
+*/make_patch.py
+*/*/make_patch.py
+vendor
+vendor-safe
+vendor-unsafe
+*-safe
+*-unsafe

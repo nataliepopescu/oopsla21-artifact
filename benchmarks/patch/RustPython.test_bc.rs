@@ -37,11 +37,13 @@ fn bench_test(n_iter: usize, name: &str, source: &str) -> (Duration, bool) {
 #[inline(never)]
 fn bench() {
     // setup
+    let args: Vec<String> = env::args().collect();
+    let filename = &args[1]; 
 
     let mut timing_error: bool = false;
     let n_iterations: usize = 1;
 
-    let contents = std::fs::read_to_string("/scratch/ziyangx/RustPython/benches/benchmarks/pystone.py").unwrap();
+    let contents = std::fs::read_to_string(&filename).unwrap();
     let code_with_loops = format!("LOOPS = {}\n{}", 30000, contents);
     let code_str = code_with_loops.as_str();
 
