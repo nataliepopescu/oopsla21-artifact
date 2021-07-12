@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>My site - Programming</title>
+	<link href="https://replace-this-with-your-url.com/posts/tutorials/programming/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://replace-this-with-your-url.com/posts/tutorials/programming/"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2017-01-01T00:00:00+00:00</updated>
+	<id>https://replace-this-with-your-url.com/posts/tutorials/programming/atom.xml</id>
+	<entry xml:lang="en">
+		<title>Python tutorial</title>
+		<published>2017-01-01T00:00:00+00:00</published>
+		<updated>2017-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/tutorials/programming/python/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/tutorials/programming/python/</id>
+		<content type="html">&lt;p&gt;A simple page&lt;&#x2F;p&gt;
+</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>Rust</title>
+		<published>2017-01-01T00:00:00+00:00</published>
+		<updated>2017-01-01T00:00:00+00:00</updated>
+		<link href="https://replace-this-with-your-url.com/posts/tutorials/programming/rust/" type="text/html"/>
+		<id>https://replace-this-with-your-url.com/posts/tutorials/programming/rust/</id>
+		<content type="html">&lt;p&gt;A simple page&lt;&#x2F;p&gt;
+&lt;span id=&quot;continue-reading&quot;&gt;&lt;&#x2F;span&gt;
+&lt;p&gt;Link to some rust-lang &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;rust-lang&#x2F;rust&#x2F;blob&#x2F;c772948b687488a087356cb91432425662e034b9&#x2F;src&#x2F;librustc_back&#x2F;target&#x2F;mod.rs#L194-L214&quot;&gt;source code&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Internal web server &lt;a href=&quot;http:&#x2F;&#x2F;%5B2001:db8::%5D&#x2F;path&quot;&gt;http:&#x2F;&#x2F;[2001:db8::]&#x2F;path&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>

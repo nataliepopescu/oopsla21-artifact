@@ -10,7 +10,7 @@ use swc_common::{
 use swc_ecma_parser::{JscTarget, Syntax, TsConfig};
 use std::{sync::Arc};
 
-static SOURCE: &str = include_str!("/scratch/ziyangx/benchmarks/swc/benches/assets/AjaxObservable.ts");
+static SOURCE: &str = include_str!("../benches/assets/AjaxObservable.ts");
 
 fn now() -> SystemTime {
     return SystemTime::now();
