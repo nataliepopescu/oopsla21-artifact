@@ -76,6 +76,51 @@ def getPerfDiff(bmark_path, arg):
 
     return (time_exp_safe - time_exp_unsafe) / time_exp_unsafe
 
+def genTable1():
+    # Baseline
+    print("Generating -Baseline- column of Table 1")
+    bmark_path = ROOT_PATH + "/brotli-expanded/"
+    arg = ROOT_PATH + "/data/silesia-5.brotli"
+    getPerfDiff(bmark_path, arg)
+
+    # rustc 1.46.0
+    print("Generating -Different Compiler- column of Table 1")
+    subprocess.run(["rustup", "override", "set", "nightly-2020-08-27-x86_64-unknown-linux-gnu"])
+    bmark_path = ROOT_PATH + "/brotli-expanded/"
+    arg = ROOT_PATH + "/data/silesia-5.brotli"
+    getPerfDiff(bmark_path, arg)
+    subprocess.run(["rustup", "override", "unset"])
+
+    # Different workload (compression level == 11, instead of 5)
+    print("Generating -Different Workload- column of Table 1")
+    bmark_path = ROOT_PATH + "/brotli-expanded/"
+    arg = ROOT_PATH + "/data/silesia-11.brotli"
+    getPerfDiff(bmark_path, arg)
+
+def genFigure1(root, quick_run=False):
+    if full_run: 
+        cratedir = "crates_full"
+    else: 
+        cratedir = "crates_fast"
+
+    os.chdir(os.path.join(root, "figure1"))
+    subprocess.run(["python3", "tool.py", "--dir", cratedir, 
+            "--compile", "--bench", "3", "--local", "-g"])
+    subprocess.run(["mv", "figure1*", os.path.join(root, "images/")]) 
+    os.chdir(root)
+
+def genFigure7Table3(root, quick_run=False):
+    if full_run: 
+        suffix = "full"
+    else: 
+        suffix = "fast"
+
+    os.chdir(os.path.join(root, "figure7"))
+    subprocess.run(["python3", "uncover_uncheckeds.py", "--root", "apps_{}".format(suffix)])
+    subprocess.run(["mv", "figure7.pdf", os.path.join(root, "images", "figure7_{}.pdf".format(suffix))]) 
+    subprocess.run(["mv", "table3.pdf", os.path.join(root, "images", "table3_{}.pdf".format(suffix))]) 
+    os.chdir(root)
+
 ## Generate brotli figs (Fig5 and Fig9)
 def genFig5and9(quick_run=False):
     #print("Running Nader on brotli, generating fig 5 and 9")
@@ -95,6 +140,9 @@ def genFig5and9(quick_run=False):
 
     # use test.pkl to generate Fig 5
     genFig9(ROOT_PATH + "/exp-results", "brotli", ROOT_PATH + "/images/figure9.pdf")
+
+def genTable4(): 
+    subprocess.run(["./scripts/table4.sh"])
 
 
 def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
@@ -173,77 +221,30 @@ def arg_parse():
 
 if __name__ == "__main__":
     gen_all, gen_f1, gen_t1, gen_f59, gen_f7t3, gen_t4, gen_f8, full_run = arg_parse()
-    rootdir = os.getcwd()
+    root = os.getcwd()
 
-    if not os.path.exists(os.path.join("data", "silesia-5.brotli")):
-        os.chdir("data")
-        subprocess.run(["./create_silesia.sh"])
-        os.chdir(rootdir)
+    quick_run = False if full_run else True
+        
+    # Figure 1
+    if gen_all or gen_f1: 
+        genFigure1(root, quick_run=quick_run)
     
-    if not os.path.isdir("images"):
-        os.mkdir("images")
-
-    if full_run: 
-        # Figure 1
-        if gen_all or gen_f1: 
-            os.chdir(os.path.join(rootdir, "figure1"))
-            subprocess.run(["python3", "tool.py", "--dir", "crates_full", 
-                    "--compile", "--bench", "3", "--local"])
-            subprocess.run(["mv", "figure1*", os.path.join(rootdir, "images/")]) 
-            os.chdir(rootdir)
-        
-        
-        # Figure 5 and 9
-        if gen_all or gen_f59: 
-            genFig5and9()
-            # TODO mv plot
-        
-        # Figure 7 and Table 3
-        if gen_all or gen_f7t3: 
-            os.chdir(os.path.join(rootdir, "figure7"))
-            subprocess.run(["python3", "uncover_uncheckeds.py", "--root", 
-                    "apps_full"])
-            subprocess.run(["mv", "figure7.pdf", os.path.join(rootdir, "images", "figure7_full.pdf")]) 
-            subprocess.run(["mv", "table3.pdf", os.path.join(rootdir, "images", "table3_full.pdf")]) 
-            os.chdir(rootdir)
-        
-        # Figure 8
-        if gen_all or gen_f8: 
-            print("F8 full not implemented")
-            # TODO mv plot
-    else: 
-        # Figure 1
-        if gen_all or gen_f1: 
-            os.chdir(os.path.join(rootdir, "figure1"))
-            subprocess.run(["python3", "tool.py", "--dir", "crates_fast", 
-                    "--compile", "--bench", "3", "--local", "-g"])
-            subprocess.run(["mv", "figure1*", os.path.join(rootdir, "images/")]) 
-            os.chdir(rootdir)
-        
-        # Figure 5 and 9
-        if gen_all or gen_f59: 
-            genFig5and9(quick_run=True)
-        
-        # Figure 7 and Table 3
-        if gen_all or gen_f7t3: 
-            os.chdir(os.path.join(rootdir, "figure7"))
-            subprocess.run(["python3", "uncover_uncheckeds.py", "--root", 
-                    "apps_fast"])
-            subprocess.run(["mv", "figure7.pdf", os.path.join(rootdir, "images", "figure7_fast.pdf")]) 
-            subprocess.run(["mv", "table3.pdf", os.path.join(rootdir, "images", "table3_fast.pdf")]) 
-            os.chdir(rootdir)
-        
-        # Figure 8
-        if gen_all or gen_f8: 
-            print("F8 fast not implemented")
-            # TODO mv plot
-
-    # Table 1 (no fast path)
+    # Table 1
     if gen_all or gen_t1: 
-        print("T1 not implemented")
-        # TODO mv plot
+        genTable1()
 
-    # Table 4 (no fast path)
+    # Figure 5 and 9
+    if gen_all or gen_f59: 
+        genFig5and9(quick_run=quick_run)
+        
+    # Figure 7 and Table 3
+    if gen_all or gen_f7t3: 
+        genFigure7Table3(root, quick_run=quick_run)
+        
+    # Table 4
     if gen_all or gen_t4: 
-        subprocess.run(["./scripts/table4.sh"])
-        # TODO mv plot
+        genTable4()
+
+    # Figure 8
+    if gen_all or gen_f8: 
+        print("F8 not implemented")

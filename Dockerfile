@@ -38,6 +38,7 @@ ENV NADER=nader
 RUN mkdir ${NADER}
 WORKDIR ${ROOT}/${NADER}
 COPY . .
+RUN mkdir -p images
 
 ##### Figure 1 Setup #####
 ENV F1=figure1
@@ -260,4 +261,6 @@ RUN mv wrk ${ROOT}/${NADER}/benchmarks
 WORKDIR ${ROOT}/${NADER}
 RUN rm -rf wrk-${SHA}
 
+WORKDIR ${ROOT}/${NADER}/data
+RUN ./create_silesia.sh
 WORKDIR ${ROOT}/${NADER}
