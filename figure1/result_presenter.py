@@ -14,8 +14,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly
 import plotly.graph_objects as go
-import plotly.express as px
 import math
+from subprocess import call
 
 # some setting for plot
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -213,7 +213,7 @@ def get_overview_layout(rp):
                 'ticks': 'outside',
                 'mirror': 'all',
                 'showline': True, 
-                'nticks': 100,
+                'nticks': 44,
                 'title': {'text': 'Speedup'},
             },
             'yaxis': {
@@ -222,7 +222,7 @@ def get_overview_layout(rp):
                 'mirror': 'all',
                 'showline': True, 
                 'gridcolor':'rgb(200,200,200)', 
-                'nticks': 50,
+                'nticks': 14,
                 'title': {'text': 'Number of Benchmarks'},
             },
             'font': {'family': 'Helvetica', 'color': 'black', 'size': 16},
@@ -243,6 +243,18 @@ def get_overview_layout(rp):
         line=dict(color="#D00D56"), #D81B60"),
         #line=dict(color="#D0620D"), #D00D56"), #D81B60"),
     )
+
+    #if len(all_bmarks) == 12: 
+    #    suffix = 'fast'
+    #else: 
+    #    suffix = 'full'
+    call(['orca', 'graph', 
+        '-o', 'figure1',
+        #'-o', 'figure1_{}'.format(suffix), 
+        '-f', 'pdf', 
+        '--width', '1500', 
+        '--height', '600',
+        json.dumps(fig_hist, cls=plotly.utils.PlotlyJSONEncoder)])
 
     fig_all = make_graph(all_bmarks, 'Bar chart of all benchmarks')
     fig_better = make_graph(rp.better, 'Bar chart of improved benchmarks')

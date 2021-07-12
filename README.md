@@ -17,7 +17,7 @@ docker build --tag oopsla21-nader .
 3. Run a docker container using the image you just built: 
 
 ```sh
-docker run -it -p 8050:8050 --cap-add=sys_nice --name artifact oopsla21-nader
+docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact oopsla21-nader
 ```
 
 Once in the docker container you can begin using the artifact.

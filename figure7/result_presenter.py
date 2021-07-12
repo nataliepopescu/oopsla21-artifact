@@ -14,9 +14,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly
 import plotly.graph_objects as go
-import plotly.express as px
-import pandas as pd
-import math
+from subprocess import call
 
 # some setting for plot
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -35,57 +33,88 @@ def is_empty_datafile(filepath):
 
 class ResultProvider:
 
-    # complete object has the following fields: 
-    # - datafile
-
     def __init__(self, root):
         self.datafile = os.path.join(root, "summary_total_uses.txt")
 
     def get_unchecked_indexing(self):
-        if is_empty_datafile(self.datafile):
+        if os.path.exists(self.datafile) or is_empty_datafile(self.datafile):
             exit("Datafile is empty, need to generate results for Figure 7/Table 3 before visualizing")
 
         df = open(self.datafile)
-        #self.data = dict()
+        self.app_names = dict()
         self.direct_ui = dict()
         self.indirect_ui = dict()
-        #self.total_deps = dict()
-        #self.deps_w_ui = dict()
+        self.total_deps = dict()
+        self.deps_w_ui = dict()
 
         for line in df: 
             cols = line.split()
-            print(cols)
             assert len(cols) == 5
-            #    "Direct UI": cols[1], 
-            #    "Indirect UI": cols[2], 
-            #    "Total Deps": cols[3],
-            #    "Deps w UI": cols[4]
+
+            if cols[0] == 'brotli-decompressor': 
+                name = 'brotli-decompressor'
+            else: 
+                name = cols[0].rsplit('-', 1)[0]
+
+            self.app_names[cols[0]] = name
             self.direct_ui[cols[0]] = cols[1]
             self.indirect_ui[cols[0]] = cols[2]
-            #self.total_deps[cols[0]] = cols[3]
-            #self.deps_w_ui[cols[0]] = cols[4]
-            #self.data[cols[0]] = [cols[1], cols[2]] #, cols[3], cols[4]]
+            self.total_deps[cols[0]] = cols[3]
+            self.deps_w_ui[cols[0]] = cols[4]
 
 def get_overview_layout(rp):
-    fig_ui = go.Figure(data=[
+    fig = go.Figure(data=[
         go.Bar(name='Direct', 
-            x=list(rp.direct_ui.keys()), 
+            x=list(rp.app_names.values()), 
             y=list(rp.direct_ui.values())),
         go.Bar(name='Indirect', 
-            x=list(rp.direct_ui.keys()), 
+            x=list(rp.app_names.values()), 
             y=list(rp.indirect_ui.values())),
     ])
-    fig_ui.update_layout(barmode='stack')
+    fig.update_layout(barmode='stack')
+    call(['orca', 'graph', 
+        '-o', 'figure7', 
+        '-f', 'pdf', 
+        '--width', '900', 
+        '--height', '700',
+        json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)])
+
+    table = go.Figure(data=[
+        go.Table(
+            header=dict(values=[
+                'Application Name', 
+                '# Direct UI',
+                '# Indirect UI',
+                'Total # Dependencies',
+                '# Dependencies with any UI'
+            ]),
+            cells=dict(values=[
+                list(rp.app_names.values()),
+                list(rp.direct_ui.values()),
+                list(rp.indirect_ui.values()),
+                list(rp.total_deps.values()),
+                list(rp.deps_w_ui.values())
+            ])
+        )
+    ])
+    call(['orca', 'graph', 
+        '-o', 'table3', 
+        '-f', 'pdf', 
+        '--width', '800', 
+        '--height', '800',
+        json.dumps(table, cls=plotly.utils.PlotlyJSONEncoder)])
 
     layout = html.Div([
         html.Br(),
         html.H3('Unchecked Indexing Usage in Popular Rust Applications'),
         html.Br(),
         dcc.Graph(
-            id='ui_usage',
-            figure=fig_ui
+            figure=fig
         ),
         html.Br(),
+        dcc.Graph(
+            figure=table
+        )
     ])
     return layout
 
@@ -113,8 +142,6 @@ def display_page(pathname):
     if not pathname:
         return 404
     if pathname == '/':
-        pathname = '/passOverview'
-    if pathname == '/passOverview':
         layout = get_overview_layout(app._result_provider)
         return layout
     else:
@@ -127,7 +154,6 @@ if __name__ == '__main__':
 
     app.layout = html.Div([
         dcc.Location(id='url', refresh=False),
-        dcc.Link('Results Overview', href='/passOverview'),
         html.Br(),
         html.Div(id='page_content')
     ])
