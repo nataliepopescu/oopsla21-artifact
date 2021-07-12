@@ -72,6 +72,53 @@ def get_overview_layout(rp):
             y=list(rp.indirect_ui.values())),
     ])
     fig.update_layout(barmode='stack')
+
+    table = go.Figure(data=[
+        go.Table(
+            header=dict(values=[
+                'Application Name', 
+                '# Direct UI',
+                '# Indirect UI',
+                'Total # Dependencies',
+                '# Dependencies with any UI'
+            ]),
+            cells=dict(values=[
+                list(rp.app_names.values()),
+                list(rp.direct_ui.values()),
+                list(rp.indirect_ui.values()),
+                list(rp.total_deps.values()),
+                list(rp.deps_w_ui.values())
+            ])
+        )
+    ])
+
+    layout = html.Div([
+        html.Br(),
+        html.H3('Unchecked Indexing Usage in Popular Rust Applications'),
+        html.Br(),
+        dcc.Graph(
+            figure=fig
+        ),
+        html.Br(),
+        dcc.Graph(
+            figure=table
+        )
+    ])
+    return layout
+
+def gen_figure7_table3(root):
+    app._result_provider = ResultProvider(root)
+    app._result_provider.get_unchecked_indexing()
+
+    fig = go.Figure(data=[
+        go.Bar(name='Direct', 
+            x=list(rp.app_names.values()), 
+            y=list(rp.direct_ui.values())),
+        go.Bar(name='Indirect', 
+            x=list(rp.app_names.values()), 
+            y=list(rp.indirect_ui.values())),
+    ])
+    fig.update_layout(barmode='stack')
     call(['orca', 'graph', 
         '-o', 'figure7', 
         '-f', 'pdf', 
@@ -104,19 +151,6 @@ def get_overview_layout(rp):
         '--height', '800',
         json.dumps(table, cls=plotly.utils.PlotlyJSONEncoder)])
 
-    layout = html.Div([
-        html.Br(),
-        html.H3('Unchecked Indexing Usage in Popular Rust Applications'),
-        html.Br(),
-        dcc.Graph(
-            figure=fig
-        ),
-        html.Br(),
-        dcc.Graph(
-            figure=table
-        )
-    ])
-    return layout
 
 def parseArgs():
     parser = argparse.ArgumentParser()

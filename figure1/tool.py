@@ -10,6 +10,7 @@ import shutil
 import numpy
 from aggregate import dump_benchmark, path_wrangle, writerow
 from crunch import crunch, stats, stats2
+from result_presenter import gen_figure1
 import datetime
 import re
 
@@ -540,11 +541,15 @@ def arg_parse():
             "prior use (default just removes compilation dirs, can use option "\
             "'a' to additionally remove benchmark result dirs or 'b' to only "\
             "remove benchmark result dirs and not compilation dirs)")
+    parser.add_argument("--gen_fig", "-g",
+            required=False,
+            action="store_true",
+            help="generate PDFs of figure1")
     args = parser.parse_args()
-    return args.dir, args.scrape, args.test, args.compile, args.bench, args.local, args.remote, args.clean
+    return args.dir, args.scrape, args.test, args.compile, args.bench, args.local, args.remote, args.clean, args.gen_fig
 
 if __name__ == "__main__":
-    rootdir, scrape, test, cmpl, bench, local, remote, clean = arg_parse()
+    rootdir, scrape, test, cmpl, bench, local, remote, clean, gen_fig = arg_parse()
     s = State(rootdir, scrape, test, cmpl, bench, local, remote, clean)
 
     start = datetime.datetime.now()
@@ -573,6 +578,8 @@ if __name__ == "__main__":
         s.crunch_local()
     if s.remote: 
         s.crunch_remote()
+    if gen_fig: 
+        gen_figure1(rootdir)
 
     end = datetime.datetime.now()
     duration = end - start

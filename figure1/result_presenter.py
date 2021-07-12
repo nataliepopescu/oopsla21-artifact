@@ -244,18 +244,6 @@ def get_overview_layout(rp):
         #line=dict(color="#D0620D"), #D00D56"), #D81B60"),
     )
 
-    #if len(all_bmarks) == 12: 
-    #    suffix = 'fast'
-    #else: 
-    #    suffix = 'full'
-    call(['orca', 'graph', 
-        '-o', 'figure1',
-        #'-o', 'figure1_{}'.format(suffix), 
-        '-f', 'pdf', 
-        '--width', '1500', 
-        '--height', '600',
-        json.dumps(fig_hist, cls=plotly.utils.PlotlyJSONEncoder)])
-
     fig_all = make_graph(all_bmarks, 'Bar chart of all benchmarks')
     fig_better = make_graph(rp.better, 'Bar chart of improved benchmarks')
     fig_worse = make_graph(rp.worse, 'Bar chart of worsened benchmarks')
@@ -331,6 +319,98 @@ def get_overview_layout(rp):
     ])
 
     return layout
+
+def gen_figure1(root):
+    app._result_provider = ResultProvider(root)
+    app._result_provider.get_speedups()
+    rp = app._result_provider
+
+    # for counting + average calc
+    all_bmarks = {**rp.better, **rp.worse, **rp.neither}
+    trimmed_bmarks = {**rp.better_, **rp.worse_, **rp.neither}
+    # for maximum/potential speedup calc
+    mock_all = list(rp.better.values()) + [1] * len(rp.worse) + list(rp.neither.values())
+    mock_trimmed = list(rp.better_.values()) + [1] * len(rp.worse_) + list(rp.neither.values())
+
+    trace = go.Histogram(x=list(all_bmarks.values()), nbinsx=100, autobinx=False, 
+            marker=dict(color='#14D085'))
+    fig_hist = go.Figure({
+        'data': trace,
+        'layout': {
+            'title': 'Histogram of all speedups',
+            'xaxis': {
+                'linecolor': 'black',
+                'ticks': 'outside',
+                'mirror': 'all',
+                'showline': True, 
+                'nticks': 44,
+                'title': {'text': 'Speedup'},
+            },
+            'yaxis': {
+                'linecolor': 'black',
+                'ticks': 'outside',
+                'mirror': 'all',
+                'showline': True, 
+                'gridcolor':'rgb(200,200,200)', 
+                'nticks': 14,
+                'title': {'text': 'Number of Benchmarks'},
+            },
+            'font': {'family': 'Helvetica', 'color': 'black', 'size': 16},
+            'plot_bgcolor': 'white',
+            'autosize': False,
+            'bargap': 0.2,
+            'width': 2000, 
+            'height': 700}
+        })
+    # add vertical line @ 1
+    fig_hist.add_shape(type="line", 
+        xref="x",
+        yref="paper",
+        x0=1, 
+        x1=1, 
+        y0=0,
+        y1=1,
+        line=dict(color="#D00D56"), #D81B60"),
+        #line=dict(color="#D0620D"), #D00D56"), #D81B60"),
+    )
+    call(['orca', 'graph', 
+        '-o', 'figure1_histogram',
+        '-f', 'pdf', 
+        '--width', '1500', 
+        '--height', '600',
+        json.dumps(fig_hist, cls=plotly.utils.PlotlyJSONEncoder)])
+
+    fig_all = make_graph(all_bmarks, 'Bar chart of all benchmarks')
+    call(['orca', 'graph', 
+        '-o', 'figure1_all',
+        '-f', 'pdf', 
+        '--width', '1500', 
+        '--height', '600',
+        json.dumps(fig_all, cls=plotly.utils.PlotlyJSONEncoder)])
+
+    fig_better = make_graph(rp.better, 'Bar chart of improved benchmarks')
+    call(['orca', 'graph', 
+        '-o', 'figure1_improved',
+        '-f', 'pdf', 
+        '--width', '1500', 
+        '--height', '600',
+        json.dumps(fig_better, cls=plotly.utils.PlotlyJSONEncoder)])
+
+    fig_worse = make_graph(rp.worse, 'Bar chart of worsened benchmarks')
+    call(['orca', 'graph', 
+        '-o', 'figure1_hurt',
+        '-f', 'pdf', 
+        '--width', '1500', 
+        '--height', '600',
+        json.dumps(fig_worse, cls=plotly.utils.PlotlyJSONEncoder)])
+
+    fig_neither = make_graph(rp.neither, 'Bar chart of everything else')
+    call(['orca', 'graph', 
+        '-o', 'figure1_insignificantly_affected',
+        '-f', 'pdf', 
+        '--width', '1500', 
+        '--height', '600',
+        json.dumps(fig_neither, cls=plotly.utils.PlotlyJSONEncoder)])
 
 def get_crates_layout(rp):
     layout = html.Div([

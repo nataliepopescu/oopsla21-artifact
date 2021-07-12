@@ -6,6 +6,7 @@ import re
 import subprocess
 import shutil
 import numpy
+from result_presenter import gen_figure7_table3
 
 VENDOR = "vendor"
 DIRECT_DEF = "direct_loc_def.txt"
@@ -286,3 +287,5 @@ if __name__ == "__main__":
     s.get_indirect_uses()
     print("get total uses")
     s.get_total_uses()
+    print("generating pdfs")
+    gen_figure7_table3(root)

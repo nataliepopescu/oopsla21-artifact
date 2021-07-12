@@ -191,9 +191,7 @@ if __name__ == "__main__":
             os.chdir(os.path.join(rootdir, "figure1"))
             subprocess.run(["python3", "tool.py", "--dir", "crates_full", 
                     "--compile", "--bench", "3", "--local"])
-            subprocess.run(["python3", "result_presenter.py", "--port", port,
-                    "--root", "crates_full"])
-            subprocess.run(["mv", "figure1.pdf", os.path.join(rootdir, "results", "figure1_full.pdf")]) 
+            subprocess.run(["mv", "figure1*", os.path.join(rootdir, "results/")]) 
             os.chdir(rootdir)
         
         
@@ -207,8 +205,6 @@ if __name__ == "__main__":
             os.chdir(os.path.join(rootdir, "figure7"))
             subprocess.run(["python3", "uncover_uncheckeds.py", "--root", 
                     "apps_full"])
-            subprocess.run(["python3", "result_presenter.py", "--port", port, 
-                    "--root", "apps_full"])
             subprocess.run(["mv", "figure7.pdf", os.path.join(rootdir, "results", "figure7_full.pdf")]) 
             subprocess.run(["mv", "table3.pdf", os.path.join(rootdir, "results", "table3_full.pdf")]) 
             os.chdir(rootdir)
@@ -222,10 +218,8 @@ if __name__ == "__main__":
         if gen_all or gen_f1: 
             os.chdir(os.path.join(rootdir, "figure1"))
             subprocess.run(["python3", "tool.py", "--dir", "crates_fast", 
-                    "--compile", "--bench", "3", "--local"])
-            subprocess.run(["python3", "result_presenter.py", "--port", port,
-                    "--root", "crates_fast"])
-            subprocess.run(["mv", "figure1.pdf", os.path.join(rootdir, "results", "figure1_fast.pdf")]) 
+                    "--compile", "--bench", "3", "--local", "-g"])
+            subprocess.run(["mv", "figure1*", os.path.join(rootdir, "results/")]) 
             os.chdir(rootdir)
         
         # Figure 5 and 9
@@ -237,8 +231,6 @@ if __name__ == "__main__":
             os.chdir(os.path.join(rootdir, "figure7"))
             subprocess.run(["python3", "uncover_uncheckeds.py", "--root", 
                     "apps_fast"])
-            subprocess.run(["python3", "result_presenter.py", "--port", port, 
-                    "--root", "apps_fast"])
             subprocess.run(["mv", "figure7.pdf", os.path.join(rootdir, "results", "figure7_fast.pdf")]) 
             subprocess.run(["mv", "table3.pdf", os.path.join(rootdir, "results", "table3_fast.pdf")]) 
             os.chdir(rootdir)
