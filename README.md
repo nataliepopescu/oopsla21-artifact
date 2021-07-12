@@ -26,82 +26,76 @@ Once in the docker container you can begin using the artifact.
 
 ### Paper claims supported by artifact
 
-All of the following commands should be run in `~/nader/`. 
-To print out options for running the script, run: 
+All of the following commands should be run from the `~/nader/` directory. 
+Running all experiments fully takes 1-2 days total. 
+We have therefore implemented a "fast path" that can run all experiments 
+on fewer libraries/applications, which finishes in under an hour. 
+Our driver will run the fast path by default, so if you wish to run the full 
+experiments, run: 
 
 ```sh
-$ python3 ExpDriver.py --help
+$ python3 ExpDriver.py --full [OPTIONS] --port <port>
 ```
+
+Where <port> should be the same as the one you passed to `docker run`.
+
+To run the fast path on all experiments, run: 
+
+```sh
+$ python3 ExpDriver.py --all --port <port>
+```
+
+To run the full path on all experiments, run: 
+
+```sh
+$ python3 ExpDriver.py --all --full --port <port>
+```
+
+We describe how to run each individual experiment below. 
 
 1. To reproduce Figure 1: 
 
-Old command: 
-
 ```sh
-$ cd figure1 && python3 tool.py --dir crates --compile --bench <num_runs> --local
+$ python3 ExpDriver.py --figure1 {--full} --port <port>
 ```
 
-New command: 
+The figure 1 fast path should take around 20 minutes to complete. 
+TODO what to do with the generated plots...
+
+1. To reproduce Table 1: 
 
 ```sh
-$ python3 ExpDriver.py --genf1 --{fast/full} --bench <num_runs>
+$ python3 ExpDriver.py --table1 {--full} --port <port>
 ```
 
-Where the expected durations for generating results for one library [fast] are as follows: 
-   * 8 minutes to compile two versions of the library's benchmarks
-   * 25 minutes to run one round of benchmarks x <num_runs>
-   * <1 minute to aggregate results
-
-And the expected durations for generating all results [full] are as follows: 
-   * 50 minutes to compile two versions of each library's benchmarks
-   * ?? minutes to run one round of benchmarks for all 7 libraries x <num_runs>
-   * 1 minute to aggregate results
-
-We suggest that <num_runs> == 2 or 3 to balance completion speed and precision. 
-Visualize the results by running: 
-
-Old command: 
+1. To reproduce Figures 5 and 9: 
 
 ```sh
-$ python3 result_presenter.py
+$ python3 ExpDriver.py --figure59 {--full} --port <port>
 ```
-
-New command: 
-
-```sh
-$ python3 ExpDriver --viewf1 --{fast/full} --port <port>
-```
-
-and opening the first listed webpage (0.0.0.0:<port>) in your browser. The specified port should be the same as the one you passed to the `docker run` command earlier. 
-
-1. To reproduce Table 1... 
-
-1. To reproduce Figure 5...
 
 1. To reproduce Figure 7 and all but the last column of Table 3, run: 
 
 ```sh
-$ cd figure7 && python3 uncover_uncheckeds.py --root apps
+$ python3 ExpDriver.py --figure7table3 {--full} --port <port>
 ```
 
-which should take about 10 minutes to complete. 
+This will only take a couple of minutes to complete. 
 
-1. To reproduce Table 4... 
+1. To reproduce Table 4: 
 
 ```sh
-cd data && ./create_silesia.sh
+$ python3 ExpDriver.py --table4 {--full} --port <port>
 ```
+
+1. To reproduce Figure 8:
 
 ```sh
-cd .. && python3 ExpDriver.py
+$ python3 ExpDriver.py --figure8 {--full} --port <port>
 ```
-
-1. To reproduce Figure 9...
 
 ### Paper claims _not_ supported by artifact
 
 1. "Different Architecture" column in Table 1...
 
 1. Last column of Table 3...
-
-1. Figure 8...
