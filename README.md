@@ -11,13 +11,13 @@ or through the
 2. Build the docker image (TODO publish image so it can just be downloaded in this step): 
 
 ```sh
-docker build --tag oopsla21-nader .
+$ docker build --tag oopsla21-nader .
 ```
 
-3. Run a docker container using the image you just built: 
+3. If the image builds successfully, start a docker container like so: 
 
 ```sh
-docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact oopsla21-nader
+$ docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact oopsla21-nader
 ```
 
 4. Test that the artifact works by running: 
