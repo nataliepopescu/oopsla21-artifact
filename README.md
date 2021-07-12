@@ -41,7 +41,7 @@ Our driver runs the fast path by default, so to run the full version of experime
 run: 
 
 ```sh
-$ python3 ExpDriver.py --full [OPTIONS]
+$ python3 ExpDriver.py [OPTIONS] --full
 ```
 
 To run the __fast__ path on _all_ experiments, run: 
@@ -75,7 +75,7 @@ $ python3 ExpDriver.py --help
 For generating Figure 7 and Table 3, for example, run the following: 
 
 ```sh
-$ python3 ExpDriver [--full] --figure7table3
+$ python3 ExpDriver --figure7table3 [--full]
 ```
 
 Expected running times for all experiments on a 
