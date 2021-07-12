@@ -72,7 +72,7 @@ $ python3 ExpDriver.py --help
   ...
 ```
 
-For generating Figure 7 and Table 3, for example, run the following: 
+To generate Figure 7 and Table 3, for example, run the following: 
 
 ```sh
 $ python3 ExpDriver --figure7table3 [--full]
