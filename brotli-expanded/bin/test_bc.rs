@@ -20,6 +20,7 @@ use brotli_decompressor::HuffmanCode;
 #[cfg(not(feature="disable-timer"))]
 use alloc_no_stdlib::{Allocator, SliceWrapper, SliceWrapperMut};
 use std::time::SystemTime;
+use std::time::Instant;
 use std::time::Duration;
 
 use std::fs::File;
@@ -313,7 +314,7 @@ fn bench() -> Result<(), io::Error> {
                 BrotliResult::ResultFailure => panic!("FAILURE"),
             }
             let mut written: usize = 0;
-            let start = now();
+            let start = Instant::now();
             result = BrotliDecompressStream(&mut available_in,
                 &mut input_offset,
                 &input.slice(),
@@ -323,7 +324,9 @@ fn bench() -> Result<(), io::Error> {
                 &mut written,
                 &mut brotli_state);
 
-            let (delta, err) = elapsed(start);
+            //let (delta, err) = elapsed(start);
+            let err = false;
+            let delta = start.elapsed();
             if err {
                 timing_error = true;
             }
