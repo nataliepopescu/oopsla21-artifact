@@ -8,7 +8,7 @@ docker daemon, either
 or through the 
 [system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities).
 
-2. Build the docker image (TODO publish image so it can just be downloaded in this step): 
+2. Build the docker image (TODO publish image so it can just be downloaded in this step) (this should take 20-30 minutes):
 
 ```sh
 docker build --tag oopsla21-nader .
