@@ -11,7 +11,7 @@ or through the
 2. Pull the docker image:
 
 ```sh
-docker pull npopescu/oopsla21ae:v1
+docker load --input oopsla21ae.tar
 ```
 
 3. Start a docker container like so: 
