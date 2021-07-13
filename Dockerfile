@@ -74,10 +74,14 @@ ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
 RUN cargo install cargo-edit
 
 ##### General Setup #####
-RUN ./data/create_silesia.sh
+WORKDIR ${WD}/data
+RUN ./create_silesia.sh
+WORKDIR ${WD}
 
 ##### Figure 8 Setup #####
-RUN ./data/get_LiveJournal.sh
+WORKDIR ${WD}/data
+RUN ./get_LiveJournal.sh
+WORKDIR ${WD}
 
 ##### Table 4 Setup #####
 ENV SHA=a211dd5a7050b1f9e8a9870b95513060e72ac4a0

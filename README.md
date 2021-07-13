@@ -216,6 +216,21 @@ and the number of dependencies that have at least one unchecked indexing use.
 
 #### Table 4
 
+Figure 4 goes through the four steps of NADER and shows that for many applications, 
+most, if not all, bounds checks can be reintroduced with little-to-no overhead. 
+For each application, NADER first checks that it uses any unchecked indexing (directly or 
+indirectly). If not, then the application has as many bounds checks as it can 
+with no extra overhead, and NADER is done. 
+
+If the application does use unchecked 
+indexing, NADER performs a coarse filtering step by comparing the generated binaries 
+of two versions of the application (one with unchecked indexing and one where the 
+unchecking indexing has been converted to checked indexing). If the binaries are the 
+same, then _in this context_ the unchecked indexing binary is as safe as the 
+checked indexing one, again with no extra overhead, and NADER is done. 
+
+Thirdly
+
 #### Figure 8
 
 Files: 
