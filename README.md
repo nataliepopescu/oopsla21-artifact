@@ -31,8 +31,6 @@ detail in the next section.
 
 ## Step by Step Instructions
 
-### Paper claims supported by artifact
-
 All of the following commands should be run from the `~/nader/` directory. 
 Running all experiments fully takes almost two days to complete. 
 We have therefore implemented a fast path that can run all experiments 
@@ -55,6 +53,8 @@ To run the __full__ path on _all_ experiments, run:
 ```sh
 python3 ExpDriver.py --all --full
 ```
+
+### Generating results/plots
 
 To run individual experiments, simply replace `--all` with the flag corresponding 
 to the desired experiment, found by running: 
@@ -87,11 +87,76 @@ are listed here:
 | Fast | 20 min | | 40 min | 2 min | | | |
 | Full | 7 hrs | | 9 hrs | 20 min | | | |
 
-TODO explain how to view results
+### Viewing results/plots
 
-TODO expected outputs? a.k.a. results we've already generated (examples)
+Some expected output is in `example-results`; you can compare your generated plots to those as a sanity check. 
+The above result/plot generalization produces a series of PDFs that can be copied out of the docker container and 
+viewed locally. If the container is currently running, get the container ID by running: 
 
-TODO any warnings that are safe to be ignored 
+```sh
+docker container ps
+```
+
+And looking for the ID associated with the 'artifact' container name. If the container is stopped, get the 
+container ID by running: 
+
+```sh
+docker container ps -a
+```
+
+Copy files locally using the `docker cp` cmd: 
+
+```sh
+docker cp <container_id>:/home/oopsla21ae/images/<plot>.pdf <local_dest>
+```
+
+Where <plot>.pdf is any of the files listed in the below subsections. 
+
+#### Figure 1
+  
+Files: 
+
+```sh
+figure1_all.pdf
+figure1_histogram.pdf
+figure1_hurt.pdf
+figure1_improved.pdf
+figure1_insignificantly_affected.pdf
+```
+
+#### Table 1
+
+Files: 
+
+#### Figures 5 and 9
+
+Files: 
+
+```sh
+figure5.pdf
+figure9.pdf
+```
+
+#### Figure 7 and Table 3
+
+Files: 
+
+```sh
+figure7.pdf
+table3.pdf
+```
+
+#### Table 4
+
+Files: 
+
+#### Figure 8
+
+Files: 
+
+```sh
+figure8.pdf
+```
 
 TODO how to explain {claims} are supported by artifact? Explain how to interpret results
 - generated results are analogous to those in the paper
@@ -101,5 +166,3 @@ TODO how to explain {claims} are supported by artifact? Explain how to interpret
 1. "Different Architecture" column in Table 1...
 
 1. Last column of Table 3...
-
-1. [Maybe] Figure 8...
