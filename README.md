@@ -17,7 +17,7 @@ docker pull npopescu/oopsla21ae:v1
 3. Start a docker container like so: 
 
 ```sh
-docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact npopescu/oopsla21ae
+docker run -it --cap-add=sys_nice --name artifact npopescu/oopsla21ae:v1
 ```
 
 4. Test that the artifact works by running: 
