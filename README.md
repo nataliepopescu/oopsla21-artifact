@@ -11,7 +11,7 @@ or through the
 2. Pull the docker image:
 
 ```sh
-docker load --input oopsla21ae.tar
+docker load < oopsla21ae.tar.gz
 ```
 
 3. Start a docker container like so: 
