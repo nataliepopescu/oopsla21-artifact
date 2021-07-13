@@ -77,28 +77,37 @@ def getPerfDiff(bmark_path, arg):
     return (time_exp_safe - time_exp_unsafe) / time_exp_unsafe
 
 def genTable1():
-    bmark_path = ROOT_PATH + "/brotli-expanded/"
-    line_nums = genUncheckedReport(bmark_path)
+    baseline = []
+    workload = []
+    compiler = []
 
     # Baseline
-    print("Generating -Baseline- column of Table 1...")
+    print("Generating -Baseline- column...")
+    bmark_path = ROOT_PATH + "/brotli-expanded/"
+    line_nums = genUncheckedReport(bmark_path)
     convertAndCompareBinaries(bmark_path, line_nums)
-    baseline_diff = getPerfDiff(bmark_path, arg)
-    print("\tOverhead == {}".format(baseline_diff))
+    for i in range(10): 
+        diff = getPerfDiff(bmark_path, arg)
+        baseline.append(diff)
+    print("\tOverhead == {}".format(sum(baseline)/10))
 
     # Different workload (compression level == 11, instead of 5)
-    print("Generating -Different Workload- column of Table 1...")
+    print("Generating -Different Workload- column...")
     arg = ROOT_PATH + "/data/silesia-11.brotli"
-    workload_diff = getPerfDiff(bmark_path, arg)
-    print("\tOverhead == {}".format(workload_diff))
+    for i in range(10): 
+        diff = getPerfDiff(bmark_path, arg)
+        workload.append(diff)
+    print("\tOverhead == {}".format(sum(workload)/10))
 
     # rustc 1.46.0
-    print("Generating -Different Compiler- column of Table 1...")
+    print("Generating -Different Compiler- column...")
     arg = ROOT_PATH + "/data/silesia-5.brotli"
     subprocess.run(["/home/.cargo/bin/rustup", "override", "set", "nightly-2020-08-27-x86_64-unknown-linux-gnu"])
     convertAndCompareBinaries(bmark_path, line_nums)
-    compiler_diff = getPerfDiff(bmark_path, arg)
-    print("\tOverhead == {}".format(compiler_diff))
+    for i in range(10): 
+        diff = getPerfDiff(bmark_path, arg)
+        compiler.append(diff)
+    print("\tOverhead == {}".format(sum(compiler)/10))
     subprocess.run(["/home/.cargo/bin/rustup", "override", "unset"])
 
 def genFigure1(root, quick_run=False):
