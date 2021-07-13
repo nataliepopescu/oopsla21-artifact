@@ -8,30 +8,29 @@ docker daemon, either
 or through the 
 [system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities).
 
-2. Build the docker image (TODO publish image so it can just be downloaded in this step) (this should take 20-30 minutes):
+2. Pull the docker image:
 
 ```sh
-docker build --tag oopsla21-nader .
+docker pull npopescu/oopsla21ae:v1
 ```
 
-3. If the image builds successfully, start a docker container like so: 
+3. Start a docker container like so: 
 
 ```sh
-docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact oopsla21-nader
+docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact npopescu/oopsla21ae
 ```
 
 4. Test that the artifact works by running: 
 
 ```sh
-python3 ExpDriver.py --all
+python3 ExpDriver.py --figure1 --figure59 --figure7table3
 ```
 
-This command should complete in under an hour. We explain what it does in more 
-detail in the next section. 
+This command should complete in under an hour.
 
 ## Step by Step Instructions
 
-All of the following commands should be run from the `~/nader/` directory. 
+All of the following commands should be run from the `~/oopsla21ae/` directory. 
 Running all experiments fully takes almost two days to complete. 
 We have therefore implemented a fast path that can run all experiments 
 (on fewer libraries and applications) and finishes in under an hour. 
@@ -84,8 +83,8 @@ are listed here:
 
 | | Figure 1 | Table 1 | Figures 5 and 9 | Figure 7 and Table 3 | Table 4 | Figure 8 | Total |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Fast | 20 min | - | 40 min | 2 min | - | | |
-| Full | 7 hrs | 20 min | 9 hrs | 20 min | 1 hr | | |
+| Fast | 20 min | - | 40 min | 2 min | - | - | 1 hr |
+| Full | 7 hrs | 20 min | 9 hrs | 20 min | 1 hr | 1 hr | ~19 hrs |
 
 ### Viewing results/plots
 
@@ -96,8 +95,8 @@ viewed locally. If the container is currently running, get the container ID by r
 ```sh
 docker container ps
 
-CONTAINER ID   IMAGE           COMMAND  CREATED  STATUS   PORTS   NAMES
-<container_id> oopsla21-nader  ...      ...      ...              artifact
+CONTAINER ID    IMAGE                COMMAND  CREATED  STATUS   PORTS   NAMES
+<container_id>  npopescu/oopsla21ae  ...      ...      ...              artifact
 ```
 
 If the container is stopped, get the 
@@ -217,8 +216,6 @@ and the number of dependencies that have at least one unchecked indexing use.
 
 #### Table 4
 
-Files: 
-
 #### Figure 8
 
 Files: 
@@ -245,17 +242,19 @@ rigorous process of elimination here.
 
 ### Functional Badge Requirements
   
-- [ ] Artifact supports all major claims made by paper
-- [ ] Artifact documentation is sufficient for reviewers to reproduce paper results
+- Artifact supports all major claims made by paper (outlined in this document by all of the Figures and Tables)
+- Artifact documents detailed steps for result reproduction and lists any potential deviations from what the paper claims
   
 Deviations: 
   
-- [ ] All but Figure 7 and Table 3 are performance results and so will vary, but we describe trends/patterns to look for
-- [ ] Full evaluation takes a long time, but we offer reviewers a fast path
+- All but Figure 7 and Table 3 are performance results and will vary, but we describe trends and patterns to look for
+- A full evaluation takes almost 19 hours, but we offer reviewers a fast path that can complete in about an hour
   
 ### Reusable Badge Requirements
   
-- [ ] Artifact is well-prepared to support future research that may build off it
-- [ ] Artifact source code can be reused as components
-- [ ] Others can learn from the source code and apply that knowledge elsewhere
-- [ ] Others can extend the artifact by modifying source code
+- Future researchers can run this artifact on more libraries and applications by cloning their source code here
+- Future researchers building off this artifact can do so by adding new benchmarks and their arguments
+- Future researchers can directly modify `Nader.py` to improve its exploration algorithm
+- Artifact source code can be reused as separate components much in the same way as the individual plots are generated 
+- Others can learn about our benchmarking and large-scale application analysis techniques
+- Others can extend the artifact beyond bounds checks to other code patterns by modifying `regexify.py`
