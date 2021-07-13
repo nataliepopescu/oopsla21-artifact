@@ -63,13 +63,16 @@ def sortByHot(lines, calout_fname, single_file=None):
         return [item[0] for item in line_cnt_tuple]
     else:
         for (fname, line) in lines:
-            if fname not in m:
-                m[fname] = {line: 0}
+            # fname is short with .unsafe suffix
+            m_fname = fname[:-7] # remove .unsafe
+            if m_fname not in m:
+                m[m_fname] = {line: 0}
             else:
-                if line not in m[fname]:
-                    m[fname][line] = 0
+                if line not in m[m_fname]:
+                    m[m_fname][line] = 0
 
-        line_cnt_tuple = [((fname, line), m[fname][line]) for (fname, line) in lines]
+        # remove .unsafe
+        line_cnt_tuple = [((fname, line), m[fname[:-7]][line]) for (fname, line) in lines]
         line_cnt_tuple.sort(key=lambda item: item[1], reverse=True)
         return [item[0] for item in line_cnt_tuple]
 
@@ -94,12 +97,14 @@ def getColdLines(lines, calout_fname, threshold=5000, single_file=None):
     else:
         cold_lines = []
         for (fname, line) in lines:
-            if fname not in m:
+            m_fname = fname[:-7] # remove .unsafe
+            print(m_fname)
+            if m_fname not in m:
                 cold_lines.append((fname, line))
             else:
-                if line not in m[fname]:
+                if line not in m[m_fname]:
                     cold_lines.append((fname, line))
-                elif m[fname][line] < threshold:
+                elif m[m_fname][line] < threshold:
                     cold_lines.append((fname, line))
 
         return cold_lines
