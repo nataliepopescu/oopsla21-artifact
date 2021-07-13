@@ -21,16 +21,6 @@ RUN pip3 install scipy
 RUN pip3 install psutil
 RUN pip3 install requests
 
-# Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
-ENV PATH="~/.cargo/bin:${PATH}"
-
-# Install cargo-edit
-ENV OPENSSL_DIR="/usr/bin/openssl"
-ENV OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
-ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
-RUN cargo install cargo-edit
-
 # For orca (dumping figures)
 WORKDIR ${HOME}
 
@@ -55,103 +45,131 @@ RUN chmod -R 777 squashfs-root/
 RUN apt-get install -y libxkbcommon-dev
 ENV PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig"
 
-# Create new user and copy over artifact dir
-ENV HOME=/home
-ENV NADER=nader
-WORKDIR ${HOME}
-RUN mkdir ${NADER}
-WORKDIR ${HOME}/${NADER}
+# Create new user:group
+ENV UNAME=oopsla21ae
+RUN useradd --create-home --shell /bin/bash ${UNAME}
 
-RUN useradd --create-home --shell /bin/bash oopsla21ae
-RUN chown oopsla21ae ${HOME}/${NADER}
-USER oopsla21ae
-COPY --chown=oopsla21ae . .
+# Give user permission to set niceness
+RUN printf ${UNAME}'\t-\tpriority\t-10\n' >> /etc/security/limits.conf
+RUN printf ${UNAME}'\t-\tnice\t-20\n' >> /etc/security/limits.conf
+
+# Copy over artifact dir
+ENV HOME=/home
+ENV WD=${HOME}/${UNAME}
+WORKDIR ${WD}
 RUN mkdir -p images
+COPY --chown=${UNAME} . .
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+ENV PATH="~/.cargo/bin:${PATH}"
+
+# Install cargo-edit
+ENV OPENSSL_DIR="/usr/bin/openssl"
+ENV OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
+ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
+RUN cargo install cargo-edit
+
+##### General Setup #####
+WORKDIR ${WD}/data
+RUN ./create_silesia.sh
+WORKDIR ${WD}
+
+##### Table 4 Setup #####
+WORKDIR ${WD}
+ENV SHA=a211dd5a7050b1f9e8a9870b95513060e72ac4a0
+RUN wget https://github.com/wg/wrk/archive/${SHA}.tar.gz
+RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
+WORKDIR ${WD}/wrk-${SHA}
+RUN make
+RUN mv wrk ${WD}/benchmarks
+WORKDIR ${WD}
+RUN rm -rf wrk-${SHA}
 
 ##### Figure 1 Setup #####
 ENV F1=figure1
 ENV CRATES_FAST=crates_fast
 ENV CRATES_FULL=crates_full
-WORKDIR ${HOME}/${NADER}/${F1}
+WORKDIR ${WD}/${F1}
 RUN mkdir ${CRATES_FAST}
 RUN mkdir ${CRATES_FULL}
 
 # Fast run
-WORKDIR ${HOME}/${NADER}/${F1}/${CRATES_FAST}
-
-RUN wget www.crates.io/api/v1/crates/prost/0.7.0/download
-RUN tar -xzf download && rm download
-COPY ./locks/prost-0.7.0_Cargo.lock prost-0.7.0/Cargo.lock
+#WORKDIR ${WD}/${F1}/${CRATES_FAST}
+#
+#RUN wget www.crates.io/api/v1/crates/prost/0.7.0/download
+#RUN tar -xzf download && rm download
+#COPY ./locks/prost-0.7.0_Cargo.lock prost-0.7.0/Cargo.lock
 
 # Full run
-WORKDIR ${HOME}/${NADER}/${F1}/${CRATES_FULL}
-
-RUN wget www.crates.io/api/v1/crates/combine/4.5.2/download
-RUN tar -xzf download && rm download
-COPY ./locks/combine-4.5.2_Cargo.lock combine-4.5.2/Cargo.lock
-
-RUN wget www.crates.io/api/v1/crates/string-interner/0.12.2/download
-RUN tar -xzf download && rm download
-COPY ./locks/string-interner-0.12.2_Cargo.lock string-interner-0.12.2/Cargo.lock
-
-RUN wget www.crates.io/api/v1/crates/prost/0.7.0/download
-RUN tar -xzf download && rm download
-COPY ./locks/prost-0.7.0_Cargo.lock prost-0.7.0/Cargo.lock
-
-RUN wget www.crates.io/api/v1/crates/glam/0.14.0/download
-RUN tar -xzf download && rm download
-COPY ./locks/glam-0.14.0_Cargo.lock glam-0.14.0/Cargo.lock
-
-RUN wget www.crates.io/api/v1/crates/primal-sieve/0.3.1/download
-RUN tar -xzf download && rm download
-COPY ./locks/primal-sieve-0.3.1_Cargo.lock primal-sieve-0.3.1/Cargo.lock
-
-RUN wget www.crates.io/api/v1/crates/euc/0.5.3/download
-RUN tar -xzf download && rm download
-COPY ./locks/euc-0.5.3_Cargo.lock euc-0.5.3/Cargo.lock
-
-RUN wget www.crates.io/api/v1/crates/roaring/0.6.5/download
-RUN tar -xzf download && rm download
-COPY ./locks/roaring-0.6.5_Cargo.lock roaring-0.6.5/Cargo.lock
+#WORKDIR ${WD}/${F1}/${CRATES_FULL}
+#
+#RUN wget www.crates.io/api/v1/crates/combine/4.5.2/download
+#RUN tar -xzf download && rm download
+#COPY ./locks/combine-4.5.2_Cargo.lock combine-4.5.2/Cargo.lock
+#
+#RUN wget www.crates.io/api/v1/crates/string-interner/0.12.2/download
+#RUN tar -xzf download && rm download
+#COPY ./locks/string-interner-0.12.2_Cargo.lock string-interner-0.12.2/Cargo.lock
+#
+#RUN wget www.crates.io/api/v1/crates/prost/0.7.0/download
+#RUN tar -xzf download && rm download
+#COPY ./locks/prost-0.7.0_Cargo.lock prost-0.7.0/Cargo.lock
+#
+#RUN wget www.crates.io/api/v1/crates/glam/0.14.0/download
+#RUN tar -xzf download && rm download
+#COPY ./locks/glam-0.14.0_Cargo.lock glam-0.14.0/Cargo.lock
+#
+#RUN wget www.crates.io/api/v1/crates/primal-sieve/0.3.1/download
+#RUN tar -xzf download && rm download
+#COPY ./locks/primal-sieve-0.3.1_Cargo.lock primal-sieve-0.3.1/Cargo.lock
+#
+#RUN wget www.crates.io/api/v1/crates/euc/0.5.3/download
+#RUN tar -xzf download && rm download
+#COPY ./locks/euc-0.5.3_Cargo.lock euc-0.5.3/Cargo.lock
+#
+#RUN wget www.crates.io/api/v1/crates/roaring/0.6.5/download
+#RUN tar -xzf download && rm download
+#COPY ./locks/roaring-0.6.5_Cargo.lock roaring-0.6.5/Cargo.lock
 
 ##### Figure 7 Setup #####
 ENV F7=figure7
 ENV APPS_FAST=apps_fast
 ENV APPS_FULL=apps_full
-WORKDIR ${HOME}/${NADER}/${F7}
+WORKDIR ${WD}/${F7}
 RUN mkdir ${APPS_FAST}
 RUN mkdir ${APPS_FULL}
 
 # Quick run
-WORKDIR ${HOME}/${NADER}/${F7}/${APPS_FAST}
-
-RUN cp -r ${HOME}/${NADER}/brotli-expanded brotli-decompressor
-RUN mv brotli-decompressor/src/lib.rs.unsafe brotli-decompressor/src/lib.rs
-
-ENV SHA=ba4bc6d7c35677a3731bd89f95ed9c9e2dac0c4b
-RUN wget https://github.com/tantivy-search/tantivy/archive/${SHA}.tar.gz
-RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
-
-ENV SHA=85ad2b1f7d4c08f40f33f6925ae6cdccc3ec35b4
-RUN wget https://github.com/RustPython/RustPython/archive/${SHA}.tar.gz
-RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
-
-ENV SHA=6e2595a191f2dd72a91a632e51b66b1cf5187083
-RUN wget https://github.com/getzola/zola/archive/${SHA}.tar.gz
-RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
-
-ENV SHA=0daa7e2add76f7d40a63dad4f831f753d35504ce
-RUN wget https://github.com/wasmerio/wasmer/archive/${SHA}.tar.gz
-RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
-
-ENV SHA=7382303182863a3f2ca575a3c421fdf4361885de
-RUN wget https://github.com/utah-scs/splinter/archive/${SHA}.tar.gz
-RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
+#WORKDIR ${WD}/${F7}/${APPS_FAST}
+#
+#RUN cp -r ${WD}/brotli-expanded brotli-decompressor
+#RUN mv brotli-decompressor/src/lib.rs.unsafe brotli-decompressor/src/lib.rs
+#
+#ENV SHA=ba4bc6d7c35677a3731bd89f95ed9c9e2dac0c4b
+#RUN wget https://github.com/tantivy-search/tantivy/archive/${SHA}.tar.gz
+#RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
+#
+#ENV SHA=85ad2b1f7d4c08f40f33f6925ae6cdccc3ec35b4
+#RUN wget https://github.com/RustPython/RustPython/archive/${SHA}.tar.gz
+#RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
+#
+#ENV SHA=6e2595a191f2dd72a91a632e51b66b1cf5187083
+#RUN wget https://github.com/getzola/zola/archive/${SHA}.tar.gz
+#RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
+#
+#ENV SHA=0daa7e2add76f7d40a63dad4f831f753d35504ce
+#RUN wget https://github.com/wasmerio/wasmer/archive/${SHA}.tar.gz
+#RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
+#
+#ENV SHA=7382303182863a3f2ca575a3c421fdf4361885de
+#RUN wget https://github.com/utah-scs/splinter/archive/${SHA}.tar.gz
+#RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 
 # Full run
-#WORKDIR ${HOME}/${NADER}/${F7}/${APPS_FULL}
+#WORKDIR ${WD}/${F7}/${APPS_FULL}
 #
-#RUN cp -r ${HOME}/${NADER}/brotli-expanded brotli-decompressor
+#RUN cp -r ${WD}/brotli-expanded brotli-decompressor
 #RUN mv brotli-decompressor/src/lib.rs.unsafe brotli-decompressor/src/lib.rs
 #
 #ENV SHA=be39ddaf7d5f017da9597a94f6fd66e17e7df2e3
@@ -254,17 +272,3 @@ RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 #RUN wget https://github.com/mozilla/gecko-dev/archive/${SHA}.tar.gz
 #RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 
-##### Table 4 Setup #####
-WORKDIR ${HOME}/${NADER}
-ENV SHA=a211dd5a7050b1f9e8a9870b95513060e72ac4a0
-RUN wget https://github.com/wg/wrk/archive/${SHA}.tar.gz
-RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
-WORKDIR ${HOME}/${NADER}/wrk-${SHA}
-RUN make
-RUN mv wrk ${HOME}/${NADER}/benchmarks
-WORKDIR ${HOME}/${NADER}
-RUN rm -rf wrk-${SHA}
-
-WORKDIR ${HOME}/${NADER}/data
-RUN ./create_silesia.sh
-WORKDIR ${HOME}/${NADER}

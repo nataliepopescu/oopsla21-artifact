@@ -77,25 +77,29 @@ def getPerfDiff(bmark_path, arg):
     return (time_exp_safe - time_exp_unsafe) / time_exp_unsafe
 
 def genTable1():
-    # Baseline
-    print("Generating -Baseline- column of Table 1")
     bmark_path = ROOT_PATH + "/brotli-expanded/"
-    arg = ROOT_PATH + "/data/silesia-5.brotli"
-    getPerfDiff(bmark_path, arg)
+    line_nums = genUncheckedReport(bmark_path)
 
-    # rustc 1.46.0
-    print("Generating -Different Compiler- column of Table 1")
-    subprocess.run(["rustup", "override", "set", "nightly-2020-08-27-x86_64-unknown-linux-gnu"])
-    bmark_path = ROOT_PATH + "/brotli-expanded/"
-    arg = ROOT_PATH + "/data/silesia-5.brotli"
-    getPerfDiff(bmark_path, arg)
-    subprocess.run(["rustup", "override", "unset"])
+    # Baseline
+    print("Generating -Baseline- column of Table 1...")
+    convertAndCompareBinaries(bmark_path, line_nums)
+    baseline_diff = getPerfDiff(bmark_path, arg)
+    print("\tOverhead == {}".format(baseline_diff))
 
     # Different workload (compression level == 11, instead of 5)
-    print("Generating -Different Workload- column of Table 1")
-    bmark_path = ROOT_PATH + "/brotli-expanded/"
+    print("Generating -Different Workload- column of Table 1...")
     arg = ROOT_PATH + "/data/silesia-11.brotli"
-    getPerfDiff(bmark_path, arg)
+    workload_diff = getPerfDiff(bmark_path, arg)
+    print("\tOverhead == {}".format(workload_diff))
+
+    # rustc 1.46.0
+    print("Generating -Different Compiler- column of Table 1...")
+    arg = ROOT_PATH + "/data/silesia-5.brotli"
+    subprocess.run(["/home/.cargo/bin/rustup", "override", "set", "nightly-2020-08-27-x86_64-unknown-linux-gnu"])
+    convertAndCompareBinaries(bmark_path, line_nums)
+    compiler_diff = getPerfDiff(bmark_path, arg)
+    print("\tOverhead == {}".format(compiler_diff))
+    subprocess.run(["/home/.cargo/bin/rustup", "override", "unset"])
 
 def genFigure1(root, quick_run=False):
     if full_run: 
