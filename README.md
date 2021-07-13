@@ -229,7 +229,18 @@ unchecking indexing has been converted to checked indexing). If the binaries are
 same, then _in this context_ the unchecked indexing binary is as safe as the 
 checked indexing one, again with no extra overhead, and NADER is done. 
 
-Thirdly
+Thirdly, NADER measures the maximum possible overhead of checked indexing between the two 
+binary versions. If this maximum overhead falls below the threshold, then NADER converts 
+all unchecked indexing to checked indexing, and the number of reintroduced bounds checks 
+is maximized. 
+  
+Finally, if the maximum possible overhead is larger than the desired threshold, NADER performs 
+an exploration phase to determine the largest set of bounds checks it can reintroduce 
+within the threshold. See more about this step [here](https://github.com/nataliepopescu/oopsla21-artifact#figures-5-and-9). 
+  
+Importantly, NADER maximizes the number of bounds checks reintroduced while staying 
+below the specified threshold by construction. Table 4 illustrates this on several 
+applications. 
 
 #### Figure 8
 
