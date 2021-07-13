@@ -8,16 +8,16 @@ docker daemon, either
 or through the 
 [system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities).
 
-2. Build the docker image (TODO publish image so it can just be downloaded in this step) (this should take 20-30 minutes):
+2. Pull the docker image:
 
 ```sh
-docker build --tag oopsla21-nader .
+docker pull npopescu/oopsla21ae:v1
 ```
 
-3. If the image builds successfully, start a docker container like so: 
+3. Start a docker container like so: 
 
 ```sh
-docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact oopsla21-nader
+docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact npopescu/oopsla21ae
 ```
 
 4. Test that the artifact works by running: 
@@ -26,12 +26,11 @@ docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact oopsla21-nade
 python3 ExpDriver.py --figure1 --figure59 --figure7table3
 ```
 
-This command should complete in under an hour. We explain what it does in more 
-detail in the next section. 
+This command should complete in under an hour.
 
 ## Step by Step Instructions
 
-All of the following commands should be run from the `~/nader/` directory. 
+All of the following commands should be run from the `~/oopsla21ae/` directory. 
 Running all experiments fully takes almost two days to complete. 
 We have therefore implemented a fast path that can run all experiments 
 (on fewer libraries and applications) and finishes in under an hour. 
@@ -96,8 +95,8 @@ viewed locally. If the container is currently running, get the container ID by r
 ```sh
 docker container ps
 
-CONTAINER ID   IMAGE           COMMAND  CREATED  STATUS   PORTS   NAMES
-<container_id> oopsla21-nader  ...      ...      ...              artifact
+CONTAINER ID    IMAGE                COMMAND  CREATED  STATUS   PORTS   NAMES
+<container_id>  npopescu/oopsla21ae  ...      ...      ...              artifact
 ```
 
 If the container is stopped, get the 
