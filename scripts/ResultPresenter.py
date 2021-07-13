@@ -281,6 +281,7 @@ def getComparisonFig(benchmark, show_legend=False, show_title=False, names=None,
     if nader_results is not None:
         xs = list(nader_results.keys())
         ys = list(nader_results.values())
+        ys = [y * 100 for y in ys]
         scatter_list.append(go.Scatter(x=xs, y=ys, line={'color': '#2c7bb6', 'width': 2.5},
             marker={"symbol": "star",
                 "size": 10, 'opacity': 1},
@@ -459,6 +460,20 @@ def genFig5(result_root, bmark_name, out_name):
     fig.update_traces(marker={"line": {"width":0}}) # Remove border
     fig.update_layout(showlegend=True, width=800, height=500, margin=dict(l=2, r=2, t=2, b=2))
     fig.write_image(out_name)
+
+def genFig8(result_root, bmark_name, out_name):
+    app._resultProvider = ResultProvider(result_root)
+    app._resultProvider.updateResult()
+    # print("Generating comparison paper")
+    with open(result_root + "/" + bmark_name + "-map.pkl", "rb") as fd:
+        nader_results = pickle.load(fd)['safecount_speed']
+    fig = getComparisonFig(bmark_name, True, False, ["Hotness"], nader_results=nader_results)
+    # fig.update_layout(showlegend=True, height=300, yaxis={"nticks": 6}, xaxis={'nticks': 8})
+    fig.update_yaxes(title={"standoff": 4})
+    fig.update_traces(marker={"line": {"width":0}}) # Remove border
+    fig.update_layout(showlegend=True, width=800, height=500, margin=dict(l=2, r=2, t=2, b=2))
+    fig.write_image(out_name)
+
 
 def genFig9(result_root, bmark_name, out_name):
     app._resultProvider = ResultProvider(result_root)

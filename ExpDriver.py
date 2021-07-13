@@ -1,9 +1,9 @@
 import sys
 sys.path.append('./scripts')
 from scripts.ExpStats import runExpWithName
-from scripts.Nader import genSourceExp
+from scripts.Nader import genSourceExp, runOnlyNader
 from scripts.Nader import runNader
-from scripts.ResultPresenter import genFig5, genFig9
+from scripts.ResultPresenter import genFig5, genFig9, genFig8
 import subprocess
 import os
 import filecmp
@@ -12,21 +12,35 @@ import argparse
 
 ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 
-def getUnsafeLines(directory):
+def getUnsafeLines(directory, isBrotli=False):
     line_nums = []
 
-    rs_files = subprocess.run(["find", directory, "-name", "*.rs.unsafe", "-type", "f"], 
+    rs_files = subprocess.run(["find", directory, "-name", "*.rs.unsafe", "-o", "-name", "*.rs", "-type", "f"], 
             capture_output=True, text=True)
     filelist = rs_files.stdout.split()
+    filelist = [fname.replace(directory, '') for fname in filelist]
 
     for fname in filelist:
+        need_convert = False
+        write_fname = fname
+        if fname.endswith(".rs"):
+            if fname + ".unsafe" in filelist:
+                continue
+            else:
+                need_convert = True
+                write_fname = fname + ".unsafe"
+
         with open(fname, 'r') as fd:
             lines = fd.readlines()
 
+        found_unsafe = False
         for idx, line in enumerate(lines):
             # if "get_unchecked(" in line or "get_unchecked_mut(" in line:
             if "get_unchecked" in line:
-                line_nums.append((fname, idx + 1))
+                line_nums.append((write_fname, idx + 1))
+                found_unsafe = True
+        if need_convert and found_unsafe:
+            shutil.move(fname, fname + ".unsafe")
 
     return line_nums
 
@@ -55,11 +69,10 @@ def genUncheckedReport(bmark_path):
 def convertAndCompareBinaries(bmark_path, line_nums):
     os.chdir(bmark_path)
 
-    # Generate unsafe version
     fnames = set([i for i, _ in line_nums])
-    genSourceExp(bmark_path, "baseline", "unsafe", fnames, line_nums)
-    
+    # Generate unsafe version
     genSourceExp(bmark_path, "baseline", "safe", fnames, [])
+    genSourceExp(bmark_path, "baseline", "unsafe", fnames, line_nums)
 
     # Compare binary
     ret = filecmp.cmp(bmark_path + "/baseline/exp-unsafe/exp.exe", bmark_path + "/baseline/exp-safe/exp.exe")
@@ -134,6 +147,10 @@ def genFigure7Table3(root, quick_run=False):
     subprocess.run(["mv", "table3.pdf", os.path.join(root, "images", "table3_{}.pdf".format(suffix))]) 
     os.chdir(root)
 
+def genFig8WithCOST(quick_run=False):
+    endToEnd("COST", ROOT_PATH + "/benchmarks/COST/" , "hilbert " + ROOT_PATH + "/data/soc-LiveJournal1 4847571", 0.02, False)
+
+
 ## Generate brotli figs (Fig5 and Fig9)
 def genFig5and9(quick_run=False):
     #print("Running Nader on brotli, generating fig 5 and 9")
@@ -158,7 +175,7 @@ def genTable4():
     subprocess.run(["./scripts/table4.sh"])
 
 
-def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
+def endToEnd(bmark_name, bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
     print("Step 1: Generating unchecked report")
     line_nums = genUncheckedReport(bmark_path)
 
@@ -188,10 +205,19 @@ def endToEnd(bmark_path, arg=None, threshold=0.03, skip_callgrind=True):
     print("Step 4: Running Nader")
 
     if skip_callgrind:
-        calout_fname = ROOT_PATH + "/example-results/cal.out.original"
+        calout_fname = ROOT_PATH + "/example-results/cal.out." + bmark_name
     else:
         print("preparing hotness file")
         calout_fname = genHotness(bmark_path, "test_bc", arg)
+
+    if "brotli" in bmark_path:
+        isBrotli = True
+    else:
+        isBrotli = False
+    runOnlyNader(cargo_root_=bmark_path, arg=arg, pickle_name=bmark_name+ ".pkl", clang_arg=None, test_times=10, calout_fname=calout_fname, isBrotli=isBrotli)
+    shutil.move(bmark_path + "/" + bmark_name + ".pkl", ROOT_PATH + "/exp-results/" + bmark_name + ".pkl")
+    shutil.move(bmark_path + "/threshold_unsafe_map.pkl", ROOT_PATH + "/exp-results/" + bmark_name + "-map.pkl")
+    genFig8(ROOT_PATH + "/exp-results", bmark_name, ROOT_PATH + "/images/figure8.pdf")
 
 
 def arg_parse():
@@ -260,4 +286,5 @@ if __name__ == "__main__":
 
     # Figure 8
     if gen_all or gen_f8: 
-        print("F8 not implemented")
+        genFig8WithCOST()
+

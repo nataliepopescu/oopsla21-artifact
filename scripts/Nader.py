@@ -28,6 +28,24 @@ def getUnsafeLines(fname):
 
     return line_nums
 
+def getUnsafeLinesDirectory(directory):
+    line_nums = []
+
+    rs_files = subprocess.run(["find", directory, "-name", "*.rs.unsafe", "-type", "f"], 
+            capture_output=True, text=True)
+    filelist = rs_files.stdout.split()
+    filelist = [fname.replace(directory, '') for fname in filelist]
+
+    for fname in filelist:
+        with open(fname, 'r') as fd:
+            lines = fd.readlines()
+
+        for idx, line in enumerate(lines):
+            # if "get_unchecked(" in line or "get_unchecked_mut(" in line:
+            if "get_unchecked" in line:
+                line_nums.append((fname, idx + 1))
+
+    return line_nums
 
 # for multiple file, actually modify the file in place
 def genSourceExp(cargo_root, explore_name, exp_num, fnames, line_nums):
@@ -235,10 +253,10 @@ def argParse():
     return args.cargo_root, args.arg, args.output, args.clang_arg, args.test_times, args.calout_fname
 
 
-def iterativeExplore(threshold, inital_unsafe_list, test_times=3, sensitivity=0.001):
+def iterativeExplore(threshold, inital_unsafe_list, test_times=3, sensitivity=0.001, isBrotli=True, fnames=None):
 
     cur_unsafe = inital_unsafe_list.copy()
-    cur_baseline = quickTestBrotli(cur_unsafe, arg=EXP_ARG, test_times=test_times)[1]
+    cur_baseline = quickTest(cur_unsafe, arg=EXP_ARG, test_times=test_times, isBrotli=isBrotli, fnames=fnames)[1]
     print("Initial baseline:", cur_baseline)
     runs_cnt = 0
     round_cnt = 0
@@ -250,15 +268,21 @@ def iterativeExplore(threshold, inital_unsafe_list, test_times=3, sensitivity=0.
 
         # generating exps
         # print("Generating", len(cur_unsafe), "exps")
-        quickTestBrotliGenAllRoundExp(cur_unsafe)
+        if isBrotli:
+            quickTestBrotliGenAllRoundExp(cur_unsafe)
 
         # run exps
         min_time = -1
         min_idx = -1
         for idx, line in enumerate(cur_unsafe):
             # print("Testing with", len(cur_unsafe) - 1, "get_unchecked, with", line, "removed")
+            if not isBrotli:
+                test_line_nums = cur_unsafe.copy()
+                test_line_nums.remove(line)
+                genSourceExp(cargo_root, "explore-src-quick-test", idx, fnames, test_line_nums)
+            # if brotli exp is already generated
+
             exp_time = quickTestExpWithName(idx, test_times, 1)
-            # print(exp_time)
             if min_time == -1 or exp_time < min_time:
                 min_time = exp_time
                 min_idx = idx
@@ -280,20 +304,23 @@ def iterativeExplore(threshold, inital_unsafe_list, test_times=3, sensitivity=0.
 
         cur_unsafe = next_unsafe
         # remeasure the baseline, using the best count
-        cur_baseline = quickTestBrotli(cur_unsafe, arg=EXP_ARG, test_times=test_times)[1]
+        cur_baseline = quickTest(cur_unsafe, arg=EXP_ARG, test_times=test_times, isBrotli=isBrotli, fnames=fnames)[1]
 
         print("### Round", round_cnt, ": ", runs_count_this_round, "runs,", len(cur_unsafe), "get_unchecked left"  )
         print("### New baseline:", cur_baseline)
 
     return cur_unsafe, cur_baseline
 
-def quickTestBrotli(unsafe_lines, arg, test_times=5):
+def quickTest(unsafe_lines, arg, test_times=5, isBrotli=True, fnames=None):
     old_fname = "src/lib.rs.unsafe"
     new_fname = "src/lib.rs"
 
-    p = genSourceExpNB(cargo_root, "baseline", old_fname, new_fname, "quick-test", unsafe_lines)
-    p.wait()
-    print("binary generated")
+    if isBrotli:
+        p = genSourceExpNB(cargo_root, "baseline", old_fname, new_fname, "quick-test", unsafe_lines)
+        p.wait()
+    else:
+        genSourceExp(cargo_root, "baseline", "quick-test", fnames, unsafe_lines)
+
     exp_name = os.path.join(cargo_root, "baseline", "exp-quick-test/exp.exe")
 
     quick_result= runExpWithName(exp_name, arg, test_times=test_times)
@@ -329,7 +356,7 @@ def quickTestExpWithName(idx, test_times=5, option=0):
 
 
 # explorer
-def explore(unsafe_time, initial_threshold, step, initial_unsafe_lines, total_unsafe_count):
+def explore(unsafe_time, initial_threshold, step, initial_unsafe_lines, total_unsafe_count, isBrotli=True, fnames=None):
     initial_unsafe_baseline  = unsafe_time[0]
     final_unsafe = initial_unsafe_lines
     threshold = initial_threshold
@@ -338,7 +365,10 @@ def explore(unsafe_time, initial_threshold, step, initial_unsafe_lines, total_un
     safecount_speed_map = {}
     while len(final_unsafe) > 0:
         threshold_time = unsafe_time[0] * (1 + threshold)
-        final_unsafe, final_baseline = iterativeExplore(threshold_time, final_unsafe)
+        if isBrotli:
+            final_unsafe, final_baseline = iterativeExplore(threshold_time, final_unsafe, isBrotli=isBrotli, fnames=fnames)
+        else:
+            final_unsafe, final_baseline = iterativeExplore(threshold_time, final_unsafe, test_times=10, isBrotli=isBrotli, fnames=fnames)
         print("{:.2f}".format(threshold * 100) + "%", final_unsafe, final_baseline)
         threshold_unsafe_map[threshold] = final_unsafe.copy()
         safecount_speed_map[total_unsafe_count- len(final_unsafe)] = (initial_unsafe_baseline / final_baseline) - 1
@@ -347,6 +377,107 @@ def explore(unsafe_time, initial_threshold, step, initial_unsafe_lines, total_un
     return threshold_unsafe_map, safecount_speed_map
 
 
+# Run Nader (with only hotness then explore)
+def runOnlyNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname, isBrotli=False):
+    global cargo_root
+    global EXP_ARG
+    global CLANG_ARGS
+
+    cargo_root = cargo_root_
+
+    EXP_ARG = arg
+    if not pickle_name.endswith("pkl"):
+        pickle_name += ".pkl"
+
+    if clang_arg is not None:
+        CLANG_ARGS = clang_arg
+
+    # get all lines with unsafe
+    os.chdir(cargo_root)
+    line_nums = getUnsafeLinesDirectory(cargo_root)
+    total_unsafe_count = len(line_nums)
+    cold_lines = getColdLines(line_nums, calout_fname)
+
+    hot_lines = line_nums.copy()
+
+    if cold_lines is None:
+        print("Cold parsing failed")
+        exit()
+
+    for i in cold_lines:
+        hot_lines.remove(i)
+
+    hot_lines.extend(cold_lines)
+    
+    # all safe baseline
+    fnames = set([i for i, _ in hot_lines])
+    print("Prep 1/2: Getting safe baseline (several minutes)")
+    genSourceExp(cargo_root, "baseline", "safe", fnames, [])
+    exp_name = os.path.join(cargo_root, "baseline", "exp-safe/exp.exe")
+    safe_time = runExpWithName(exp_name, arg, test_times=test_times)
+    print("Safe baseline:", safe_time)
+
+    # all unsafe baseline
+    print("Prep 2/2: Getting unsafe baseline (several minutes)")
+    genSourceExp(cargo_root, "baseline", "unsafe", fnames, line_nums)
+    exp_name = os.path.join(cargo_root, "baseline", "exp-unsafe/exp.exe")
+    unsafe_time = runExpWithName(exp_name, arg, test_times=test_times)
+    print("Unsafe baseline:", unsafe_time)
+
+    print("Exp 1/2: Evaluate hotness impact")
+    
+    cur_lines = []
+    lines_list = []
+    time_list = []
+    top_error_list = [] # longer
+    bottom_error_list = [] # shorter
+    time_list_list = []
+
+    test_line_nums = []
+    for idx, line_num in enumerate(tqdm(hot_lines, leave=True)):
+        genSourceExp(cargo_root, "explore-src-r2", idx, fnames, test_line_nums)
+        dir_name = os.path.join(cargo_root, "explore-src-r2", "exp-" + str(idx))
+        exp_name = os.path.join(dir_name, "exp.exe")
+        os.chdir(dir_name)
+        test_line_nums.append(line_num)
+        time_exp, shortest_run, longest_run, all_time_list = runExpWithName(exp_name, arg, test_times=test_times, getAllList=True)
+        if time_exp is None:
+            exit()
+
+        cur_lines.append(line_num)
+        time_list.append(time_exp)
+        top_error_list.append(longest_run - time_exp)
+        bottom_error_list.append(time_exp - shortest_run)
+        lines_list.append(cur_lines.copy())
+        time_list_list.append(all_time_list)
+
+    final_tuple_by_hotness = list(zip(lines_list, time_list, top_error_list, bottom_error_list, time_list_list))
+
+    # Dumping results
+    results = {"final_tuple_hotness": final_tuple_by_hotness,
+            "unsafe_baseline": unsafe_time, "safe_baseline": safe_time}
+    os.chdir(cargo_root)
+
+    with open(pickle_name, "wb") as fd:
+        pickle.dump(results, fd)
+
+    # find the first dip
+    remaining_count = total_unsafe_count
+    for idx, exp_time in enumerate(time_list):
+        if (exp_time - unsafe_time[0]) / unsafe_time[0] < 0.02:
+            remaining_count = idx + 1
+            break
+
+    print("Exp 2/2: Explore the remaining")
+    
+    threshold_unsafe_map, safecount_speed_map = explore(unsafe_time, initial_threshold=0.01, step=0.01, initial_unsafe_lines=hot_lines[:remaining_count], total_unsafe_count=total_unsafe_count, isBrotli=isBrotli, fnames=fnames)
+    os.chdir(cargo_root)
+    with open("threshold_unsafe_map.pkl", "wb") as fd:
+        pickle.dump({"threshold_unsafe": threshold_unsafe_map, "safecount_speed": safecount_speed_map}, fd)
+    
+    
+
+# Run Nader to generate complete results (for plot generation0
 def runNader(cargo_root_, arg, pickle_name, clang_arg, test_times, calout_fname, quick_run=False):
     global cargo_root
     global EXP_ARG
