@@ -228,7 +228,6 @@ rigorous process of elimination here.
 ### Functional Badge Requirements
   
 - [ ] Artifact supports all major claims made by paper
-  
 - [ ] Artifact documentation is sufficient for reviewers to reproduce paper results
   
 Deviations: 
