@@ -214,9 +214,6 @@ Files:
 figure8.pdf
 ```
 
-TODO how to explain {claims} are supported by artifact? Explain how to interpret results
-- generated results are analogous to those in the paper
-
 ### Paper claims _not_ supported by artifact
 
 1. The "Different Architecture" column in Table 1 is not supported by our artifact because 
@@ -227,3 +224,20 @@ run our experiments.
 the result of a manual process. We moved forward with applications that had 
 reasonable synthetic profiling workloads, although there is room for a more 
 rigorous process of elimination here. 
+
+### Functional Badge Requirements
+  
+  [ ] Artifact supports all major claims made by paper
+  [ ] Artifact documentation is sufficient for reviewers to reproduce paper results
+  
+Deviations: 
+  
+  [ ] All but figure 7/table 3 are performance results and so will vary, but we describe trends/patterns to look for
+  [ ] Full evaluation takes a long time, but we offer reviewers a fast path
+  
+### Reusable Badge Requirements
+  
+  [ ] Artifact is well-prepared to support future research that may build off it
+  [ ] Artifact source code can be reused as components
+  [ ] Others can learn from the source code and apply elsewhere
+  [ ] Others can extend the artifact by modifying source code
