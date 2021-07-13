@@ -211,6 +211,9 @@ audit because most of it is in project dependencies.
 Table 3 results build off Figure 7 by also including the total number of application dependencies 
 and the number of dependencies that have at least one unchecked indexing use. 
 
+Note that we do not include the full set of applications that we evaluated in the paper 
+due to an error with building our docker image that we were unable to resolve in time. 
+
 #### Table 4
 
 Figure 4 goes through the four steps of NADER and shows that for many applications, 
