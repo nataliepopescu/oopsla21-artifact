@@ -227,17 +227,18 @@ rigorous process of elimination here.
 
 ### Functional Badge Requirements
   
-  [ ] Artifact supports all major claims made by paper
-  [ ] Artifact documentation is sufficient for reviewers to reproduce paper results
+- [ ] Artifact supports all major claims made by paper
+  
+- [ ] Artifact documentation is sufficient for reviewers to reproduce paper results
   
 Deviations: 
   
-  [ ] All but figure 7/table 3 are performance results and so will vary, but we describe trends/patterns to look for
-  [ ] Full evaluation takes a long time, but we offer reviewers a fast path
+- [ ] All but figure 7/table 3 are performance results and so will vary, but we describe trends/patterns to look for
+- [ ] Full evaluation takes a long time, but we offer reviewers a fast path
   
 ### Reusable Badge Requirements
   
-  [ ] Artifact is well-prepared to support future research that may build off it
-  [ ] Artifact source code can be reused as components
-  [ ] Others can learn from the source code and apply elsewhere
-  [ ] Others can extend the artifact by modifying source code
+- [ ] Artifact is well-prepared to support future research that may build off it
+- [ ] Artifact source code can be reused as components
+- [ ] Others can learn from the source code and apply elsewhere
+- [ ] Others can extend the artifact by modifying source code
