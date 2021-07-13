@@ -1,6 +1,6 @@
 # OOPSLA 2021 Artifact
 
-## Getting Started Guide
+## Getting Started
 
 1. [Install Docker](https://docs.docker.com/engine/install/) and start up the 
 docker daemon, either 
