@@ -1,5 +1,6 @@
 use std::time::SystemTime;
 use std::time::Duration;
+use std::env;
 use std::io;
 use std::io::Write as IoWrite;
 use rustpython_vm::Interpreter;
