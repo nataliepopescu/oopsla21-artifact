@@ -23,7 +23,7 @@ docker run -it -p <port>:<port> --cap-add=sys_nice --name artifact oopsla21-nade
 4. Test that the artifact works by running: 
 
 ```sh
-python3 ExpDriver.py --all
+python3 ExpDriver.py --figure1 --figure59 --figure7table3
 ```
 
 This command should complete in under an hour. We explain what it does in more 
@@ -84,8 +84,8 @@ are listed here:
 
 | | Figure 1 | Table 1 | Figures 5 and 9 | Figure 7 and Table 3 | Table 4 | Figure 8 | Total |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Fast | 20 min | - | 40 min | 2 min | - | | |
-| Full | 7 hrs | 20 min | 9 hrs | 20 min | 1 hr | | |
+| Fast | 20 min | - | 40 min | 2 min | - | - | 1 hr |
+| Full | 7 hrs | 20 min | 9 hrs | 20 min | 1 hr | 1 hr | ~19 hrs |
 
 ### Viewing results/plots
 
