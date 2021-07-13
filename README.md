@@ -109,18 +109,19 @@ docker container ps -a
 Copy files locally using the `docker cp` cmd: 
 
 ```sh
-docker cp <container_id>:/home/oopsla21ae/images/<plot>.pdf <local_dest>
+docker cp <container_id>:/home/oopsla21ae/images/<plot.pdf> <local_dest>
 ```
 
-Where <plot>.pdf is any of the files listed in the below subsections. 
+Where <plot.pdf> is any of the files listed in the below subsections (for example `figure1_all.pdf`). 
+Note that Tables 1 and 4 do not generate any PDF files; the output that would be in a PDF is instead 
+printed to the terminal as the scripts run. Therefore, we recommend generating these results separately 
+so they can be properly viewed. 
 
 In general, the figures and tables produced here are analogous to the figures and 
 tables presented in the paper. We describe how to interpret results below, but 
 also refer reviewers to the paper for more detailed information. 
 
 #### Figure 1
-  
-Files: 
 
 ```sh
 figure1_all.pdf
@@ -168,8 +169,6 @@ in these different contexts show that this is indeed the case.
 
 #### Figures 5 and 9
 
-Files: 
-
 ```sh
 figure5.pdf
 figure9.pdf
@@ -193,8 +192,6 @@ NADER on `rust-brotli`. The line that hugs the x axis longest introduces the mos
 bounds checks within the threshold. 
 
 #### Figure 7 and Table 3
-
-Files: 
 
 ```sh
 figure7.pdf
@@ -243,8 +240,6 @@ below the specified threshold by construction. Table 4 illustrates this on sever
 applications. 
 
 #### Figure 8
-
-Files: 
 
 ```sh
 figure8.pdf
