@@ -21,6 +21,11 @@ RUN pip3 install scipy
 RUN pip3 install psutil
 RUN pip3 install requests
 
+# Create new user:group
+ENV UNAME=oopsla21ae
+ENV HOME=/home
+RUN useradd --create-home --shell /bin/bash ${UNAME}
+
 # For orca (dumping figures)
 WORKDIR ${HOME}
 
@@ -45,20 +50,17 @@ RUN chmod -R 777 squashfs-root/
 RUN apt-get install -y libxkbcommon-dev
 ENV PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig"
 
-# Create new user:group
-ENV UNAME=oopsla21ae
-RUN useradd --create-home --shell /bin/bash ${UNAME}
-
 # Give user permission to set niceness
 RUN printf ${UNAME}'\t-\tpriority\t-10\n' >> /etc/security/limits.conf
 RUN printf ${UNAME}'\t-\tnice\t-20\n' >> /etc/security/limits.conf
 
 # Copy over artifact dir
-ENV HOME=/home
 ENV WD=${HOME}/${UNAME}
 WORKDIR ${WD}
-RUN mkdir -p images
 COPY --chown=${UNAME} . .
+RUN chown ${UNAME} ${HOME}
+USER ${UNAME}
+RUN mkdir -p images
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
@@ -80,6 +82,7 @@ WORKDIR ${WD}
 ENV SHA=a211dd5a7050b1f9e8a9870b95513060e72ac4a0
 RUN wget https://github.com/wg/wrk/archive/${SHA}.tar.gz
 RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
+RUN chown ${UNAME} wrk-${SHA}
 WORKDIR ${WD}/wrk-${SHA}
 RUN make
 RUN mv wrk ${WD}/benchmarks
@@ -93,6 +96,8 @@ ENV CRATES_FULL=crates_full
 WORKDIR ${WD}/${F1}
 RUN mkdir ${CRATES_FAST}
 RUN mkdir ${CRATES_FULL}
+RUN chown ${UNAME} ${CRATES_FAST}
+RUN chown ${UNAME} ${CRATES_FULL}
 
 # Fast run
 #WORKDIR ${WD}/${F1}/${CRATES_FAST}
@@ -139,6 +144,8 @@ ENV APPS_FULL=apps_full
 WORKDIR ${WD}/${F7}
 RUN mkdir ${APPS_FAST}
 RUN mkdir ${APPS_FULL}
+RUN chown ${UNAME} ${APPS_FAST}
+RUN chown ${UNAME} ${APPS_FULL}
 
 # Quick run
 #WORKDIR ${WD}/${F7}/${APPS_FAST}
@@ -272,3 +279,4 @@ RUN mkdir ${APPS_FULL}
 #RUN wget https://github.com/mozilla/gecko-dev/archive/${SHA}.tar.gz
 #RUN tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 
+WORKDIR ${WD}

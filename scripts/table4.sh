@@ -63,11 +63,11 @@ function gen_binary {
         cd age
         # Copy the files 
         ln -sf $ROOT/../scripts/regexify.py .; ln -sf $ROOT/make_patch.py .
-        rm -f vendor; ln -s vendor-safe vendor; python make_patch.py -t $(pwd)/.. -r age/vendor >> log 2>&1
+        rm -f vendor; ln -s vendor-safe vendor; python3 make_patch.py -t $(pwd)/.. -r age/vendor >> log 2>&1
     else 
         # Copy the files 
         ln -sf $ROOT/../scripts/regexify.py .; ln -sf $ROOT/make_patch.py .
-        rm -f vendor; ln -s vendor-safe vendor; python make_patch.py -t $(pwd) -r vendor >> log 2>&1
+        rm -f vendor; ln -s vendor-safe vendor; python3 make_patch.py -t $(pwd) -r vendor >> log 2>&1
     fi
 
     # Gen unsafe binary
