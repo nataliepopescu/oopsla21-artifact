@@ -226,4 +226,4 @@ run our experiments.
 1. The last column of Table 3 is also not supported by our artifact because it was 
 the result of a manual process. We moved forward with applications that had 
 reasonable synthetic profiling workloads, although there is room for a more 
-rigorous process of elimination. 
+rigorous process of elimination here. 
