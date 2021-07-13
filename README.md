@@ -217,8 +217,6 @@ and the number of dependencies that have at least one unchecked indexing use.
 
 #### Table 4
 
-Files: 
-
 #### Figure 8
 
 Files: 
@@ -245,17 +243,19 @@ rigorous process of elimination here.
 
 ### Functional Badge Requirements
   
-- [ ] Artifact supports all major claims made by paper
-- [ ] Artifact documentation is sufficient for reviewers to reproduce paper results
+- Artifact supports all major claims made by paper (outlined in this document by all of the Figures and Tables)
+- Artifact documents detailed steps for result reproduction and lists any potential deviations from what the paper claims
   
 Deviations: 
   
-- [ ] All but Figure 7 and Table 3 are performance results and so will vary, but we describe trends/patterns to look for
-- [ ] Full evaluation takes a long time, but we offer reviewers a fast path
+- All but Figure 7 and Table 3 are performance results and will vary, but we describe trends and patterns to look for
+- A full evaluation takes almost 19 hours, but we offer reviewers a fast path that can complete in about an hour
   
 ### Reusable Badge Requirements
   
-- [ ] Artifact is well-prepared to support future research that may build off it
-- [ ] Artifact source code can be reused as components
-- [ ] Others can learn from the source code and apply that knowledge elsewhere
-- [ ] Others can extend the artifact by modifying source code
+- Future researchers can run this artifact on more libraries and applications by cloning their source code here
+- Future researchers building off this artifact can do so by adding new benchmarks and their arguments
+- Future researchers can directly modify `Nader.py` to improve its exploration algorithm
+- Artifact source code can be reused as separate components much in the same way as the individual plots are generated 
+- Others can learn about our benchmarking and large-scale application analysis techniques
+- Others can extend the artifact beyond bounds checks to other code patterns by modifying `regexify.py`
