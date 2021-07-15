@@ -50,6 +50,16 @@ RUN printf ${UNAME}'\t-\tnice\t-20\n' >> /etc/security/limits.conf
 ENV WD=${HOME}/${UNAME}
 WORKDIR ${WD}
 
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+ENV PATH="~/.cargo/bin:${PATH}"
+
+# Install cargo-edit
+ENV OPENSSL_DIR="/usr/bin/openssl"
+ENV OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
+ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
+RUN cargo install cargo-edit
+
 # Copy over artifact necessities
 COPY --chown=${UNAME} ExpDriver.py      ExpDriver.py
 COPY --chown=${UNAME} benchmarks        benchmarks
@@ -63,16 +73,6 @@ COPY --chown=${UNAME} scripts           scripts
 RUN chown ${UNAME} ${HOME}
 USER ${UNAME}
 RUN mkdir -p images
-
-# Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
-ENV PATH="~/.cargo/bin:${PATH}"
-
-# Install cargo-edit
-ENV OPENSSL_DIR="/usr/bin/openssl"
-ENV OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
-ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
-RUN cargo install cargo-edit
 
 # Setup artifact data
 WORKDIR ${WD}/data
