@@ -74,7 +74,7 @@ ENV OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
 ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
 RUN cargo install cargo-edit
 
-##### General Setup #####
+# Setup artifact data
 WORKDIR ${WD}/data
 RUN ./create_silesia.sh
 RUN ./get_LiveJournal.sh
