@@ -11,7 +11,7 @@ or through the
 2. Pull the docker image:
 
 ```sh
-docker pull npopescu/oopsla21ae:v1
+docker load < oopsla21ae.tar.gz
 ```
 
 3. Start a docker container like so: 
@@ -109,18 +109,19 @@ docker container ps -a
 Copy files locally using the `docker cp` cmd: 
 
 ```sh
-docker cp <container_id>:/home/oopsla21ae/images/<plot>.pdf <local_dest>
+docker cp <container_id>:/home/oopsla21ae/images/<plot.pdf> <local_dest>
 ```
 
-Where <plot>.pdf is any of the files listed in the below subsections. 
+Where <plot.pdf> is any of the files listed in the below subsections (for example `figure1_all.pdf`). 
+Note that Tables 1 and 4 do not generate any PDF files; the output that would be in a PDF is instead 
+printed to the terminal as the scripts run. Therefore, we recommend generating these results separately 
+so they can be properly viewed. 
 
 In general, the figures and tables produced here are analogous to the figures and 
 tables presented in the paper. We describe how to interpret results below, but 
 also refer reviewers to the paper for more detailed information. 
 
 #### Figure 1
-  
-Files: 
 
 ```sh
 figure1_all.pdf
@@ -168,8 +169,6 @@ in these different contexts show that this is indeed the case.
 
 #### Figures 5 and 9
 
-Files: 
-
 ```sh
 figure5.pdf
 figure9.pdf
@@ -194,8 +193,6 @@ bounds checks within the threshold.
 
 #### Figure 7 and Table 3
 
-Files: 
-
 ```sh
 figure7.pdf
 table3.pdf
@@ -213,6 +210,9 @@ audit because most of it is in project dependencies.
   
 Table 3 results build off Figure 7 by also including the total number of application dependencies 
 and the number of dependencies that have at least one unchecked indexing use. 
+
+Note that we do not include the full set of applications that we evaluated in the paper 
+due to an error with building our docker image that we were unable to resolve in time. 
 
 #### Table 4
 
@@ -243,8 +243,6 @@ below the specified threshold by construction. Table 4 illustrates this on sever
 applications. 
 
 #### Figure 8
-
-Files: 
 
 ```sh
 figure8.pdf
