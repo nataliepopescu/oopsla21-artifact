@@ -109,6 +109,7 @@ def get_overview_layout(rp):
 def gen_figure7_table3(root):
     app._result_provider = ResultProvider(root)
     app._result_provider.get_unchecked_indexing()
+    rp = app._result_provider
 
     fig = go.Figure(data=[
         go.Bar(name='Direct', 

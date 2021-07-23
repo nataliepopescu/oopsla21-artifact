@@ -1,5 +1,5 @@
 #!/bin/bash
-cd figure1
+cd ../figure1
 mkdir crates_fast && cd crates_fast
 
 wget www.crates.io/api/v1/crates/prost/0.7.0/download
@@ -37,4 +37,4 @@ wget www.crates.io/api/v1/crates/roaring/0.6.5/download
 tar -xzf download && rm download
 cp ../locks/roaring-0.6.5_Cargo.lock roaring-0.6.5/Cargo.lock
 
-cd ..
+cd ../..

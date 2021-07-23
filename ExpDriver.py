@@ -97,6 +97,7 @@ def genTable1():
     # Baseline
     print("Generating -Baseline- column...")
     bmark_path = ROOT_PATH + "/brotli-expanded/"
+    arg = ROOT_PATH + "/data/silesia-5.brotli"
     line_nums = genUncheckedReport(bmark_path)
     convertAndCompareBinaries(bmark_path, line_nums)
     for i in range(10): 
@@ -132,7 +133,12 @@ def genFigure1(root, quick_run=False):
     os.chdir(os.path.join(root, "figure1"))
     subprocess.run(["python3", "tool.py", "--dir", cratedir, 
             "--compile", "--bench", "3", "--local", "-g"])
-    subprocess.run(["mv", "figure1*", os.path.join(root, "images/")]) 
+    os.chdir(os.path.join(root, "figure1"))
+    subprocess.run(["mv", "figure1_all.pdf", os.path.join(root, "images/")]) 
+    subprocess.run(["mv", "figure1_histogram.pdf", os.path.join(root, "images/")]) 
+    subprocess.run(["mv", "figure1_hurt.pdf", os.path.join(root, "images/")]) 
+    subprocess.run(["mv", "figure1_improved.pdf", os.path.join(root, "images/")]) 
+    subprocess.run(["mv", "figure1_insignificantly_affected.pdf", os.path.join(root, "images/")]) 
     os.chdir(root)
 
 def genFigure7Table3(root, quick_run=False):
@@ -143,8 +149,15 @@ def genFigure7Table3(root, quick_run=False):
 
     os.chdir(os.path.join(root, "figure7"))
     subprocess.run(["python3", "uncover_uncheckeds.py", "--root", "apps_{}".format(suffix)])
-    subprocess.run(["mv", "figure7.pdf", os.path.join(root, "images", "figure7_{}.pdf".format(suffix))]) 
-    subprocess.run(["mv", "table3.pdf", os.path.join(root, "images", "table3_{}.pdf".format(suffix))]) 
+    
+    f7_from_path = os.path.join(root, "figure7", "apps_{}".format(suffix), "figure7.pdf")
+    f7_to_path = os.path.join(root, "images", "figure7_{}.pdf".format(suffix))
+    subprocess.run(["mv", f7_from_path, f7_to_path])
+
+    t3_from_path = os.path.join(root, "table3", "apps_{}".format(suffix), "table3.pdf")
+    t3_to_path = os.path.join(root, "images", "table3_{}.pdf".format(suffix))
+    subprocess.run(["mv", t3_from_path, t3_to_path])
+
     os.chdir(root)
 
 def genFig8WithCOST(quick_run=False):

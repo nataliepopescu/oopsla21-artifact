@@ -65,12 +65,14 @@ COPY --chown=${UNAME} ExpDriver.py      ExpDriver.py
 COPY --chown=${UNAME} benchmarks        benchmarks
 COPY --chown=${UNAME} brotli-expanded   brotli-expanded
 COPY --chown=${UNAME} data              data
+COPY --chown=${UNAME} example-results   example-results
 COPY --chown=${UNAME} figure1           figure1
 COPY --chown=${UNAME} figure7           figure7
 COPY --chown=${UNAME} rust-toolchain    rust-toolchain
 COPY --chown=${UNAME} scripts           scripts
-RUN chown ${UNAME} ${HOME}
+RUN chown -R ${UNAME} ${HOME}
 USER ${UNAME}
+RUN source ~/.profile
 RUN mkdir -p images
 
 # Setup artifact data

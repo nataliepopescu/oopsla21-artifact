@@ -17,10 +17,16 @@ docker load < oopsla21ae.tar.gz
 3. Start a docker container like so: 
 
 ```sh
-docker run -it --cap-add=sys_nice --name artifact npopescu/oopsla21ae:v1
+docker run -it --cap-add=sys_nice --name artifact oopsla21ae
 ```
 
-4. Test that the artifact works by running: 
+4. Make rust tools available in the environment: 
+
+```sh
+source ~/.cargo/env
+```
+
+5. Test that the artifact works by running: 
 
 ```sh
 python3 ExpDriver.py --figure1 --figure59 --figure7table3

@@ -1,5 +1,5 @@
 #!/bin/bash
-cd figure7
+cd ../figure7
 mkdir apps_fast && cd apps_fast
 
 cp -r ${WD}/brotli-expanded brotli-decompressor
@@ -131,4 +131,4 @@ SHA=f90389736b755ff0063b6abfeeeaedeaeec08acd
 wget https://github.com/mozilla/gecko-dev/archive/${SHA}.tar.gz
 tar -xzf ${SHA}.tar.gz && rm ${SHA}.tar.gz
 
-cd ..
+cd ../..
