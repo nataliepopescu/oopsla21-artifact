@@ -46,22 +46,14 @@ def test_swc():
 
 def test_warp():
     print("Testing warp")
-    p_server = subprocess.Popen(["warp/hello-safe"], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    time.sleep(2)
-    # out = subprocess.Popen(["./wrk", "--latency", "-t12",  "-c100",  "-d30s", "http://localhost:3030/"],  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # out, _ = out.communicate()
-    out = subprocess.check_output(["./wrk", "--latency", "-t12",  "-c100",  "-d30s", "http://localhost:3030/"])
+    out = subprocess.Popen([ROOT_PATH + '/runWarp.sh', 'safe'],  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out, _ = out.communicate()
     out = out.decode("utf-8")  # convert to string from bytes
-    p_server.kill()
     safe_throughput = parseThroughput(out)
 
-    p_server = subprocess.Popen(["warp/hello-unsafe"], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    time.sleep(2)
-    # out = subprocess.Popen(["./wrk", "--latency", "-t12",  "-c100",  "-d30s", "http://localhost:3030/"],  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # out, _ = out.communicate()
-    out = subprocess.check_output(["./wrk", "--latency", "-t12",  "-c100",  "-d30s", "http://localhost:3030/"])
+    out = subprocess.Popen([ROOT_PATH + '/runWarp.sh', 'unsafe'],  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out, _ = out.communicate()
     out = out.decode("utf-8")  # convert to string from bytes
-    p_server.kill()
     unsafe_throughput = parseThroughput(out)
 
     if safe_throughput and unsafe_throughput:
@@ -71,22 +63,14 @@ def test_warp():
 
 def test_iron():
     print("Testing iron")
-    p_server = subprocess.Popen(["iron/hello-safe"], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    time.sleep(2)
-    # out = subprocess.Popen(["./wrk", "--latency", "-t12",  "-c100",  "-d30s", "http://localhost:3000/"],  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # out, _ = out.communicate()
-    out = subprocess.check_output(["./wrk", "--latency", "-t12",  "-c100",  "-d30s", "http://localhost:3000/"])
+    out = subprocess.Popen([ROOT_PATH + '/runIron.sh', 'safe'],  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out, _ = out.communicate()
     out = out.decode("utf-8")  # convert to string from bytes
-    p_server.kill()
     safe_throughput = parseThroughput(out)
 
-    p_server = subprocess.Popen(["iron/hello-unsafe"], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    time.sleep(2)
-    # out = subprocess.Popen(["./wrk", "--latency", "-t12",  "-c100",  "-d30s", "http://localhost:3000/"],  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # out, _ = out.communicate()
-    out = subprocess.check_output(["./wrk", "--latency", "-t12",  "-c100",  "-d30s", "http://localhost:3000/"])
+    out = subprocess.Popen([ROOT_PATH + '/runIron.sh', 'unsafe'],  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out, _ = out.communicate()
     out = out.decode("utf-8")  # convert to string from bytes
-    p_server.kill()
     unsafe_throughput = parseThroughput(out)
 
     if safe_throughput and unsafe_throughput:
@@ -99,9 +83,8 @@ def test_zola():
 
     time_list = []
     for _ in range(100):
-        #out = subprocess.Popen(["time", "zola/zola-safe",  "--root", "zola/test_site", "build" ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        #out, _ = out.communicate()
-        out = subprocess.check_output(["zola/zola-safe",  "--root", "zola/test_site", "build" ])
+        out = subprocess.Popen([ROOT_PATH + '/runZola.sh', 'safe'],  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        out, _ = out.communicate()
         out = out.decode("utf-8")  # convert to string from bytes
         time = parseZola(out)
         time_list.append(time)
@@ -110,7 +93,8 @@ def test_zola():
 
     time_list = []
     for _ in range(100):
-        out = subprocess.check_output(["zola/zola-unsafe",  "--root", "zola/test_site", "build" ])
+        out = subprocess.Popen([ROOT_PATH + '/runZola.sh', 'safe'],  stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        out, _ = out.communicate()
         out = out.decode("utf-8")  # convert to string from bytes
         time = parseZola(out)
         time_list.append(time)
