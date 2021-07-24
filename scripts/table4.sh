@@ -1,7 +1,6 @@
 #!/bin/bash
-
-BMARK_DIRS=("tantivy" "rage" "swc" "warp" "iron" "RustPython" "zola" "COST")
-BIN_NAMES=("test_bc" "test_bc" "test_bc" "hello" "hello" "test_bc" "zola" "test_bc")
+BMARK_DIRS=("tantivy" "rage" "swc" "warp" "iron" "RustPython" "zola")
+BIN_NAMES=("test_bc" "test_bc" "test_bc" "hello" "hello" "test_bc" "zola")
 
 script_path=`realpath $0`
 SCRIPT_ROOT=`dirname $script_path`/
@@ -17,13 +16,6 @@ function patch_bmark {
         mkdir -p bin
         cp $ROOT/patch/$BMARK.test_bc.rs bin/test_bc.rs
     fi
-
-    if [ "$BMARK" == "COST" ]; then
-        cp $ROOT/patch/$BMARK.pagerank.rs src/bin/pagerank.rs
-        cp $ROOT/patch/$BMARK.lib.rs src/lib.rs
-        cp $ROOT/patch/$BMARK.bench.rs src/bench.rs
-    fi
-
 
     if [ "$BMARK" == "rage" ]; then
         mkdir -p age/bin
