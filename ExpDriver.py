@@ -175,7 +175,7 @@ def genFig5and9(quick_run=False):
     #print("Running Nader on brotli, generating fig 5 and 9")
     bmark_path = ROOT_PATH + "/brotli-expanded/"
     arg = ROOT_PATH + "/data/silesia-5.brotli"
-    calout_fname = ROOT_PATH + "/example-results/cal.out.original"
+    calout_fname = ROOT_PATH + "/example-results/cal.out.brotli"
     runNader(cargo_root_=bmark_path, arg=arg, pickle_name="brotli.pkl", clang_arg=None, test_times=5, calout_fname=calout_fname, quick_run=quick_run)
     if not os.path.exists(ROOT_PATH + "/exp-results"):
         os.mkdir(ROOT_PATH + "/exp-results")
