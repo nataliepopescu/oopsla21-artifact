@@ -108,6 +108,7 @@ def test_zola():
     
 
 def test_rustpython():
+    print("Testing RustPython")
     os.chdir(ROOT_PATH + "/../benchmarks/RustPython")
     arg = ROOT_PATH + "/../benchmarks/RustPython/benches/benchmarks/pystone.py"
     safe_time, _, _ = runExpWithName("./test_bc-safe", arg, 10, False)
