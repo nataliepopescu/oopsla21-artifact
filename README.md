@@ -108,8 +108,8 @@ viewed locally. If the container is currently running, get the container ID by r
 ```sh
 docker container ps
 
-CONTAINER ID    IMAGE         COMMAND  CREATED  STATUS   PORTS   NAMES
-<container_id>  oopsla21ae    ...      ...      ...              artifact
+CONTAINER ID     IMAGE        COMMAND  CREATED  STATUS   PORTS   NAMES
+<container_id>   oopsla21ae   ...      ...      ...              artifact
 ```
 
 If the container is stopped, get the 
