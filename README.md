@@ -119,7 +119,8 @@ container ID by running:
 docker container ps -a
 ```
 
-Copy files locally using the `docker cp` cmd: 
+Copy files locally using the [docker cp](https://docs.docker.com/engine/reference/commandline/cp/) 
+cmd: 
 
 ```sh
 docker cp <container_id>:/home/oopsla21ae/images/<plot.pdf> <local_dest>
