@@ -1,9 +1,6 @@
 #!/bin/bash
-BMARK_DIRS=("warp" "iron" "zola")
-BIN_NAMES=("hello" "hello" "test_bc" "zola")
-
-#BMARK_DIRS=("tantivy" "rage" "swc" "warp" "iron" "RustPython" "zola")
-#BIN_NAMES=("test_bc" "test_bc" "test_bc" "hello" "hello" "test_bc" "zola")
+BMARK_DIRS=("tantivy" "rage" "swc" "warp" "iron" "RustPython" "zola")
+BIN_NAMES=("test_bc" "test_bc" "test_bc" "hello" "hello" "test_bc" "zola")
 
 script_path=`realpath $0`
 SCRIPT_ROOT=`dirname $script_path`/

@@ -161,6 +161,8 @@ def genFigure7Table3(root, quick_run=False):
     os.chdir(root)
 
 def genFig8WithCOST(quick_run=False):
+    if not os.path.exists(ROOT_PATH + "/exp-results"):
+        os.mkdir(ROOT_PATH + "/exp-results")
     # prepare by vendoring
     print("Preparing COST vendor")
     out = subprocess.Popen([ROOT_PATH + '/scripts/prepareCOST.sh'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
