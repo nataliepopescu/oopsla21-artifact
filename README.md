@@ -2,31 +2,34 @@
 
 ## Getting Started
 
-1. [Install Docker](https://docs.docker.com/engine/install/) and start up the 
-docker daemon, either 
-[manually](https://docs.docker.com/config/daemon/#start-the-daemon-manually)
-or through the 
-[system utility](https://docs.docker.com/config/daemon/#start-the-daemon-using-operating-system-utilities).
+We recommend running this artifact on a Linux system with Docker version 20 and up. 
+To install Docker on Linux, run: 
 
-2. Pull the docker image:
+```sh
+sudo apt-get update
+sudo apt-get install -y docker-ce
+```
+
+Make sure the docker daemon is running. Download the compressed artifact 
+from provided Google Drive link and load it like so: 
 
 ```sh
 docker load < oopsla21ae.tar.gz
 ```
 
-3. Start a docker container like so: 
+This should take some time. Then start the docker container:
 
 ```sh
 docker run -it --cap-add=sys_nice --name artifact oopsla21ae
 ```
 
-4. Make rust tools available in the environment: 
+and make rust tools available in the environment by running: 
 
 ```sh
 source ~/.cargo/env
 ```
 
-5. Test that the artifact works by running: 
+Finally, test that the artifact works by running: 
 
 ```sh
 python3 ExpDriver.py --figure1 --figure59 --figure7table3
@@ -77,14 +80,18 @@ python3 ExpDriver.py --help
   ...
 ```
 
+**Note** that `--figure8` depends on some results from `--table4`, so `--table4` 
+should be run first. 
+
 To generate Figure 7 and Table 3, for example, run the following: 
 
 ```sh
 python3 ExpDriver --figure7table3 [--full]
 ```
 
-Expected running times for all experiments on a 
-2.3 GHz Dual-Core Intel Core i5 Macbook Pro
+Expected running times for all experiments on 
+[this](https://www.clemson.cloudlab.us/portal/show-nodetype.php?type=c6320) 
+machine, running Ubuntu 18.04 STD and Docker 20.10.2,
 are listed here:  
 
 | | Figure 1 | Table 1 | Figures 5 and 9 | Figure 7 and Table 3 | Table 4 | Figure 8 | Total |
@@ -101,8 +108,8 @@ viewed locally. If the container is currently running, get the container ID by r
 ```sh
 docker container ps
 
-CONTAINER ID    IMAGE                COMMAND  CREATED  STATUS   PORTS   NAMES
-<container_id>  npopescu/oopsla21ae  ...      ...      ...              artifact
+CONTAINER ID     IMAGE        COMMAND  CREATED  STATUS   PORTS   NAMES
+<container_id>   oopsla21ae   ...      ...      ...              artifact
 ```
 
 If the container is stopped, get the 
@@ -112,7 +119,8 @@ container ID by running:
 docker container ps -a
 ```
 
-Copy files locally using the `docker cp` cmd: 
+Copy files locally using the [docker cp](https://docs.docker.com/engine/reference/commandline/cp/) 
+cmd: 
 
 ```sh
 docker cp <container_id>:/home/oopsla21ae/images/<plot.pdf> <local_dest>
