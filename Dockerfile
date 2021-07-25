@@ -52,6 +52,8 @@ ENV WD=${HOME}/${UNAME}
 WORKDIR ${WD}
 
 # Install Rust
+RUN chown ${UNAME} ${HOME}
+USER ${UNAME}
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="~/.cargo/bin:${PATH}"
 
@@ -71,9 +73,8 @@ COPY --chown=${UNAME} figure1           figure1
 COPY --chown=${UNAME} figure7           figure7
 COPY --chown=${UNAME} rust-toolchain    rust-toolchain
 COPY --chown=${UNAME} scripts           scripts
-RUN chown -R ${UNAME} ${HOME}
-USER ${UNAME}
-RUN source ~/.profile
+COPY --chown=${UNAME} COST              COST
+COPY --chown=${UNAME} bashrc            ${HOME}/.bashrc
 RUN mkdir -p images
 
 # Setup artifact data
