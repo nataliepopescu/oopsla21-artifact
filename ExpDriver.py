@@ -9,6 +9,7 @@ import os
 import filecmp
 import shutil
 import argparse
+from tqdm.auto import tqdm
 
 ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -89,40 +90,49 @@ def getPerfDiff(bmark_path, arg):
 
     return (time_exp_safe - time_exp_unsafe) / time_exp_unsafe
 
+def getPerfDiffSilent(bmark_path, arg):
+    os.chdir(bmark_path)
+    time_exp_unsafe, _, _ = runExpWithName("baseline/exp-unsafe/exp.exe", arg, 5)
+    time_exp_safe, _, _ = runExpWithName("baseline/exp-safe/exp.exe", arg, 5)
+    return (time_exp_safe - time_exp_unsafe) / time_exp_unsafe
+
 def genTable1():
     baseline = []
     workload = []
     compiler = []
 
+    print("Generating Table 1")
+
     # Baseline
-    print("Generating -Baseline- column...")
+    print("Getting overheads for baseline context...")
     bmark_path = ROOT_PATH + "/brotli-expanded/"
     arg = ROOT_PATH + "/data/silesia-5.brotli"
     line_nums = genUncheckedReport(bmark_path)
     convertAndCompareBinaries(bmark_path, line_nums)
-    for i in range(10): 
-        diff = getPerfDiff(bmark_path, arg)
+    for i in tqdm(range(10), leave=True): 
+        diff = getPerfDiffSilent(bmark_path, arg)
         baseline.append(diff)
     print("\tOverhead == {}".format(sum(baseline)/10))
 
     # Different workload (compression level == 11, instead of 5)
-    print("Generating -Different Workload- column...")
+    print("Getting overheads for different workload...")
     arg = ROOT_PATH + "/data/silesia-11.brotli"
-    for i in range(10): 
-        diff = getPerfDiff(bmark_path, arg)
+    for i in tqdm(range(10), leave=True):
+        diff = getPerfDiffSilent(bmark_path, arg)
         workload.append(diff)
     print("\tOverhead == {}".format(sum(workload)/10))
 
     # rustc 1.46.0
-    print("Generating -Different Compiler- column...")
+    print("Getting overheads for different compiler...")
     arg = ROOT_PATH + "/data/silesia-5.brotli"
-    subprocess.run(["/home/.cargo/bin/rustup", "override", "set", "nightly-2020-08-27-x86_64-unknown-linux-gnu"])
+    subprocess.run(["/home/.cargo/bin/rustup", "override", "set", "nightly-2020-08-27-x86_64-unknown-linux-gnu"], stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
     convertAndCompareBinaries(bmark_path, line_nums)
-    for i in range(10): 
-        diff = getPerfDiff(bmark_path, arg)
+    for i in tqdm(range(10), leave=True):
+        diff = getPerfDiffSilent(bmark_path, arg)
         compiler.append(diff)
     print("\tOverhead == {}".format(sum(compiler)/10))
-    subprocess.run(["/home/.cargo/bin/rustup", "override", "unset"])
+    subprocess.run(["/home/.cargo/bin/rustup", "override", "unset"],
+            stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
 
 def genFigure1(root, quick_run=False):
     if full_run: 
@@ -151,11 +161,11 @@ def genFigure7Table3(root, quick_run=False):
     subprocess.run(["python3", "uncover_uncheckeds.py", "--root", "apps_{}".format(suffix)])
     
     f7_from_path = os.path.join(root, "figure7", "apps_{}".format(suffix), "figure7.pdf")
-    f7_to_path = os.path.join(root, "images", "figure7_{}.pdf".format(suffix))
+    f7_to_path = os.path.join(root, "images") #, "figure7_{}.pdf".format(suffix))
     subprocess.run(["mv", f7_from_path, f7_to_path])
 
-    t3_from_path = os.path.join(root, "table3", "apps_{}".format(suffix), "table3.pdf")
-    t3_to_path = os.path.join(root, "images", "table3_{}.pdf".format(suffix))
+    t3_from_path = os.path.join(root, "figure7", "apps_{}".format(suffix), "table3.pdf")
+    t3_to_path = os.path.join(root, "images") #, "table3_{}.pdf".format(suffix))
     subprocess.run(["mv", t3_from_path, t3_to_path])
 
     os.chdir(root)
@@ -163,6 +173,8 @@ def genFigure7Table3(root, quick_run=False):
 def genFig8WithCOST(quick_run=False):
     if not os.path.exists(ROOT_PATH + "/exp-results"):
         os.mkdir(ROOT_PATH + "/exp-results")
+    if not os.path.exists(ROOT_PATH + "/images"):
+        os.mkdir(ROOT_PATH + "/images")
     # prepare by vendoring
     print("Preparing COST vendor")
     out = subprocess.Popen([ROOT_PATH + '/scripts/prepareCOST.sh'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -175,7 +187,7 @@ def genFig5and9(quick_run=False):
     #print("Running Nader on brotli, generating fig 5 and 9")
     bmark_path = ROOT_PATH + "/brotli-expanded/"
     arg = ROOT_PATH + "/data/silesia-5.brotli"
-    calout_fname = ROOT_PATH + "/example-results/cal.out.original"
+    calout_fname = ROOT_PATH + "/example-results/cal.out.brotli"
     runNader(cargo_root_=bmark_path, arg=arg, pickle_name="brotli.pkl", clang_arg=None, test_times=5, calout_fname=calout_fname, quick_run=quick_run)
     if not os.path.exists(ROOT_PATH + "/exp-results"):
         os.mkdir(ROOT_PATH + "/exp-results")

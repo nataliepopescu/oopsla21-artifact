@@ -64,7 +64,8 @@ class State:
     def convert(self):
         for app in self.app_dirs:
             os.chdir(self.app_dirs.get(app).get("top-dir"))
-            subprocess.run(["python3.8", self.regexify, "--root", "."])
+            subprocess.run(["python3.8", self.regexify, "--root", "."], 
+                    stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
             directs = open(DIRECT_USES, "w")
             changes = open(CHANGES, "r")
 
@@ -99,7 +100,7 @@ class State:
         to_delete = [x for x in all_deps if x not in non_dev_deps]
         for d in to_delete:
             path = os.path.join(self.vendor_dir, d)
-            print("deleting {}".format(d))
+            #print("deleting {}".format(d))
             try: 
                 shutil.rmtree(path)
             except OSError as err: 
@@ -110,14 +111,16 @@ class State:
         for app in self.app_dirs:
             app_dir = self.app_dirs.get(app).get("cargo-dir")
             os.chdir(app_dir)
-            print()
-            print("***** current app: {} *****".format(app))
-            print("  vendor dir: {}".format(self.vendor_dir))
-            print()
+            #print()
+            #print("***** current app: {} *****".format(app))
+            #print("  vendor dir: {}".format(self.vendor_dir))
+            #print()
 
             # vendor crates for this app
-            subprocess.run(["rustup", "override", "set", "nightly-2021-02-11"])
-            subprocess.run(["cargo", "vendor", "--versioned-dirs"])
+            subprocess.run(["rustup", "override", "set", "nightly-2021-02-11"], 
+                    stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
+            subprocess.run(["cargo", "vendor", "--versioned-dirs"], 
+                    stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
             num_vendored = subprocess.run(["ls", self.vendor_dir], 
                     capture_output=True, text=True)
             if len(num_vendored.stdout) == 0:
@@ -125,7 +128,7 @@ class State:
                 continue
 
             # filter out dev deps
-            print("filtering out dev deps not otherwise used")
+            #print("filtering out dev deps not otherwise used")
             self.filter()
             os.chdir(self.root)
 
@@ -134,8 +137,9 @@ class State:
             app_dir = self.app_dirs.get(app).get("cargo-dir")
             os.chdir(app_dir)
             # convert vendored crates
-            print("converting vendored crates for {}".format(app))
-            subprocess.run(["python3.8", self.regexify, "--root", self.vendor_dir])
+            #print("converting vendored crates for {}".format(app))
+            subprocess.run(["python3.8", self.regexify, "--root", self.vendor_dir], 
+                    stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
             v_changes_file = os.path.join(self.vendor_dir, CHANGES)
             v_changes = open(v_changes_file, "r")
             indirects = open(INDIRECT_USES, "w")
@@ -268,24 +272,24 @@ if __name__ == "__main__":
     regexify = os.path.join(os.getcwd(), "../", "scripts", "regexify.py")
     root = os.path.join(os.getcwd(), root)
     s = State(root, regexify)
-    print("check for locally-defined get_unchecked")
+    #print("Getting locally-defined get_unchecked...")
+    print("Getting direct get_unchecked uses...")
     s.get_loc_def_gu()
-    print("convert")
+    #print("Converting locally-defined get_unchecked...")
     s.convert()
-    print("vendoring dependencies")
+    #print("Vendoring dependencies...")
+    print("Getting dependencies...")
     s.vendor()
-    print("check for locally-defined get_unchecked in deps")
+    #print("Getting get_unchecked uses in dependencies...")
+    print("Getting indirect get_unchecked uses...")
     s.get_loc_def_gu(indirect=True)
     s.convert_vendor()
-    print("get all direct get_unchecked usage from top-level apps")
     s.get_direct_gus()
-    print("get total num of dependencies")
     s.get_num_deps()
-    print("get num of dependencies with indirect get_unchecked per top-level app")
+    print("Counting number of dependencies with indirect get_unchecked uses...")
     s.get_indirect_deps()
-    print("get num of indirect get_unchecked uses per top-level app")
     s.get_indirect_uses()
-    print("get total uses")
+    #print("Getting total uses...")
     s.get_total_uses()
-    print("generating pdfs")
+    print("Generating pdfs...")
     gen_figure7_table3(root)

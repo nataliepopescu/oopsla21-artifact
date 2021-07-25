@@ -40,8 +40,8 @@ def parseZola(out):
 def test_swc():
     print("Testing swc")
     os.chdir(ROOT_PATH + "/../benchmarks/swc")
-    safe_time, _, _ = runExpWithName("test_bc-safe", None, 20, False)
-    unsafe_time, _, _ = runExpWithName("test_bc-unsafe", None, 20, False)
+    safe_time, _, _ = runExpWithName("./test_bc-safe", None, 20, False)
+    unsafe_time, _, _ = runExpWithName("./test_bc-unsafe", None, 20, False)
     perf_diff = (safe_time - unsafe_time) / unsafe_time
     print("Performance difference of swc is: {:2.2%}".format(perf_diff))
 
@@ -108,10 +108,11 @@ def test_zola():
     
 
 def test_rustpython():
+    print("Testing RustPython")
     os.chdir(ROOT_PATH + "/../benchmarks/RustPython")
     arg = ROOT_PATH + "/../benchmarks/RustPython/benches/benchmarks/pystone.py"
-    safe_time, _, _ = runExpWithName("test_bc-safe", arg, 10, False)
-    unsafe_time, _, _ = runExpWithName("test_bc-unsafe", arg, 10, False)
+    safe_time, _, _ = runExpWithName("./test_bc-safe", arg, 10, False)
+    unsafe_time, _, _ = runExpWithName("./test_bc-unsafe", arg, 10, False)
     perf_diff = (safe_time - unsafe_time) / unsafe_time
     print("Performance difference of RustPython is: {:2.2%}".format(perf_diff))
 

@@ -1,8 +1,15 @@
 # OOPSLA 2021 Artifact
 
+## Sytem Requirements
+
+Linux OS (we've tested on Ubuntu 18.04 STD)
+
+Docker version 20+
+
+35GB memory
+
 ## Getting Started
 
-We recommend running this artifact on a Linux system with Docker version 20 and up. 
 To install Docker on Linux, run: 
 
 ```sh
@@ -10,62 +17,60 @@ sudo apt-get update
 sudo apt-get install -y docker-ce
 ```
 
-Make sure the docker daemon is running. Download the compressed artifact 
-from provided Google Drive link and load it like so: 
+Make sure the docker daemon is running, then download the compressed artifact 
+from the provided Google Drive link and load it like so: 
 
 ```sh
 docker load < oopsla21ae.tar.gz
 ```
 
-This should take some time. Then start the docker container:
+This should take some time. Once done, start the docker container:
 
 ```sh
 docker run -it --cap-add=sys_nice --name artifact oopsla21ae
 ```
 
-and make rust tools available in the environment by running: 
-
-```sh
-source ~/.cargo/env
-```
-
-Finally, test that the artifact works by running: 
+And finally test that the artifact works: 
 
 ```sh
 python3 ExpDriver.py --figure1 --figure59 --figure7table3
 ```
 
-This command should complete in under an hour.
+This should complete in about an hour.
 
 ## Step by Step Instructions
 
-All of the following commands should be run from the `~/oopsla21ae/` directory. 
-Running all experiments fully takes almost two days to complete. 
-We have therefore implemented a fast path that can run all experiments 
-(on fewer libraries and applications) and finishes in under an hour. 
-Our driver runs the fast path by default, so to run the full version of experiments, 
-run: 
+Any commands should be run from `~/oopsla21ae/`. 
+Running all experiments fully takes almost two days to complete, so
+we have implemented a fast path that can run all experiments 
+(on fewer libraries and applications) in about three hours. 
+The fast path is enabled by default, so use the `--full` flag 
+to run the full versions of experiments: 
 
 ```sh
 python3 ExpDriver.py [OPTIONS] --full
 ```
 
-To run the __fast__ path on _all_ experiments, run: 
+To run  _all_ experiments, run: 
 
 ```sh
-python3 ExpDriver.py --all
+python3 ExpDriver.py --all [--full]
 ```
 
-To run the __full__ path on _all_ experiments, run: 
+Expected running times for all experiments on 
+[this](https://www.clemson.cloudlab.us/portal/show-nodetype.php?type=c6320) 
+machine, running Ubuntu 18.04 STD and Docker 20.10.2,
+are listed here:  
 
-```sh
-python3 ExpDriver.py --all --full
-```
+| | Figure 1 | Table 1 | Figures 5 and 9 | Figure 7 and Table 3 | Table 4 | Figure 8 | Total |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Fast | 20 min | - | 40 min | 2 min | - | - | 1 hr |
+| Full | 7 hrs | 20 min | 9 hrs | 20 min | 1 hr | 1 hr | ~19 hrs |
 
-### Generating results/plots
+### Generating results
 
-To run individual experiments, simply replace `--all` with the flag corresponding 
-to the desired experiment, found by running: 
+To run individual experiments, simply replace `--all` with the corresponding 
+experiment's flag, found by running: 
 
 ```sh
 python3 ExpDriver.py --help
@@ -80,8 +85,8 @@ python3 ExpDriver.py --help
   ...
 ```
 
-**Note** that `--figure8` depends on some results from `--table4`, so `--table4` 
-should be run first. 
+**Note** that `--figure8` depends on results from `--table4`, so `--table4` 
+must be run beforehand. 
 
 To generate Figure 7 and Table 3, for example, run the following: 
 
@@ -89,21 +94,17 @@ To generate Figure 7 and Table 3, for example, run the following:
 python3 ExpDriver --figure7table3 [--full]
 ```
 
-Expected running times for all experiments on 
-[this](https://www.clemson.cloudlab.us/portal/show-nodetype.php?type=c6320) 
-machine, running Ubuntu 18.04 STD and Docker 20.10.2,
-are listed here:  
-
-| | Figure 1 | Table 1 | Figures 5 and 9 | Figure 7 and Table 3 | Table 4 | Figure 8 | Total |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Fast | 20 min | - | 40 min | 2 min | - | - | 1 hr |
-| Full | 7 hrs | 20 min | 9 hrs | 20 min | 1 hr | 1 hr | ~19 hrs |
-
-### Viewing results/plots
+### Viewing results
 
 Some expected output is in `example-results`; you can compare your generated plots to those as a sanity check. 
-The above result/plot generalization produces a series of PDFs that can be copied out of the docker container and 
-viewed locally. If the container is currently running, get the container ID by running: 
+Our artifact generates PDFs that can be copied out of the docker container using
+[docker cp](https://docs.docker.com/engine/reference/commandline/cp/): 
+
+```sh
+docker cp <container_id>:/home/oopsla21ae/images/<filename> <local_dest>
+```
+
+- To get the `<container_id>` of a _running_ container, run: 
 
 ```sh
 docker container ps
@@ -112,30 +113,21 @@ CONTAINER ID     IMAGE        COMMAND  CREATED  STATUS   PORTS   NAMES
 <container_id>   oopsla21ae   ...      ...      ...              artifact
 ```
 
-If the container is stopped, get the 
-container ID by running: 
+- To get the `<container_id>` of a _stopped_ container, run: 
 
 ```sh
 docker container ps -a
 ```
 
-Copy files locally using the [docker cp](https://docs.docker.com/engine/reference/commandline/cp/) 
-cmd: 
-
-```sh
-docker cp <container_id>:/home/oopsla21ae/images/<plot.pdf> <local_dest>
-```
-
-Where <plot.pdf> is any of the files listed in the below subsections (for example `figure1_all.pdf`). 
-Note that Tables 1 and 4 do not generate any PDF files; the output that would be in a PDF is instead 
-printed to the terminal as the scripts run. Therefore, we recommend generating these results separately 
-so they can be properly viewed. 
+- `<filename>` names for each experiment are listed in the following subsections. 
 
 In general, the figures and tables produced here are analogous to the figures and 
-tables presented in the paper. We describe how to interpret results below, but 
-also refer reviewers to the paper for more detailed information. 
+tables presented in the paper, but we describe how to interpret results in more 
+detail below. 
 
-#### Figure 1
+#### Figure 1 Expectations
+
+Generated files: 
 
 ```sh
 figure1_all.pdf
@@ -160,7 +152,9 @@ at all. For comparison, `figure1_hurt.pdf` shows the benchmarks where bounds che
 do hurt performance, and all results are summarized in `figure1_all.pdf` and 
 `figure1_histogram.pdf`.
 
-#### Table 1
+#### Table 1 Expectations
+
+TODO how to interpret results
 
 Table 1 results are generated by benchmarking two versions of a 
 [Rust implementation](https://github.com/dropbox/rust-brotli-decompressor) of the 
@@ -181,7 +175,9 @@ performance differences. We claim that different contexts further complicate the
 performance impacts of checked indexing. Different checked indexing overheads 
 in these different contexts show that this is indeed the case. 
 
-#### Figures 5 and 9
+#### Figures 5 and 9 Expectations
+
+Generated files: 
 
 ```sh
 figure5.pdf
@@ -205,7 +201,9 @@ Figure 9 confirms that hotness + one-checked performs better than just hotness
 NADER on `rust-brotli`. The line that hugs the x axis longest introduces the most 
 bounds checks within the threshold. 
 
-#### Figure 7 and Table 3
+#### Figure 7 and Table 3 Expectations
+
+Generated files: 
 
 ```sh
 figure7.pdf
@@ -228,7 +226,9 @@ and the number of dependencies that have at least one unchecked indexing use.
 Note that we do not include the full set of applications that we evaluated in the paper 
 due to an error with building our docker image that we were unable to resolve in time. 
 
-#### Table 4
+#### Table 4 Expectations
+
+TODO how to interpret results
 
 Figure 4 goes through the four steps of NADER and shows that for many applications, 
 most, if not all, bounds checks can be reintroduced with little-to-no overhead. 
@@ -256,7 +256,9 @@ Importantly, NADER maximizes the number of bounds checks reintroduced while stay
 below the specified threshold by construction. Table 4 illustrates this on several 
 applications. 
 
-#### Figure 8
+#### Figure 8 Expectations
+
+Generated files: 
 
 ```sh
 figure8.pdf
