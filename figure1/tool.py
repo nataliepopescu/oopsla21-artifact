@@ -13,6 +13,7 @@ from crunch import crunch, stats, stats2
 from result_presenter import gen_figure1
 import datetime
 import re
+from tqdm.auto import tqdm
 
 EXPLORE_OG = "explore"
 EXPLORE_RX = "explore_regex"
@@ -97,11 +98,12 @@ class State:
         random.shuffle(self.dirlist)
 
     def revert_criterion_version(self):
-        subprocess.run(["cargo", "install", "cargo-edit"])
         for d in self.dirlist: 
             os.chdir(d)
-            subprocess.run(["cargo", "rm", "criterion", "--dev"])
-            subprocess.run(["cargo", "add", "criterion@=0.3.2", "--dev"])
+            subprocess.run(["cargo", "rm", "criterion", "--dev"], 
+                    stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
+            subprocess.run(["cargo", "add", "criterion@=0.3.2", "--dev"], 
+                    stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
             os.chdir(self.root)
 
     def run_tests(self):
@@ -181,11 +183,10 @@ class State:
         totalnum = len(self.dirlist)
         EXPLORE = EXPLORE_RX if regex else EXPLORE_OG
         os.environ["RUSTFLAGS"] = UNMODFLAGS
-        print(os.environ["RUSTFLAGS"])
         if EXPLORE == EXPLORE_OG: 
-            print("Compiling original crates")
+            print("Compiling original crates...")
         else: 
-            print("Compiling regexified crates")
+            print("Compiling regexified crates...")
 
         for d in self.dirlist:
             curnum += 1
@@ -197,8 +198,8 @@ class State:
                 os.chdir(d)
                 outdir = os.path.join(d, EXPLORE)
             print("Compiling {}/{} crates...".format(curnum, totalnum))
-            print(outdir)
-            subprocess.run(["mkdir", "-p", outdir])
+            #print(outdir)
+            subprocess.run(["mkdir", "-p", outdir], stdout=open(os.devnull, 'wb'))
             #for b in self.bnames.get(d): 
             #    print("\tBenchmark: {}".format(b))
             #    f_out = open(os.path.join(outdir, "{}_{}".format(b, COMP_OUT)), "w")
@@ -206,7 +207,8 @@ class State:
             f_out = open(os.path.join(outdir, COMP_OUT), "w")
             f_err = open(os.path.join(outdir, COMP_ERR), "w")
             try:
-                subprocess.run(["cargo", "clean"])
+                subprocess.run(["cargo", "clean"], stdout=open(os.devnull, 'wb'),
+                        stderr=open(os.devnull, 'wb'))
                 #subprocess.run([COMPILE, b, EXPLORE],
                 subprocess.run(["cargo", "bench", "--verbose", "--no-run"],
                         text=True, timeout=1200, stdout=f_out, stderr=f_err)
@@ -222,7 +224,7 @@ class State:
     def run_benchmarks(self):
         self.get_bmark_names()
         os.environ["RUSTFLAGS"] = UNMODFLAGS
-        for r in range(self.bench): 
+        for r in tqdm(range(self.bench)): 
             self.randomize_dirlist()
             curnum = 0
             totalnum = len(self.dirlist)
@@ -236,11 +238,14 @@ class State:
                     outdir = os.path.join(d, RESULTS, str(r))
                 curnum += 1
                 print("Benchmarking {}/{} crates...".format(curnum, totalnum))
-                print(outdir)
-                subprocess.run(["mkdir", "-p", outdir])
+                #print(outdir)
+                subprocess.run(["mkdir", "-p", outdir], stdout=open(os.devnull, 'wb'))
                 for e in exp_types:
-                    print(e)
                     EXPLORE = EXPLORE_RX if e == REGEX else EXPLORE_OG
+                    if EXPLORE == EXPLORE_OG: 
+                        print("Benchmarking original crates...")
+                    else: 
+                        print("Benchmarking regexified crates...")
                     #for b in self.bnames.get(d):
                     #    print("\tBenchmark: {}".format(b))
                     #    f_out = open(os.path.join(outdir, "{}_{}.out".format(b, e)), "w")
@@ -469,7 +474,8 @@ class State:
                 else: 
                     os.chdir(d)
                     dirname = os.path.join(d, EXPLORE)
-                subprocess.run(["cargo", "clean"])
+                subprocess.run(["cargo", "clean"], stdout=open(os.devnull, 'wb'),
+                        stderr=open(os.devnull, 'wb'))
                 print("deleting directory: {}...".format(dirname))
                 try: 
                     shutil.rmtree(dirname)
@@ -568,8 +574,9 @@ if __name__ == "__main__":
     if s.cmpl == True:
         s.revert_criterion_version()
         s.compile_benchmarks()
-        print("Converting source code with regexify.py")
-        subprocess.run(["python3", REGEX_PY, "--root", s.ctgrydir])
+        print("Converting source code...")
+        subprocess.run(["python3", REGEX_PY, "--root", s.ctgrydir],
+                stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
         s.compile_benchmarks(regex=True)
     if s.bench: 
         s.run_benchmarks()

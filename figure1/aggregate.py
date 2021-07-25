@@ -47,16 +47,16 @@ def dump_benchmark(
     bnames = re.findall(name_pattern, check_output(["cat", unmod]).decode('utf-8'))
     unmod_result = re.findall(pattern, check_output(["cat", unmod]).decode('utf-8'))
     regex_result = re.findall(pattern, check_output(["cat", regex]).decode('utf-8'))
-    print(bnames)
-    print()
-    print(unmod_result)
-    print(regex_result)
+    #print(bnames)
+    #print()
+    #print(unmod_result)
+    #print(regex_result)
     # get rid of nasty commas
     output = []
     unmod_len = len(unmod_result)
     regex_len = len(regex_result)
     length = unmod_len if unmod_len < regex_len else regex_len
-    print(length)
+    #print(length)
     for i in range(length):
         line = []
         # grab and append benchmark name to line
