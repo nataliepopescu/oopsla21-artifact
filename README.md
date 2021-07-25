@@ -168,24 +168,14 @@ The three contexts are:
 See [this](https://github.com/nataliepopescu/oopsla21-artifact#paper-claims-not-supported-by-artifact) 
 section for why we do not reproduce the `different architecture` column. 
 
-We expect the overhead of checked indexing in Context 1 to be around: 
+We expect the overhead of checked indexing to be around: 
 
 ```sh
-Getting overheads for baseline context...
+Getting overheads for baseline context... [Context 1]
         Overhead == 0.0852062889815508
-```
-
-We expect the overhead of checked indexing in Context 2 to be around: 
-
-```sh
-Getting overheads for different workload...
+Getting overheads for different workload... [Context 2]
         Overhead == 0.05165770297643811
-```
-
-We expect the overhead of checked indexing in Context 3 to be around: 
-
-```sh
-Getting overheads for different compiler...
+Getting overheads for different compiler... [Context 3]
         Overhead == 0.1482833160361338
 ```
 
