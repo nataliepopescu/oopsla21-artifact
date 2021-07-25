@@ -3,7 +3,9 @@
 ## Sytem Requirements
 
 Linux OS (we've tested on Ubuntu 18.04 STD)
+
 Docker version 20+
+
 35GB memory
 
 ## Getting Started
@@ -102,7 +104,7 @@ Our artifact generates PDFs that can be copied out of the docker container using
 docker cp <container_id>:/home/oopsla21ae/images/<plot.pdf> <local_dest>
 ```
 
-- To get the `<container_id>` of a running container, run: 
+- To get the `<container_id>` of a _running_ container, run: 
 
 ```sh
 docker container ps
@@ -111,7 +113,7 @@ CONTAINER ID     IMAGE        COMMAND  CREATED  STATUS   PORTS   NAMES
 <container_id>   oopsla21ae   ...      ...      ...              artifact
 ```
 
-- To get the `<container_id>` of a stopped container, run: 
+- To get the `<container_id>` of a _stopped_ container, run: 
 
 ```sh
 docker container ps -a
