@@ -125,7 +125,7 @@ In general, the figures and tables produced here are analogous to the figures an
 tables presented in the paper, but we describe how to interpret results in more 
 detail below. 
 
-#### Figure 1
+#### Figure 1 Expectations
 
 Generated files: 
 
@@ -152,7 +152,7 @@ at all. For comparison, `figure1_hurt.pdf` shows the benchmarks where bounds che
 do hurt performance, and all results are summarized in `figure1_all.pdf` and 
 `figure1_histogram.pdf`.
 
-#### Table 1
+#### Table 1 Expectations
 
 TODO how to interpret results
 
@@ -175,7 +175,7 @@ performance differences. We claim that different contexts further complicate the
 performance impacts of checked indexing. Different checked indexing overheads 
 in these different contexts show that this is indeed the case. 
 
-#### Figures 5 and 9
+#### Figures 5 and 9 Expectations
 
 Generated files: 
 
@@ -201,7 +201,7 @@ Figure 9 confirms that hotness + one-checked performs better than just hotness
 NADER on `rust-brotli`. The line that hugs the x axis longest introduces the most 
 bounds checks within the threshold. 
 
-#### Figure 7 and Table 3
+#### Figure 7 and Table 3 Expectations
 
 Generated files: 
 
@@ -226,7 +226,7 @@ and the number of dependencies that have at least one unchecked indexing use.
 Note that we do not include the full set of applications that we evaluated in the paper 
 due to an error with building our docker image that we were unable to resolve in time. 
 
-#### Table 4
+#### Table 4 Expectations
 
 TODO how to interpret results
 
@@ -256,7 +256,7 @@ Importantly, NADER maximizes the number of bounds checks reintroduced while stay
 below the specified threshold by construction. Table 4 illustrates this on several 
 applications. 
 
-#### Figure 8
+#### Figure 8 Expectations
 
 Generated files: 
 
