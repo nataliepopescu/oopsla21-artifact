@@ -127,6 +127,8 @@ detail below.
 
 #### Figure 1
 
+Generated files: 
+
 ```sh
 figure1_all.pdf
 figure1_histogram.pdf
@@ -175,6 +177,8 @@ in these different contexts show that this is indeed the case.
 
 #### Figures 5 and 9
 
+Generated files: 
+
 ```sh
 figure5.pdf
 figure9.pdf
@@ -198,6 +202,8 @@ NADER on `rust-brotli`. The line that hugs the x axis longest introduces the mos
 bounds checks within the threshold. 
 
 #### Figure 7 and Table 3
+
+Generated files: 
 
 ```sh
 figure7.pdf
@@ -251,6 +257,8 @@ below the specified threshold by construction. Table 4 illustrates this on sever
 applications. 
 
 #### Figure 8
+
+Generated files: 
 
 ```sh
 figure8.pdf
