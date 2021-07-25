@@ -67,7 +67,7 @@ are listed here:
 | Fast | 20 min | - | 40 min | 2 min | - | - | 1 hr |
 | Full | 7 hrs | 20 min | 9 hrs | 20 min | 1 hr | 1 hr | ~19 hrs |
 
-### Generating results/plots
+### Generating results
 
 To run individual experiments, simply replace `--all` with the corresponding 
 experiment's flag, found by running: 
@@ -94,14 +94,14 @@ To generate Figure 7 and Table 3, for example, run the following:
 python3 ExpDriver --figure7table3 [--full]
 ```
 
-### Viewing results/plots
+### Viewing results
 
 Some expected output is in `example-results`; you can compare your generated plots to those as a sanity check. 
 Our artifact generates PDFs that can be copied out of the docker container using
 [docker cp](https://docs.docker.com/engine/reference/commandline/cp/): 
 
 ```sh
-docker cp <container_id>:/home/oopsla21ae/images/<plot.pdf> <local_dest>
+docker cp <container_id>:/home/oopsla21ae/images/<filename> <local_dest>
 ```
 
 - To get the `<container_id>` of a _running_ container, run: 
@@ -119,7 +119,7 @@ CONTAINER ID     IMAGE        COMMAND  CREATED  STATUS   PORTS   NAMES
 docker container ps -a
 ```
 
-- `<plot.pdf>` names for each experiment are listed in the following subsections. 
+- `<filename>` names for each experiment are listed in the following subsections. 
 
 In general, the figures and tables produced here are analogous to the figures and 
 tables presented in the paper, but we describe how to interpret results in more 
