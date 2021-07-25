@@ -151,11 +151,11 @@ def genFigure7Table3(root, quick_run=False):
     subprocess.run(["python3", "uncover_uncheckeds.py", "--root", "apps_{}".format(suffix)])
     
     f7_from_path = os.path.join(root, "figure7", "apps_{}".format(suffix), "figure7.pdf")
-    f7_to_path = os.path.join(root, "images", "figure7_{}.pdf".format(suffix))
+    f7_to_path = os.path.join(root, "images") #, "figure7_{}.pdf".format(suffix))
     subprocess.run(["mv", f7_from_path, f7_to_path])
 
-    t3_from_path = os.path.join(root, "table3", "apps_{}".format(suffix), "table3.pdf")
-    t3_to_path = os.path.join(root, "images", "table3_{}.pdf".format(suffix))
+    t3_from_path = os.path.join(root, "figure7", "apps_{}".format(suffix), "table3.pdf")
+    t3_to_path = os.path.join(root, "images") #, "table3_{}.pdf".format(suffix))
     subprocess.run(["mv", t3_from_path, t3_to_path])
 
     os.chdir(root)
