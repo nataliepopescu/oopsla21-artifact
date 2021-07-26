@@ -259,8 +259,8 @@ We expect the applications we evaluate to stop after the following steps:
 - `iron` after step 3 (checked indexing overhead == -2.01%)
 - `RustPython` after step 3 (checked indexing overhead == 0.71%)
 - `zola` after step 3 (checked indexing overhead == 0.25%)
-- `COST` after step 4 (see [figure 8](https://github.com/nataliepopescu/oopsla21-artifact#figure-8-expectations))
-- `rust-brotli` after step 4 (see [figure 9](https://github.com/nataliepopescu/oopsla21-artifact#figures-5-and-9-expectations))
+- `COST` after step 4 (not generated here, see [figure 8](https://github.com/nataliepopescu/oopsla21-artifact#figure-8-expectations))
+- `rust-brotli` after step 4 (not generated here, see [figure 9](https://github.com/nataliepopescu/oopsla21-artifact#figures-5-and-9-expectations))
 
 #### Figure 8 Expectations
 
