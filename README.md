@@ -24,7 +24,7 @@ from the provided Google Drive link and load it like so:
 docker load < oopsla21ae.tar.gz
 ```
 
-This should take some time. Once done, start the docker container:
+This might take some time. Once done, start the docker container:
 
 ```sh
 docker run -it --cap-add=sys_nice --name artifact oopsla21ae
