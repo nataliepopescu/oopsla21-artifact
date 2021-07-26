@@ -240,31 +240,27 @@ with at least one use of unchecked indexing. Please see the `table3.pdf` in
 
 No generated files. 
 
-Figure 4 goes through the four steps of NADER and shows that for many applications, 
-most, if not all, bounds checks can be reintroduced with little-to-no overhead. 
-For each application, NADER first checks that it uses any unchecked indexing (directly or 
-indirectly). If not, then the application has as many bounds checks as it can 
-with no extra overhead, and NADER is done. 
+The four steps of NADER are: 
 
-If the application does use unchecked 
-indexing, NADER performs a coarse filtering step by comparing the generated binaries 
-of two versions of the application (one with unchecked indexing and one where the 
-unchecking indexing has been converted to checked indexing). If the binaries are the 
-same, then _in this context_ the unchecked indexing binary is as safe as the 
-checked indexing one, again with no extra overhead, and NADER is done. 
+1. Check for any unchecked indexing
 
-Thirdly, NADER measures the maximum possible overhead of checked indexing between the two 
-binary versions. If this maximum overhead falls below the threshold, then NADER converts 
-all unchecked indexing to checked indexing, and the number of reintroduced bounds checks 
-is maximized. 
-  
-Finally, if the maximum possible overhead is larger than the desired threshold, NADER performs 
-an exploration phase to determine the largest set of bounds checks it can reintroduce 
-within the threshold. See more about this step [here](https://github.com/nataliepopescu/oopsla21-artifact#figures-5-and-9). 
-  
-Importantly, NADER maximizes the number of bounds checks reintroduced while staying 
-below the specified threshold by construction. Table 4 illustrates this on several 
-applications. 
+2. Compare original binary with one generated after converted all unchecked indexing to checked indexing
+
+3. Measure overhead of all converted checked indexing (applicable to current context only)
+
+4. If significant, run NADER to only reintroduce bounds checks up to a threshold
+
+We expect the applications we evaluate to stop after the following steps: 
+
+- `tantivy` after step 2 (binaries are identical)
+- `rage` after step 2 (binaries are identical)
+- `swc` after step 3 (checked indexing overhead == 0.13%)
+- `warp` after step 3 (checked indexing overhead == -0.31%)
+- `iron` after step 3 (checked indexing overhead == -2.01%)
+- `RustPython` after step 3 (checked indexing overhead == 0.71%)
+- `zola` after step 3 (checked indexing overhead == 0.25%)
+- `COST` after step 4 (see [figure 8](https://github.com/nataliepopescu/oopsla21-artifact#figure-8-expectations))
+- `rust-brotli` after step 4 (see [figure 9](https://github.com/nataliepopescu/oopsla21-artifact#figures-5-and-9-expectations))
 
 #### Figure 8 Expectations
 
