@@ -273,11 +273,12 @@ Generated files:
 ```sh
 figure8.pdf
 ```
-  
-Figure 8 confirms that hotness + one-checked performs better than just hotness 
-(and better than random) through a fully-automated run of the heuristic-based 
-NADER on `COST`. The line that hugs the x axis longest introduces the most 
-bounds checks within the threshold. 
+ 
+`figure8.pdf` presents the same information as `figure9.pdf` (excluding the 
+random line) for the `COST` benchmark instead of `rust-brotli`. Specifically, 
+the dark blue line at the far right of the graph shows when NADER switches 
+from the hotness heuristic to the one-checked heuristic, and should be above 
+the orange hotness line. 
 
 ### Paper claims _not_ supported by artifact
 
