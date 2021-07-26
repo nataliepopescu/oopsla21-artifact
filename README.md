@@ -200,8 +200,8 @@ in the `rust-brotli` benchmark:
 
 - Random
 - Hotness
-- One-checked
-- One-unchecked
+- One-checked slowdown
+- One-unchecked speedup
 
 With more "successful" heuristics reintroducing more bounds checks within a 
 certain threshold, i.e. hugging the black 0% line the longest. 
@@ -273,7 +273,7 @@ figure8.pdf
 `figure8.pdf` presents the same information as `figure9.pdf` (excluding the 
 random line) for the `COST` benchmark instead of `rust-brotli`. Specifically, 
 the dark blue line at the far right of the graph shows when NADER switches 
-from the hotness heuristic to the one-checked heuristic, and should be above 
+from the hotness heuristic to the one-checked heuristic and should be above 
 the orange hotness line. 
 
 ### Paper claims _not_ supported by artifact
@@ -289,17 +289,17 @@ rigorous process of elimination here.
 
 ### Functional Badge Requirements
   
-- Artifact supports all major claims made by paper (outlined in this document by all of the Figures and Tables)
+- Artifact supports all major claims made by paper (outlined in this document by the Figures and Tables)
 - Artifact documents detailed steps for result reproduction and lists any potential deviations from what the paper claims
   
 Deviations: 
   
 - All but Figure 7 and Table 3 are performance results and will vary, but we describe trends and patterns to look for
-- A full evaluation takes almost 19 hours, but we offer reviewers a fast path that can complete in about an hour
+- A full evaluation takes almost 19 hours, but we offer reviewers a fast path that can complete in about three hours
   
 ### Reusable Badge Requirements
   
-- Future researchers can run this artifact on more libraries and applications by cloning their source code here
+- Future researchers can run this artifact on more libraries and applications by cloning their source code
 - Future researchers building off this artifact can do so by adding new benchmarks and their arguments
 - Future researchers can directly modify `Nader.py` to improve its exploration algorithm
 - Artifact source code can be reused as separate components much in the same way as the individual plots are generated 
