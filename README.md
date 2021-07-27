@@ -121,6 +121,9 @@ docker container ps -a
 
 - `<filename>` names for each experiment are listed in the following subsections. 
 
+Once the generated PDFs have been copied over to `<local_dest>`, reviewers can view them 
+using their favorite PDF viewer. 
+
 In general, the figures and tables produced here are analogous to the figures and 
 tables presented in the paper, but we describe how to interpret results in more 
 detail below. 
