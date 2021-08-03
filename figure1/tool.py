@@ -224,7 +224,7 @@ class State:
     def run_benchmarks(self):
         self.get_bmark_names()
         os.environ["RUSTFLAGS"] = UNMODFLAGS
-        for r in tqdm(range(self.bench)): 
+        for r in tqdm(range(self.bench), leave=False): 
             self.randomize_dirlist()
             curnum = 0
             totalnum = len(self.dirlist)
