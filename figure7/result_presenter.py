@@ -119,7 +119,10 @@ def gen_figure7_table3(root):
             x=list(rp.app_names.values()), 
             y=list(rp.indirect_ui.values())),
     ])
-    fig.update_layout(barmode='stack')
+    fig.update_layout(barmode='stack',
+        xaxis_title="Applications",
+        yaxis_title="Total Number of Unchecked Indexing",
+    )
     call(['orca', 'graph', 
         '-o', 'figure7', 
         '-f', 'pdf', 
