@@ -1,5 +1,9 @@
 exp-results/
 images/
+data/apps_fast
+data/apps_full
+data/crates_fast
+data/crates_full
 # Created by https://www.toptal.com/developers/gitignore/api/rust,python,linux,macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=rust,python,linux,macos
 
