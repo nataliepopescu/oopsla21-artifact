@@ -10,10 +10,11 @@ import shutil
 import numpy
 from aggregate import dump_benchmark, path_wrangle, writerow
 from crunch import crunch, stats, stats2
-from result_presenter import gen_figure1
+from result_presenter_fig1 import gen_figure1
 import datetime
 import re
 from tqdm.auto import tqdm
+from make_patch import patchAll
 
 EXPLORE_OG = "explore"
 EXPLORE_RX = "explore_regex"
@@ -34,14 +35,17 @@ OPTFLAGS =  " -C opt-level={}".format(optval)
 DBGFLAGS =  " -C debuginfo={}".format(dbgval)
 EMBDFLAGS = " -C embed-bitcode={}".format(embdval)
 CGUFLAGS =  " -C codegen-units={}".format(cguval)
-RBCFLAGS =  " -Z remove-bc"
-UNMODFLAGS = OPTFLAGS + DBGFLAGS + EMBDFLAGS + CGUFLAGS
-BCRMPFLAGS = OPTFLAGS + DBGFLAGS + EMBDFLAGS + CGUFLAGS + RBCFLAGS
+#RBCFLAGS =  " -Z remove-bc"
+CVTFLAGS =  " -Z convert-unchecked-indexing"
+UNMODFLAGS = OPTFLAGS + DBGFLAGS + EMBDFLAGS + CGUFLAGS + CVTFLAGS
+#BCRMPFLAGS = OPTFLAGS + DBGFLAGS + EMBDFLAGS + CGUFLAGS + RBCFLAGS
 
 TESTS_OUT =     "tests.out"
 TESTS_ERR =     "tests.err"
 COMP_OUT =      "compile.out"
 COMP_ERR =      "compile.err"
+CONV_OUT =      "convert.out"
+CONV_ERR =      "convert.err"
 BENCH_DATA =    "bench.data"
 CRUNCHED_DATA = "crunched.data"
 
@@ -108,7 +112,7 @@ class State:
 
     def run_tests(self):
         for e in exp_types:
-            os.environ["RUSTFLAGS"] = UNMODFLAGS if e == UNMOD else BCRMPFLAGS
+            os.environ["RUSTFLAGS"] = UNMODFLAGS #if e == UNMOD else BCRMPFLAGS
             curnum = 0
             totalnum = len(self.dirlist)
 
@@ -152,9 +156,9 @@ class State:
         self.bnames = dict()
         for d in self.dirlist: 
             names = []
-            if "flux" in d:
-                ctoml = open(os.path.join(d, "libflux", "flux", "Cargo.toml"))
-            elif "rage" in d:
+            #if "flux" in d:
+            #    ctoml = open(os.path.join(d, "libflux", "flux", "Cargo.toml"))
+            if "rage" in d:
                 ctoml = open(os.path.join(d, "age", "Cargo.toml"))
             else: 
                 ctoml = open(os.path.join(d, "Cargo.toml"))
@@ -177,7 +181,7 @@ class State:
                 names.append(m)
             self.bnames.update({d: names})
 
-    def compile_benchmarks(self, regex=False):
+    def compile_benchmarks(self, regex=False, converted=False):
         self.get_bmark_names()
         curnum = 0
         totalnum = len(self.dirlist)
@@ -190,27 +194,34 @@ class State:
 
         for d in self.dirlist:
             curnum += 1
-            if "flux" in d:
-                newd = os.path.join(d, "libflux", "flux")
-                os.chdir(newd)
-                outdir = os.path.join(newd, EXPLORE)
-            else: 
-                os.chdir(d)
-                outdir = os.path.join(d, EXPLORE)
-            print("Compiling {}/{} crates...".format(curnum, totalnum))
-            #print(outdir)
+            #if "flux" in d:
+            #    newd = os.path.join(d, "libflux", "flux")
+            #    os.chdir(newd)
+            #    outdir = os.path.join(newd, EXPLORE)
+            #else: 
+            os.chdir(d)
+            outdir = os.path.join(d, EXPLORE)
+            target_dir = os.path.join(outdir, "target")
+            vendor_dir = os.path.join(outdir, "vendor")
             subprocess.run(["mkdir", "-p", outdir], stdout=open(os.devnull, 'wb'))
-            #for b in self.bnames.get(d): 
-            #    print("\tBenchmark: {}".format(b))
-            #    f_out = open(os.path.join(outdir, "{}_{}".format(b, COMP_OUT)), "w")
-            #    f_err = open(os.path.join(outdir, "{}_{}".format(b, COMP_ERR)), "w")
+            if regex and converted: 
+                subprocess.run(["cp", os.path.join(outdir, COMP_OUT), os.path.join(outdir, "{}.old".format(COMP_OUT))])
             f_out = open(os.path.join(outdir, COMP_OUT), "w")
             f_err = open(os.path.join(outdir, COMP_ERR), "w")
             try:
-                subprocess.run(["cargo", "clean"], stdout=open(os.devnull, 'wb'),
+                subprocess.run(["cargo", "clean", "--target-dir", target_dir], stdout=open(os.devnull, 'wb'),
                         stderr=open(os.devnull, 'wb'))
-                #subprocess.run([COMPILE, b, EXPLORE],
-                subprocess.run(["cargo", "bench", "--verbose", "--no-run"],
+
+                if regex and not converted:
+                    print("Vendoring {}/{} crates...".format(curnum, totalnum))
+                    subprocess.run(["cargo", "vendor", "--versioned-dirs", vendor_dir])
+                    subprocess.run(["mkdir", "-p", ".cargo"])
+                    with open(".cargo/config.toml", 'a') as fd:
+                        fd.write("[source.crates-io]\nreplace-with = \x22vendored-sources\x22\n\n[source.vendored-sources]\ndirectory = \x22{}\x22\n".format(vendor_dir))
+                    patchAll(".", vendor_dir, vendor_dir)
+
+                print("Compiling {}/{} crates...".format(curnum, totalnum))
+                subprocess.run(["cargo", "bench", "--verbose", "--no-run", "--target-dir", target_dir],
                         text=True, timeout=1200, stdout=f_out, stderr=f_err)
             except subprocess.TimeoutExpired as err: 
                 print(err)
@@ -221,6 +232,41 @@ class State:
                 f_err.close()
             os.chdir(self.root)
 
+    #def convert_paths(self, old_mir_filelist, new_mir_filelist):
+    #    old_fd = open(old_mir_filelist, "r")
+    #    new_fd = open(new_mir_filelist, "w")
+
+    #    to_write = []
+    #    lines = old_fd.readlines()
+    #    for line in lines: 
+    #        # convert "explore/vendor" -> "explore_regex/vendor"
+    #        new_line = re.sub("explore/vendor", "explore_regex/vendor", line)
+    #        to_write.append(new_line)
+
+    #    all_lines = ''.join(to_write)
+    #    new_fd.write(all_lines)
+
+    #    old_fd.close()
+    #    new_fd.close()
+        
+    def convert(self):
+        curnum = 0
+        totalnum = len(self.dirlist)
+        for d in self.dirlist:
+            os.chdir(d)
+            curnum += 1
+            print("Converting {}/{} crates...".format(curnum, totalnum))
+            outdir = os.path.join(d, EXPLORE_RX)
+            f_out = open(os.path.join(outdir, CONV_OUT), "w")
+            f_err = open(os.path.join(outdir, CONV_ERR), "w")
+            mir_filelist = os.path.join(EXPLORE_RX, COMP_OUT)
+            print(mir_filelist)
+            subprocess.run(["python3", "../../../scripts/regexify.py", "--root", d, "-f", mir_filelist],
+                    text=True, stdout=f_out, stderr=f_err)
+            f_out.close()
+            f_err.close()
+            os.chdir(self.root)
+
     def run_benchmarks(self):
         self.get_bmark_names()
         os.environ["RUSTFLAGS"] = UNMODFLAGS
@@ -229,13 +275,14 @@ class State:
             curnum = 0
             totalnum = len(self.dirlist)
             for d in self.dirlist:
-                if "flux" in d:
-                    newd = os.path.join(d, "libflux", "flux")
-                    os.chdir(newd)
-                    outdir = os.path.join(newd, RESULTS, str(r))
-                else: 
-                    os.chdir(d)
-                    outdir = os.path.join(d, RESULTS, str(r))
+                #if "flux" in d:
+                #    newd = os.path.join(d, "libflux", "flux")
+                #    os.chdir(newd)
+                #    outdir = os.path.join(newd, RESULTS, str(r))
+                #else: 
+                os.chdir(d)
+                outdir = os.path.join(d, RESULTS, str(r))
+
                 curnum += 1
                 print("Benchmarking {}/{} crates...".format(curnum, totalnum))
                 #print(outdir)
@@ -246,6 +293,7 @@ class State:
                         print("Benchmarking original crates...")
                     else: 
                         print("Benchmarking regexified crates...")
+                    target_dir = os.path.join(d, EXPLORE, "target")
                     #for b in self.bnames.get(d):
                     #    print("\tBenchmark: {}".format(b))
                     #    f_out = open(os.path.join(outdir, "{}_{}.out".format(b, e)), "w")
@@ -254,7 +302,7 @@ class State:
                     f_err = open(os.path.join(outdir, "{}.err".format(e)), "w")
                     try:
                         #subprocess.run([RUN, b, EXPLORE],
-                        subprocess.run(["cargo", "bench", "--verbose"],
+                        subprocess.run(["cargo", "bench", "--verbose", "--target-dir", target_dir],
                                 text=True, timeout=1800, stdout=f_out, stderr=f_err)
                     except subprocess.TimeoutExpired as err: 
                         print(err)
@@ -467,13 +515,14 @@ class State:
             for d in self.dirlist: 
                 #for EXPLORE in [EXPLORE_OG, EXPLORE_RX]:
                 EXPLORE = EXPLORE_OG
-                if "flux" in d: 
-                    newd = os.path.join(d, "libflux", "flux")
-                    os.chdir(newd)
-                    dirname = os.path.join(newd, EXPLORE)
-                else: 
-                    os.chdir(d)
-                    dirname = os.path.join(d, EXPLORE)
+                #if "flux" in d: 
+                #    newd = os.path.join(d, "libflux", "flux")
+                #    os.chdir(newd)
+                #    dirname = os.path.join(newd, EXPLORE)
+                #else: 
+                os.chdir(d)
+                dirname = os.path.join(d, EXPLORE)
+
                 subprocess.run(["cargo", "clean"], stdout=open(os.devnull, 'wb'),
                         stderr=open(os.devnull, 'wb'))
                 print("deleting directory: {}...".format(dirname))
@@ -486,11 +535,12 @@ class State:
         # remove benchmark directories
         if self.clean == "a" or self.clean == "b":
             for d in self.dirlist: 
-                if "flux" in d: 
-                    newd = os.path.join(d, "libflux", "flux")
-                    os.chdir(newd)
-                else: 
-                    os.chdir(d)
+                #if "flux" in d: 
+                #    newd = os.path.join(d, "libflux", "flux")
+                #    os.chdir(newd)
+                #else: 
+                os.chdir(d)
+
                 print("deleting directory: {}...".format(RESULTS))
                 try: 
                     shutil.rmtree(RESULTS)
@@ -574,10 +624,12 @@ if __name__ == "__main__":
     if s.cmpl == True:
         s.revert_criterion_version()
         s.compile_benchmarks()
-        print("Converting source code...")
-        subprocess.run(["python3", REGEX_PY, "--root", s.ctgrydir],
-                stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
         s.compile_benchmarks(regex=True)
+        s.convert()
+        #print("Converting source code...")
+        #subprocess.run(["python3", REGEX_PY, "--root", s.ctgrydir],
+        #        stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
+        s.compile_benchmarks(regex=True, converted=True)
     if s.bench: 
         s.run_benchmarks()
         s.crunch_per_run()

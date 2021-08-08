@@ -136,14 +136,14 @@ def genTable1():
 
 def genFigure1(root, quick_run=False):
     if full_run: 
-        cratedir = "crates_full"
+        cratedir = os.path.join(root, "data", "crates_full")
     else: 
-        cratedir = "crates_fast"
+        cratedir = os.path.join(root, "data", "crates_fast")
 
-    os.chdir(os.path.join(root, "figure1"))
+    os.chdir(os.path.join(root, "scripts"))
     subprocess.run(["python3", "tool.py", "--dir", cratedir, 
-            "--compile", "--bench", "3", "--local", "-g"])
-    os.chdir(os.path.join(root, "figure1"))
+            "--compile", "--bench", "10", "--local", "-g"])
+    os.chdir(os.path.join(root, "data"))
     subprocess.run(["mv", "figure1_all.pdf", os.path.join(root, "images/")]) 
     subprocess.run(["mv", "figure1_histogram.pdf", os.path.join(root, "images/")]) 
     subprocess.run(["mv", "figure1_hurt.pdf", os.path.join(root, "images/")]) 
@@ -153,19 +153,19 @@ def genFigure1(root, quick_run=False):
 
 def genFigure7Table3(root, quick_run=False):
     if full_run: 
-        suffix = "full"
+        appdir = os.path.join(root, "data", "apps_full")
     else: 
-        suffix = "fast"
+        appdir = os.path.join(root, "data", "apps_fast")
 
-    os.chdir(os.path.join(root, "figure7"))
-    subprocess.run(["python3", "uncover_uncheckeds.py", "--root", "apps_{}".format(suffix)])
+    os.chdir(os.path.join(root, "scripts"))
+    subprocess.run(["python3", "uncover_uncheckeds.py", "--root", appdir])
     
-    f7_from_path = os.path.join(root, "figure7", "apps_{}".format(suffix), "figure7.pdf")
-    f7_to_path = os.path.join(root, "images") #, "figure7_{}.pdf".format(suffix))
+    f7_from_path = os.path.join(root, "data", "apps_{}".format(suffix), "figure7.pdf")
+    f7_to_path = os.path.join(root, "images")
     subprocess.run(["mv", f7_from_path, f7_to_path])
 
-    t3_from_path = os.path.join(root, "figure7", "apps_{}".format(suffix), "table3.pdf")
-    t3_to_path = os.path.join(root, "images") #, "table3_{}.pdf".format(suffix))
+    t3_from_path = os.path.join(root, "data", "apps_{}".format(suffix), "table3.pdf")
+    t3_to_path = os.path.join(root, "images")
     subprocess.run(["mv", t3_from_path, t3_to_path])
 
     os.chdir(root)

@@ -1,5 +1,5 @@
 #!/bin/bash
-cd ../figure7
+#cd ../figure7
 mkdir apps_fast && cd apps_fast
 
 cp -r ${WD}/brotli-expanded brotli-decompressor

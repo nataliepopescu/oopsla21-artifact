@@ -4,7 +4,7 @@ import re
 import os
 import subprocess
 import argparse
-from make_patch import patchAll
+#from make_patch import patchAll
 
 
 # [(line, col, fname), ...]
@@ -22,14 +22,15 @@ def dumpBCs(bcs, logfile=None):
             fd.write("%d %d %s\n" % (line, col, fname))
 
 
-def findTargetFiles(mir_filelist): #single_file):
+def findTargetFiles(mir_file): #single_file):
     # a line in mir_filelist looks something like: src/lib.rs:28:42: 28:62 (#0)
     filelist = dict()
 
-    lines = mir_filelist.strip().split("\n")
-    for line in lines: 
+    lines = mir_file.readlines()
+    #lines = mir_filelist.strip().split("\n")
+    for line in lines:
         parts = line.split(":")
-        print(parts)
+        #print(parts)
         filename = parts[0].strip()
         line_start = parts[1].strip()
         line_end = parts[3].strip()
@@ -218,8 +219,7 @@ def convertBlock(block, regex_in, regex_out, cur_line=1, selective_safe=[]):
 
         # if choose not to convert this line to safe
         if not cur_line in selective_safe:
-            print("we here")
-            print(cur_line)
+            #print(cur_line)
             new_block += pre_block + cur_block
             block = post_block
             continue
@@ -304,29 +304,30 @@ if __name__ == "__main__":
     os.chdir(root)
 
     # vendor
-    subprocess.run(["cargo", "clean"])
-    subprocess.run(["cargo", "vendor", "--versioned-dirs"])
-    subprocess.run(["mkdir", "-p", ".cargo"])
-    with open(".cargo/config.toml", 'a') as fd: 
-        fd.write("[source.crates-io]\nreplace-with = \x22vendored-sources\x22\n[source.vendored-sources]\ndirectory = \x22vendor\x22")
+    #subprocess.run(["cargo", "clean"])
+    #subprocess.run(["cargo", "vendor", "--versioned-dirs"])
+    #subprocess.run(["mkdir", "-p", ".cargo"])
+    #with open(".cargo/config.toml", 'a') as fd: 
+    #    fd.write("[source.crates-io]\nreplace-with = \x22vendored-sources\x22\n[source.vendored-sources]\ndirectory = \x22vendor\x22")
 
-    # patch Cargo.toml with vendored crates
-    patchAll(".", "vendor", "vendor")
+    ## patch Cargo.toml with vendored crates
+    #patchAll(".", "vendor", "vendor")
 
-    # get list of get_unchecked to convert
-    os.environ["RUSTFLAGS"] = "-Z convert-unchecked-indexing"
-    mir_filelist = subprocess.run(["cargo", "bench", "--no-run"], capture_output=True, text=True)
+    ## get list of get_unchecked to convert
+    #os.environ["RUSTFLAGS"] = "-Z convert-unchecked-indexing"
+    #mir_filelist = subprocess.run(["cargo", "bench", "--no-run"], capture_output=True, text=True)
 
-    filelist = findTargetFiles(mir_filelist.stdout)
-    print("\nFilelist: \n")
-    for f in filelist.items():
-        print(f)
-    print()
+    fd = open(mir_filelist[0], 'r')
+    filelist = findTargetFiles(fd)
+    #print("\nFilelist: \n")
+    #for f in filelist.items():
+    #    print(f)
+    #print()
     
     # List of all bounds checks
     bcs = []
     for fname in filelist.keys():
-        print("Converting: {}".format(fname))
+        #print("Converting: {}".format(fname))
         bcs.extend(convertFile(fname, fname, filelist[fname]))
 
     dumpBCs(bcs, logfile)

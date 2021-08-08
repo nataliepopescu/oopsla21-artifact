@@ -6,7 +6,7 @@ import re
 import subprocess
 import shutil
 import numpy
-from result_presenter import gen_figure7_table3
+from result_presenter_fig7 import gen_figure7_table3
 
 VENDOR = "vendor"
 DIRECT_DEF = "direct_loc_def.txt"
