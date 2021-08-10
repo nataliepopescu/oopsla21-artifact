@@ -18,7 +18,9 @@ RUN apt-get update && apt-get -y install curl \
     libxtst6 \
     libxss1 \
     libgconf-2-4 \
-    libnss3
+    libnss3 \
+    build-essential \
+    ninja-build
 
 COPY ./requirements.txt /root/requirements.txt
 RUN pip3 install -r /root/requirements.txt
@@ -58,6 +60,17 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="~/.cargo/bin:${PATH}"
 RUN source $HOME/.cargo/env
 
+# For custom Rust
+WORKDIR ${HOME}
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.20.2/cmake-3.20.2.tar.gz && \
+    tar -zxvf cmake-3.20.2.tar.gz && \
+    cd cmake-3.20.2 && \ 
+    ./bootstrap && make
+USER root
+RUN make install
+USER ${UNAME}
+WORKDIR ${WD}
+
 # Install cargo-edit
 ENV OPENSSL_DIR="/usr/bin/openssl"
 ENV OPENSSL_LIB_DIR="/usr/lib/x86_64-linux-gnu"
@@ -70,10 +83,9 @@ COPY --chown=${UNAME} benchmarks        benchmarks
 COPY --chown=${UNAME} brotli-expanded   brotli-expanded
 COPY --chown=${UNAME} data              data
 COPY --chown=${UNAME} example-results   example-results
-COPY --chown=${UNAME} figure1           figure1
-COPY --chown=${UNAME} figure7           figure7
 COPY --chown=${UNAME} rust-toolchain    rust-toolchain
 COPY --chown=${UNAME} scripts           scripts
+COPY --chown=${UNAME} locks		locks
 COPY --chown=${UNAME} COST              COST
 COPY --chown=${UNAME} bashrc            ${HOME}/.bashrc
 RUN mkdir -p images
@@ -82,6 +94,7 @@ RUN mkdir -p images
 WORKDIR ${WD}/data
 RUN ./create_silesia.sh
 RUN ./get_LiveJournal.sh
+RUN ./setup_rust.sh
 RUN ./setup_figure1.sh
 RUN ./setup_figure7.sh
 RUN ./setup_table4.sh
