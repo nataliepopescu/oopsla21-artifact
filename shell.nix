@@ -5,7 +5,6 @@
       pkgs.python38Packages.numpy
       pkgs.python38Packages.dash
       pkgs.python38Packages.plotly
-      pkgs.python38Packages.orca
       pkgs.python38Packages.tqdm
       pkgs.python38Packages.scipy
       pkgs.python38Packages.psutil

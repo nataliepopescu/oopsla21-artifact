@@ -1,5 +1,4 @@
 #!/bin/bash
-#cd ../figure1
 mkdir crates_fast && cd crates_fast
 
 wget www.crates.io/api/v1/crates/prost/0.7.0/download
