@@ -20,7 +20,7 @@ EXPLORE_OG = "explore"
 EXPLORE_RX = "explore_regex"
 RESULTS = "results"
 
-REGEX_PY = os.path.join("../", "scripts", "regexify.py")
+#REGEX_PY = os.path.join("../", "scripts", "regexify.py")
 
 UNMOD = "UNMOD"
 REGEX = "REGEX"
