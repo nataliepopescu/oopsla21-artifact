@@ -4,8 +4,7 @@ import re
 import os
 import subprocess
 import argparse
-#from make_patch import patchAll
-
+from make_patch import patchAll
 
 # [(line, col, fname), ...]
 def dumpBCs(bcs, logfile=None):
@@ -284,14 +283,14 @@ def argParse():
             required=False,
             type=str,
             nargs=1,
-            default="mir_output.txt",
+            default="/exploreunsafe/mir-filelist",
             help="Specify the mir output file that contains the filenames, line #s, and col #s /"
             "of the function calls to convert") #this if only want to apply this tool to a single file")
     parser.add_argument("--logfile", "-l",
             metavar="filename",
             type=str,
             nargs="?",
-            const="changes.txt",
+            const="/exploreunsafe/changes.txt",
             default="changes.txt",
             help="name of the file in which to store line/column/filename of changes; "\
                     "default is 'changes.txt' in the specified root dir")
@@ -317,7 +316,12 @@ if __name__ == "__main__":
     #os.environ["RUSTFLAGS"] = "-Z convert-unchecked-indexing"
     #mir_filelist = subprocess.run(["cargo", "bench", "--no-run"], capture_output=True, text=True)
 
-    fd = open(mir_filelist[0], 'r')
+    if "mozilla" in root: 
+        #patchAll(".", "vendor", "vendor")
+        fd = open(mir_filelist, 'r')
+    else:
+        fd = open(mir_filelist[0], 'r')
+
     filelist = findTargetFiles(fd)
     #print("\nFilelist: \n")
     #for f in filelist.items():
@@ -327,8 +331,9 @@ if __name__ == "__main__":
     # List of all bounds checks
     bcs = []
     for fname in filelist.keys():
-        #print("Converting: {}".format(fname))
+        print("Converting: {}".format(fname))
         bcs.extend(convertFile(fname, fname, filelist[fname]))
+        print(bcs)
 
     dumpBCs(bcs, logfile)
 

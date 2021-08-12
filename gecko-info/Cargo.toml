@@ -1,0 +1,1963 @@
+[workspace]
+
+# These are the "root" crates, which we build and test as top-level targets.
+# Their transitive dependencies and dev-dependencies are included automatically
+# and do not need to be listed here. Their external dependencies are vendored
+# into `third_party/rust` by `mach vendor rust`.
+members = [
+  "js/src/frontend/smoosh",
+  "js/src/rust",
+  "js/src/wasm/cranelift",
+  "netwerk/test/http3server",
+  "security/manager/ssl/osclientcerts",
+  "testing/geckodriver",
+  "toolkit/crashreporter/rust_minidump_writer_linux",
+  "toolkit/crashreporter/mozwer-rust",
+  "toolkit/library/gtest/rust",
+  "toolkit/library/rust/",
+  "toolkit/mozapps/defaultagent/rust",
+]
+
+# Excluded crates may be built as dependencies, but won't be considered members
+# of the workspace and their dev-dependencies won't be included.
+exclude = [
+  # Excluded because it's for a toolchain task
+  "build/liblowercase",
+
+  # Exclude third-party code vendored into mozilla-central.
+  "servo",
+  "third_party/rust",
+
+  # Excluded because these crates have their own Cargo workspaces so they can't
+  # be included in the top-level one.
+  "gfx/wgpu",
+  "gfx/wr",
+
+  # Excluded because they are used only as dependencies, not top-level targets,
+  # so we don't need to vendor their dev-dependencies.
+  "gfx/webrender_bindings",
+  "media/mp4parse-rust/mp4parse",
+  "media/mp4parse-rust/mp4parse_capi",
+  "xpcom/rust/gkrust_utils",
+  "tools/lint/test/files/clippy",
+  "tools/fuzzing/rust",
+]
+
+# Explicitly specify what our profiles use.  The opt-level setting here is
+# a total fiction; see the setup of MOZ_RUST_DEFAULT_FLAGS for what the
+# opt-level setting will be as a result of various other configure flags.
+[profile.dev]
+opt-level = 1
+rpath = false
+lto = false
+debug-assertions = true
+panic = "abort"
+
+[profile.release]
+opt-level = 2
+rpath = false
+debug-assertions = false
+panic = "abort"
+
+# Optimize build dependencies, because bindgen and proc macros / style
+# compilation take more to run than to build otherwise.
+[profile.dev.build-override]
+opt-level = 1
+
+[profile.release.build-override]
+opt-level = 1
+
+# optimizing glsl more makes a big difference in swgl build times
+[profile.dev.package.glsl]
+opt-level = 2
+
+[profile.release.package.glsl]
+opt-level = 2
+
+[patch.crates-io]
+chardetng = { git = "https://github.com/hsivonen/chardetng", rev="302c995f91f44cf26e77dc4758ad56c3ff0153ad" }
+chardetng_c = { git = "https://github.com/hsivonen/chardetng_c", rev="ed8a4c6f900a90d4dbc1d64b856e61490a1c3570" }
+libudev-sys = { path = "dom/webauthn/libudev-sys" }
+packed_simd = { git = "https://github.com/hsivonen/packed_simd", rev="6a16f954950401b92b4e220fbf2dfaf6f00e1fb2" }
+rlbox_lucet_sandbox = { git = "https://github.com/PLSysSec/rlbox_lucet_sandbox/", rev="5c8e79048d3ff6f434109e19d4aee4ff8624d3d7" }
+nix = { git = "https://github.com/shravanrn/nix/", rev="4af6c367603869a30fddb5ffb0aba2b9477ba92e" }
+spirv_cross = { git = "https://github.com/kvark/spirv_cross", branch = "wgpu5" }
+minidump_writer_linux = { git = "https://github.com/msirringhaus/minidump_writer_linux.git", rev = "85551909b95a5cf553a85dbcddfa5f117cfbbe0e" }
+
+
+[patch.crates-io.cranelift-codegen]
+git = "https://github.com/bytecodealliance/wasmtime"
+rev = "824fa69756523f2b6d49029fe25de94130b1f144"
+
+[patch.crates-io.cranelift-wasm]
+git = "https://github.com/bytecodealliance/wasmtime"
+rev = "824fa69756523f2b6d49029fe25de94130b1f144"
+
+# Patch autocfg to hide rustc output. Workaround for https://github.com/cuviper/autocfg/issues/30
+#[patch.crates-io.autocfg]
+#path = "third_party/rust/autocfg"
+
+# Patch mio 0.6 to use winapi 0.3 and miow 0.3, getting rid of winapi 0.2.
+# There is not going to be new version of mio 0.6, mio now being >= 0.7.11.
+#[patch.crates-io.mio]
+#path = "third_party/rust/mio"
+
+# Patch failure 0.1.8 to disable the backtrace feature by default. See bug 1608157.
+#[patch.crates-io.failure]
+#path = "third_party/rust/failure"
+
+[patch.crates-io.pin-project-lite]
+path = "vendor/pin-project-lite"
+
+[patch.crates-io.pin-project-lite01]
+path = "vendor/pin-project-lite-0.1.12"
+package = "pin-project-lite"
+
+[patch.crates-io.crossbeam-utils]
+path = "vendor/crossbeam-utils-0.7.2"
+package = "crossbeam-utils"
+
+[patch.crates-io.crossbeam-utils01]
+path = "vendor/crossbeam-utils-0.6.6"
+package = "crossbeam-utils"
+
+[patch.crates-io.crossbeam-channel]
+path = "vendor/crossbeam-channel"
+
+[patch.crates-io.crossbeam-channel01]
+path = "vendor/crossbeam-channel-0.4.4"
+package = "crossbeam-channel"
+
+[patch.crates-io.itertools]
+path = "vendor/itertools"
+
+[patch.crates-io.itertools01]
+path = "vendor/itertools-0.8.2"
+package = "itertools"
+
+[patch.crates-io.futures]
+path = "vendor/futures"
+
+[patch.crates-io.futures01]
+path = "vendor/futures-0.1.31"
+package = "futures"
+
+[patch.crates-io.cfg-if]
+path = "vendor/cfg-if"
+
+[patch.crates-io.cfg-if01]
+path = "vendor/cfg-if-0.1.10"
+package = "cfg-if"
+
+[patch.crates-io.libloading]
+path = "vendor/libloading"
+
+[patch.crates-io.libloading01]
+path = "vendor/libloading-0.5.2"
+package = "libloading"
+
+[patch.crates-io.memmap2]
+path = "vendor/memmap2"
+
+[patch.crates-io.memmap201]
+path = "vendor/memmap2-0.2.3"
+package = "memmap2"
+
+[patch.crates-io.bytes]
+path = "vendor/bytes"
+
+[patch.crates-io.bytes01]
+path = "vendor/bytes-0.4.12"
+package = "bytes"
+
+[patch.crates-io.target-lexicon]
+path = "vendor/target-lexicon"
+
+[patch.crates-io.target-lexicon01]
+path = "vendor/target-lexicon-0.9.0"
+package = "target-lexicon"
+
+[patch.crates-io.cranelift-entity]
+path = "vendor/cranelift-entity"
+
+[patch.crates-io.cranelift-entity01]
+path = "vendor/cranelift-entity-0.41.0"
+package = "cranelift-entity"
+
+[patch.crates-io.base64]
+path = "vendor/base64"
+
+[patch.crates-io.base6401]
+path = "vendor/base64-0.10.1"
+package = "base64"
+
+[patch.crates-io.tokio]
+path = "vendor/tokio"
+
+[patch.crates-io.tokio01]
+path = "vendor/tokio-0.1.11"
+package = "tokio"
+
+[patch.crates-io.jsparagus-ast]
+path = "vendor/jsparagus-ast"
+package = "jsparagus-ast"
+
+[patch.crates-io.ashmem]
+path = "vendor/ashmem"
+package = "ashmem"
+
+[patch.crates-io.triple_buffer]
+path = "vendor/triple_buffer"
+package = "triple_buffer"
+
+[patch.crates-io.proc-macro-error-attr]
+path = "vendor/proc-macro-error-attr"
+package = "proc-macro-error-attr"
+
+[patch.crates-io.type-map]
+path = "vendor/type-map"
+package = "type-map"
+
+[patch.crates-io.byte-tools]
+path = "vendor/byte-tools"
+package = "byte-tools"
+
+[patch.crates-io.dbus]
+path = "vendor/dbus"
+package = "dbus"
+
+[patch.crates-io.viaduct]
+path = "vendor/viaduct"
+package = "viaduct"
+
+[patch.crates-io.lmdb-rkv]
+path = "vendor/lmdb-rkv"
+package = "lmdb-rkv"
+
+[patch.crates-io.fluent-langneg]
+path = "vendor/fluent-langneg"
+package = "fluent-langneg"
+
+[patch.crates-io.mime]
+path = "vendor/mime"
+package = "mime"
+
+[patch.crates-io.zip]
+path = "vendor/zip"
+package = "zip"
+
+[patch.crates-io.replace_with]
+path = "vendor/replace_with"
+package = "replace_with"
+
+[patch.crates-io.lucet-runtime-internals-wasmsbx]
+path = "vendor/lucet-runtime-internals-wasmsbx"
+package = "lucet-runtime-internals-wasmsbx"
+
+[patch.crates-io.cose]
+path = "vendor/cose"
+package = "cose"
+
+[patch.crates-io.android_logger]
+path = "vendor/android_logger"
+package = "android_logger"
+
+[patch.crates-io.slab]
+path = "vendor/slab"
+package = "slab"
+
+[patch.crates-io.intl_pluralrules]
+path = "vendor/intl_pluralrules"
+package = "intl_pluralrules"
+
+[patch.crates-io.cranelift-frontend]
+path = "vendor/cranelift-frontend"
+package = "cranelift-frontend"
+
+[patch.crates-io.mime_guess]
+path = "vendor/mime_guess"
+package = "mime_guess"
+
+[patch.crates-io.atomic]
+path = "vendor/atomic"
+package = "atomic"
+
+[patch.crates-io.objc]
+path = "vendor/objc"
+package = "objc"
+
+[patch.crates-io.khronos_api]
+path = "vendor/khronos_api"
+package = "khronos_api"
+
+[patch.crates-io.thiserror]
+path = "vendor/thiserror"
+package = "thiserror"
+
+[patch.crates-io.fixedbitset]
+path = "vendor/fixedbitset"
+package = "fixedbitset"
+
+[patch.crates-io.safemem]
+path = "vendor/safemem"
+package = "safemem"
+
+[patch.crates-io.encoding_c]
+path = "vendor/encoding_c"
+package = "encoding_c"
+
+[patch.crates-io.peeking_take_while]
+path = "vendor/peeking_take_while"
+package = "peeking_take_while"
+
+[patch.crates-io.sha2]
+path = "vendor/sha2"
+package = "sha2"
+
+[patch.crates-io.rand_pcg]
+path = "vendor/rand_pcg"
+package = "rand_pcg"
+
+[patch.crates-io.crossbeam-queue]
+path = "vendor/crossbeam-queue"
+package = "crossbeam-queue"
+
+[patch.crates-io.pin-utils]
+path = "vendor/pin-utils"
+package = "pin-utils"
+
+[patch.crates-io.sync-guid]
+path = "vendor/sync-guid"
+package = "sync-guid"
+
+[patch.crates-io.strsim]
+path = "vendor/strsim"
+package = "strsim"
+
+[patch.crates-io.libudev]
+path = "vendor/libudev"
+package = "libudev"
+
+[patch.crates-io.hashbrown]
+path = "vendor/hashbrown"
+package = "hashbrown"
+
+[patch.crates-io.rand_core]
+path = "vendor/rand_core"
+package = "rand_core"
+
+[patch.crates-io.neqo-crypto]
+path = "vendor/neqo-crypto"
+package = "neqo-crypto"
+
+[patch.crates-io.mach]
+path = "vendor/mach"
+package = "mach"
+
+[patch.crates-io.sync15-traits]
+path = "vendor/sync15-traits"
+package = "sync15-traits"
+
+[patch.crates-io.coreaudio-sys]
+path = "vendor/coreaudio-sys"
+package = "coreaudio-sys"
+
+[patch.crates-io.version_check]
+path = "vendor/version_check"
+package = "version_check"
+
+[patch.crates-io.plain]
+path = "vendor/plain"
+package = "plain"
+
+[patch.crates-io.intl-memoizer]
+path = "vendor/intl-memoizer"
+package = "intl-memoizer"
+
+[patch.crates-io.etagere]
+path = "vendor/etagere"
+package = "etagere"
+
+[patch.crates-io.atty]
+path = "vendor/atty"
+package = "atty"
+
+[patch.crates-io.pkcs11]
+path = "vendor/pkcs11"
+package = "pkcs11"
+
+[patch.crates-io.memmap]
+path = "vendor/memmap"
+package = "memmap"
+
+[patch.crates-io.tokio-timer]
+path = "vendor/tokio-timer"
+package = "tokio-timer"
+
+[patch.crates-io.termcolor]
+path = "vendor/termcolor"
+package = "termcolor"
+
+[patch.crates-io.mio-uds]
+path = "vendor/mio-uds"
+package = "mio-uds"
+
+[patch.crates-io.stable_deref_trait]
+path = "vendor/stable_deref_trait"
+package = "stable_deref_trait"
+
+[patch.crates-io.regex-syntax]
+path = "vendor/regex-syntax"
+package = "regex-syntax"
+
+[patch.crates-io.euclid]
+path = "vendor/euclid"
+package = "euclid"
+
+[patch.crates-io.arrayref]
+path = "vendor/arrayref"
+package = "arrayref"
+
+[patch.crates-io.threadbound]
+path = "vendor/threadbound"
+package = "threadbound"
+
+[patch.crates-io.phf_macros]
+path = "vendor/phf_macros"
+package = "phf_macros"
+
+[patch.crates-io.cubeb-coreaudio]
+path = "vendor/cubeb-coreaudio"
+package = "cubeb-coreaudio"
+
+[patch.crates-io.plane-split]
+path = "vendor/plane-split"
+package = "plane-split"
+
+[patch.crates-io.cranelift-bforest]
+path = "vendor/cranelift-bforest"
+package = "cranelift-bforest"
+
+[patch.crates-io.either]
+path = "vendor/either"
+package = "either"
+
+[patch.crates-io.phf_generator]
+path = "vendor/phf_generator"
+package = "phf_generator"
+
+[patch.crates-io.scopeguard]
+path = "vendor/scopeguard"
+package = "scopeguard"
+
+[patch.crates-io.bit-vec]
+path = "vendor/bit-vec"
+package = "bit-vec"
+
+[patch.crates-io.range-alloc]
+path = "vendor/range-alloc"
+package = "range-alloc"
+
+[patch.crates-io.unicode-normalization]
+path = "vendor/unicode-normalization"
+package = "unicode-normalization"
+
+[patch.crates-io.gfx-backend-vulkan]
+path = "vendor/gfx-backend-vulkan"
+package = "gfx-backend-vulkan"
+
+[patch.crates-io.ryu]
+path = "vendor/ryu"
+package = "ryu"
+
+[patch.crates-io.wasi]
+path = "vendor/wasi"
+package = "wasi"
+
+[patch.crates-io.chrono]
+path = "vendor/chrono"
+package = "chrono"
+
+[patch.crates-io.uluru]
+path = "vendor/uluru"
+package = "uluru"
+
+[patch.crates-io.objc_exception]
+path = "vendor/objc_exception"
+package = "objc_exception"
+
+[patch.crates-io.gfx-backend-dx11]
+path = "vendor/gfx-backend-dx11"
+package = "gfx-backend-dx11"
+
+[patch.crates-io.foreign-types]
+path = "vendor/foreign-types"
+package = "foreign-types"
+
+[patch.crates-io.tokio-util]
+path = "vendor/tokio-util"
+package = "tokio-util"
+
+[patch.crates-io.precomputed-hash]
+path = "vendor/precomputed-hash"
+package = "precomputed-hash"
+
+[patch.crates-io.rusqlite]
+path = "vendor/rusqlite"
+package = "rusqlite"
+
+[patch.crates-io.cssparser-macros]
+path = "vendor/cssparser-macros"
+package = "cssparser-macros"
+
+[patch.crates-io.rust-ini]
+path = "vendor/rust-ini"
+package = "rust-ini"
+
+[patch.crates-io.comedy]
+path = "vendor/comedy"
+package = "comedy"
+
+[patch.crates-io.semver]
+path = "vendor/semver"
+package = "semver"
+
+[patch.crates-io.jsparagus-emitter]
+path = "vendor/jsparagus-emitter"
+package = "jsparagus-emitter"
+
+[patch.crates-io.bumpalo]
+path = "vendor/bumpalo"
+package = "bumpalo"
+
+[patch.crates-io.svg_fmt]
+path = "vendor/svg_fmt"
+package = "svg_fmt"
+
+[patch.crates-io.raw-window-handle]
+path = "vendor/raw-window-handle"
+package = "raw-window-handle"
+
+[patch.crates-io.mp4parse]
+path = "vendor/mp4parse"
+package = "mp4parse"
+
+[patch.crates-io.async-trait]
+path = "vendor/async-trait"
+package = "async-trait"
+
+[patch.crates-io.bindgen]
+path = "vendor/bindgen"
+package = "bindgen"
+
+[patch.crates-io.futures-util]
+path = "vendor/futures-util"
+package = "futures-util"
+
+[patch.crates-io.log]
+path = "vendor/log"
+package = "log"
+
+[patch.crates-io.goblin]
+path = "vendor/goblin"
+package = "goblin"
+
+[patch.crates-io.coreaudio-sys-utils]
+path = "vendor/coreaudio-sys-utils"
+package = "coreaudio-sys-utils"
+
+[patch.crates-io.scoped-tls]
+path = "vendor/scoped-tls"
+package = "scoped-tls"
+
+[patch.crates-io.webrtc-sdp]
+path = "vendor/webrtc-sdp"
+package = "webrtc-sdp"
+
+[patch.crates-io.cache-padded]
+path = "vendor/cache-padded"
+package = "cache-padded"
+
+[patch.crates-io.futures-macro]
+path = "vendor/futures-macro"
+package = "futures-macro"
+
+[patch.crates-io.ash]
+path = "vendor/ash"
+package = "ash"
+
+[patch.crates-io.serde_bytes]
+path = "vendor/serde_bytes"
+package = "serde_bytes"
+
+[patch.crates-io.tokio-udp]
+path = "vendor/tokio-udp"
+package = "tokio-udp"
+
+[patch.crates-io.toml]
+path = "vendor/toml"
+package = "toml"
+
+[patch.crates-io.cmake]
+path = "vendor/cmake"
+package = "cmake"
+
+[patch.crates-io.profiling]
+path = "vendor/profiling"
+package = "profiling"
+
+[patch.crates-io.filetime_win]
+path = "vendor/filetime_win"
+package = "filetime_win"
+
+[patch.crates-io.sfv]
+path = "vendor/sfv"
+package = "sfv"
+
+[patch.crates-io.lazy_static]
+path = "vendor/lazy_static"
+package = "lazy_static"
+
+[patch.crates-io.cc]
+path = "vendor/cc"
+package = "cc"
+
+[patch.crates-io.idna]
+path = "vendor/idna"
+package = "idna"
+
+[patch.crates-io.audioipc-server]
+path = "vendor/audioipc-server"
+package = "audioipc-server"
+
+[patch.crates-io.arrayvec]
+path = "vendor/arrayvec"
+package = "arrayvec"
+
+[patch.crates-io.core-graphics]
+path = "vendor/core-graphics"
+package = "core-graphics"
+
+[patch.crates-io.matches]
+path = "vendor/matches"
+package = "matches"
+
+[patch.crates-io.fuchsia-zircon]
+path = "vendor/fuchsia-zircon"
+package = "fuchsia-zircon"
+
+[patch.crates-io.redox_users]
+path = "vendor/redox_users"
+package = "redox_users"
+
+[patch.crates-io.try-lock]
+path = "vendor/try-lock"
+package = "try-lock"
+
+[patch.crates-io.neqo-common]
+path = "vendor/neqo-common"
+package = "neqo-common"
+
+[patch.crates-io.serde_json]
+path = "vendor/serde_json"
+package = "serde_json"
+
+[patch.crates-io.lazycell]
+path = "vendor/lazycell"
+package = "lazycell"
+
+[patch.crates-io.remove_dir_all]
+path = "vendor/remove_dir_all"
+package = "remove_dir_all"
+
+[patch.crates-io.glean]
+path = "vendor/glean"
+package = "glean"
+
+[patch.crates-io.runloop]
+path = "vendor/runloop"
+package = "runloop"
+
+[patch.crates-io.typenum]
+path = "vendor/typenum"
+package = "typenum"
+
+[patch.crates-io.fluent-fallback]
+path = "vendor/fluent-fallback"
+package = "fluent-fallback"
+
+[patch.crates-io.rose_tree]
+path = "vendor/rose_tree"
+package = "rose_tree"
+
+[patch.crates-io.core-text]
+path = "vendor/core-text"
+package = "core-text"
+
+[patch.crates-io.autocfg]
+path = "vendor/autocfg"
+package = "autocfg"
+
+[patch.crates-io.futures-executor]
+path = "vendor/futures-executor"
+package = "futures-executor"
+
+[patch.crates-io.ffi-support]
+path = "vendor/ffi-support"
+package = "ffi-support"
+
+[patch.crates-io.fallible_collections]
+path = "vendor/fallible_collections"
+package = "fallible_collections"
+
+[patch.crates-io.synstructure]
+path = "vendor/synstructure"
+package = "synstructure"
+
+[patch.crates-io.adler]
+path = "vendor/adler"
+package = "adler"
+
+[patch.crates-io.humantime]
+path = "vendor/humantime"
+package = "humantime"
+
+[patch.crates-io.codespan-reporting]
+path = "vendor/codespan-reporting"
+package = "codespan-reporting"
+
+[patch.crates-io.siphasher]
+path = "vendor/siphasher"
+package = "siphasher"
+
+[patch.crates-io.thunderdome]
+path = "vendor/thunderdome"
+package = "thunderdome"
+
+[patch.crates-io.unicode-segmentation]
+path = "vendor/unicode-segmentation"
+package = "unicode-segmentation"
+
+[patch.crates-io.glean-ffi]
+path = "vendor/glean-ffi"
+package = "glean-ffi"
+
+[patch.crates-io.maybe-uninit]
+path = "vendor/maybe-uninit"
+package = "maybe-uninit"
+
+[patch.crates-io.miow]
+path = "vendor/miow"
+package = "miow"
+
+[patch.crates-io.generic-array]
+path = "vendor/generic-array"
+package = "generic-array"
+
+[patch.crates-io.cubeb-core]
+path = "vendor/cubeb-core"
+package = "cubeb-core"
+
+[patch.crates-io.wat]
+path = "vendor/wat"
+package = "wat"
+
+[patch.crates-io.malloc_buf]
+path = "vendor/malloc_buf"
+package = "malloc_buf"
+
+[patch.crates-io.paste-impl]
+path = "vendor/paste-impl"
+package = "paste-impl"
+
+[patch.crates-io.socket2]
+path = "vendor/socket2"
+package = "socket2"
+
+[patch.crates-io.pulse]
+path = "vendor/pulse"
+package = "pulse"
+
+[patch.crates-io.xml-rs]
+path = "vendor/xml-rs"
+package = "xml-rs"
+
+[patch.crates-io.serde_yaml]
+path = "vendor/serde_yaml"
+package = "serde_yaml"
+
+[patch.crates-io.jsparagus-stencil]
+path = "vendor/jsparagus-stencil"
+package = "jsparagus-stencil"
+
+[patch.crates-io.jsparagus-scope]
+path = "vendor/jsparagus-scope"
+package = "jsparagus-scope"
+
+[patch.crates-io.jsparagus-generated-parser]
+path = "vendor/jsparagus-generated-parser"
+package = "jsparagus-generated-parser"
+
+[patch.crates-io.unicode-width]
+path = "vendor/unicode-width"
+package = "unicode-width"
+
+[patch.crates-io.dtoa]
+path = "vendor/dtoa"
+package = "dtoa"
+
+[patch.crates-io.indexmap]
+path = "vendor/indexmap"
+package = "indexmap"
+
+[patch.crates-io.unix_str]
+path = "vendor/unix_str"
+package = "unix_str"
+
+[patch.crates-io.urlencoding]
+path = "vendor/urlencoding"
+package = "urlencoding"
+
+[patch.crates-io.vcpkg]
+path = "vendor/vcpkg"
+package = "vcpkg"
+
+[patch.crates-io.futures-channel]
+path = "vendor/futures-channel"
+package = "futures-channel"
+
+[patch.crates-io.gpu-alloc-types]
+path = "vendor/gpu-alloc-types"
+package = "gpu-alloc-types"
+
+[patch.crates-io.warp]
+path = "vendor/warp"
+package = "warp"
+
+[patch.crates-io.lmdb-rkv-sys]
+path = "vendor/lmdb-rkv-sys"
+package = "lmdb-rkv-sys"
+
+[patch.crates-io.webext-storage]
+path = "vendor/webext-storage"
+package = "webext-storage"
+
+[patch.crates-io.core-foundation-sys]
+path = "vendor/core-foundation-sys"
+package = "core-foundation-sys"
+
+[patch.crates-io.dirs-sys]
+path = "vendor/dirs-sys"
+package = "dirs-sys"
+
+[patch.crates-io.devd-rs]
+path = "vendor/devd-rs"
+package = "devd-rs"
+
+[patch.crates-io.freetype]
+path = "vendor/freetype"
+package = "freetype"
+
+[patch.crates-io.mio-named-pipes]
+path = "vendor/mio-named-pipes"
+package = "mio-named-pipes"
+
+[patch.crates-io.cocoa-foundation]
+path = "vendor/cocoa-foundation"
+package = "cocoa-foundation"
+
+[patch.crates-io.podio]
+path = "vendor/podio"
+package = "podio"
+
+[patch.crates-io.rand_chacha]
+path = "vendor/rand_chacha"
+package = "rand_chacha"
+
+[patch.crates-io.glsl]
+path = "vendor/glsl"
+package = "glsl"
+
+[patch.crates-io.serde]
+path = "vendor/serde"
+package = "serde"
+
+[patch.crates-io.failure_derive]
+path = "vendor/failure_derive"
+package = "failure_derive"
+
+[patch.crates-io.malloc_size_of_derive]
+path = "vendor/malloc_size_of_derive"
+package = "malloc_size_of_derive"
+
+[patch.crates-io.rental-impl]
+path = "vendor/rental-impl"
+package = "rental-impl"
+
+[patch.crates-io.fallible-iterator]
+path = "vendor/fallible-iterator"
+package = "fallible-iterator"
+
+[patch.crates-io.ahash]
+path = "vendor/ahash"
+package = "ahash"
+
+[patch.crates-io.phf]
+path = "vendor/phf"
+package = "phf"
+
+[patch.crates-io.num_cpus]
+path = "vendor/num_cpus"
+package = "num_cpus"
+
+[patch.crates-io.ioctl-sys]
+path = "vendor/ioctl-sys"
+package = "ioctl-sys"
+
+[patch.crates-io.regalloc]
+path = "vendor/regalloc"
+package = "regalloc"
+
+[patch.crates-io.linked-hash-map]
+path = "vendor/linked-hash-map"
+package = "linked-hash-map"
+
+[patch.crates-io.rkv]
+path = "vendor/rkv"
+package = "rkv"
+
+[patch.crates-io.authenticator]
+path = "vendor/authenticator"
+package = "authenticator"
+
+[patch.crates-io.raw-cpuid]
+path = "vendor/raw-cpuid"
+package = "raw-cpuid"
+
+[patch.crates-io.headers-core]
+path = "vendor/headers-core"
+package = "headers-core"
+
+[patch.crates-io.derive_more]
+path = "vendor/derive_more"
+package = "derive_more"
+
+[patch.crates-io.num-derive]
+path = "vendor/num-derive"
+package = "num-derive"
+
+[patch.crates-io.instant]
+path = "vendor/instant"
+package = "instant"
+
+[patch.crates-io.cstr]
+path = "vendor/cstr"
+package = "cstr"
+
+[patch.crates-io.fxhash]
+path = "vendor/fxhash"
+package = "fxhash"
+
+[patch.crates-io.lock_api]
+path = "vendor/lock_api"
+package = "lock_api"
+
+[patch.crates-io.sha-1]
+path = "vendor/sha-1"
+package = "sha-1"
+
+[patch.crates-io.prost]
+path = "vendor/prost"
+package = "prost"
+
+[patch.crates-io.same-file]
+path = "vendor/same-file"
+package = "same-file"
+
+[patch.crates-io.spirv_headers]
+path = "vendor/spirv_headers"
+package = "spirv_headers"
+
+[patch.crates-io.dirs]
+path = "vendor/dirs"
+package = "dirs"
+
+[patch.crates-io.libsqlite3-sys]
+path = "vendor/libsqlite3-sys"
+package = "libsqlite3-sys"
+
+[patch.crates-io.flate2]
+path = "vendor/flate2"
+package = "flate2"
+
+[patch.crates-io.libdbus-sys]
+path = "vendor/libdbus-sys"
+package = "libdbus-sys"
+
+[patch.crates-io.neqo-qpack]
+path = "vendor/neqo-qpack"
+package = "neqo-qpack"
+
+[patch.crates-io.encoding_rs]
+path = "vendor/encoding_rs"
+package = "encoding_rs"
+
+[patch.crates-io.gfx-hal]
+path = "vendor/gfx-hal"
+package = "gfx-hal"
+
+[patch.crates-io.blake2b_simd]
+path = "vendor/blake2b_simd"
+package = "blake2b_simd"
+
+[patch.crates-io.serde_with]
+path = "vendor/serde_with"
+package = "serde_with"
+
+[patch.crates-io.bitflags]
+path = "vendor/bitflags"
+package = "bitflags"
+
+[patch.crates-io.copyless]
+path = "vendor/copyless"
+package = "copyless"
+
+[patch.crates-io.rust_cascade]
+path = "vendor/rust_cascade"
+package = "rust_cascade"
+
+[patch.crates-io.glean-core]
+path = "vendor/glean-core"
+package = "glean-core"
+
+[patch.crates-io.hashlink]
+path = "vendor/hashlink"
+package = "hashlink"
+
+[patch.crates-io.moz_cbor]
+path = "vendor/moz_cbor"
+package = "moz_cbor"
+
+[patch.crates-io.ringbuf]
+path = "vendor/ringbuf"
+package = "ringbuf"
+
+[patch.crates-io.fluent-pseudo]
+path = "vendor/fluent-pseudo"
+package = "fluent-pseudo"
+
+[patch.crates-io.gfx-backend-metal]
+path = "vendor/gfx-backend-metal"
+package = "gfx-backend-metal"
+
+[patch.crates-io.audioipc]
+path = "vendor/audioipc"
+package = "audioipc"
+
+[patch.crates-io.tokio-fs]
+path = "vendor/tokio-fs"
+package = "tokio-fs"
+
+[patch.crates-io.gpu-descriptor-types]
+path = "vendor/gpu-descriptor-types"
+package = "gpu-descriptor-types"
+
+[patch.crates-io.winapi-util]
+path = "vendor/winapi-util"
+package = "winapi-util"
+
+[patch.crates-io.futures-core]
+path = "vendor/futures-core"
+package = "futures-core"
+
+[patch.crates-io.audio_thread_priority]
+path = "vendor/audio_thread_priority"
+package = "audio_thread_priority"
+
+[patch.crates-io.ouroboros_macro]
+path = "vendor/ouroboros_macro"
+package = "ouroboros_macro"
+
+[patch.crates-io.aho-corasick]
+path = "vendor/aho-corasick"
+package = "aho-corasick"
+
+[patch.crates-io.h2]
+path = "vendor/h2"
+package = "h2"
+
+[patch.crates-io.fluent-syntax]
+path = "vendor/fluent-syntax"
+package = "fluent-syntax"
+
+[patch.crates-io.tower-service]
+path = "vendor/tower-service"
+package = "tower-service"
+
+[patch.crates-io.iovec]
+path = "vendor/iovec"
+package = "iovec"
+
+[patch.crates-io.percent-encoding]
+path = "vendor/percent-encoding"
+package = "percent-encoding"
+
+[patch.crates-io.foreign-types-shared]
+path = "vendor/foreign-types-shared"
+package = "foreign-types-shared"
+
+[patch.crates-io.xmldecl]
+path = "vendor/xmldecl"
+package = "xmldecl"
+
+[patch.crates-io.interrupt-support]
+path = "vendor/interrupt-support"
+package = "interrupt-support"
+
+[patch.crates-io.inherent]
+path = "vendor/inherent"
+package = "inherent"
+
+[patch.crates-io.jsparagus-parser]
+path = "vendor/jsparagus-parser"
+package = "jsparagus-parser"
+
+[patch.crates-io.rustc-demangle]
+path = "vendor/rustc-demangle"
+package = "rustc-demangle"
+
+[patch.crates-io.failure]
+path = "vendor/failure"
+package = "failure"
+
+[patch.crates-io.audio-mixer]
+path = "vendor/audio-mixer"
+package = "audio-mixer"
+
+[patch.crates-io.regex]
+path = "vendor/regex"
+package = "regex"
+
+[patch.crates-io.rust_decimal]
+path = "vendor/rust_decimal"
+package = "rust_decimal"
+
+[patch.crates-io.jsparagus]
+path = "vendor/jsparagus"
+package = "jsparagus"
+
+[patch.crates-io.futures-io]
+path = "vendor/futures-io"
+package = "futures-io"
+
+[patch.crates-io.url]
+path = "vendor/url"
+package = "url"
+
+[patch.crates-io.cose-c]
+path = "vendor/cose-c"
+package = "cose-c"
+
+[patch.crates-io.unicase]
+path = "vendor/unicase"
+package = "unicase"
+
+[patch.crates-io.net2]
+path = "vendor/net2"
+package = "net2"
+
+[patch.crates-io.neqo-transport]
+path = "vendor/neqo-transport"
+package = "neqo-transport"
+
+[patch.crates-io.uuid]
+path = "vendor/uuid"
+package = "uuid"
+
+[patch.crates-io.mio-extras]
+path = "vendor/mio-extras"
+package = "mio-extras"
+
+[patch.crates-io.num-traits]
+path = "vendor/num-traits"
+package = "num-traits"
+
+[patch.crates-io.encoding_c_mem]
+path = "vendor/encoding_c_mem"
+package = "encoding_c_mem"
+
+[patch.crates-io.qlog]
+path = "vendor/qlog"
+package = "qlog"
+
+[patch.crates-io.pin-project]
+path = "vendor/pin-project"
+package = "pin-project"
+
+[patch.crates-io.unicode-bidi]
+path = "vendor/unicode-bidi"
+package = "unicode-bidi"
+
+[patch.crates-io.semver-parser]
+path = "vendor/semver-parser"
+package = "semver-parser"
+
+[patch.crates-io.tokio-codec]
+path = "vendor/tokio-codec"
+package = "tokio-codec"
+
+[patch.crates-io.num-integer]
+path = "vendor/num-integer"
+package = "num-integer"
+
+[patch.crates-io.fuchsia-zircon-sys]
+path = "vendor/fuchsia-zircon-sys"
+package = "fuchsia-zircon-sys"
+
+[patch.crates-io.tokio-current-thread]
+path = "vendor/tokio-current-thread"
+package = "tokio-current-thread"
+
+[patch.crates-io.darling_macro]
+path = "vendor/darling_macro"
+package = "darling_macro"
+
+[patch.crates-io.cast]
+path = "vendor/cast"
+package = "cast"
+
+[patch.crates-io.id-arena]
+path = "vendor/id-arena"
+package = "id-arena"
+
+[patch.crates-io.env_logger]
+path = "vendor/env_logger"
+package = "env_logger"
+
+[patch.crates-io.cubeb]
+path = "vendor/cubeb"
+package = "cubeb"
+
+[patch.crates-io.gfx-auxil]
+path = "vendor/gfx-auxil"
+package = "gfx-auxil"
+
+[patch.crates-io.cubeb-pulse]
+path = "vendor/cubeb-pulse"
+package = "cubeb-pulse"
+
+[patch.crates-io.cranelift-codegen-shared]
+path = "vendor/cranelift-codegen-shared"
+package = "cranelift-codegen-shared"
+
+[patch.crates-io.pulse-ffi]
+path = "vendor/pulse-ffi"
+package = "pulse-ffi"
+
+[patch.crates-io.scroll]
+path = "vendor/scroll"
+package = "scroll"
+
+[patch.crates-io.tokio-reactor]
+path = "vendor/tokio-reactor"
+package = "tokio-reactor"
+
+[patch.crates-io.once_cell]
+path = "vendor/once_cell"
+package = "once_cell"
+
+[patch.crates-io.android_log-sys]
+path = "vendor/android_log-sys"
+package = "android_log-sys"
+
+[patch.crates-io.object]
+path = "vendor/object"
+package = "object"
+
+[patch.crates-io.audioipc-client]
+path = "vendor/audioipc-client"
+package = "audioipc-client"
+
+[patch.crates-io.smallvec]
+path = "vendor/smallvec"
+package = "smallvec"
+
+[patch.crates-io.proc-macro-hack]
+path = "vendor/proc-macro-hack"
+package = "proc-macro-hack"
+
+[patch.crates-io.parking_lot_core]
+path = "vendor/parking_lot_core"
+package = "parking_lot_core"
+
+[patch.crates-io.yaml-rust]
+path = "vendor/yaml-rust"
+package = "yaml-rust"
+
+[patch.crates-io.bit-set]
+path = "vendor/bit-set"
+package = "bit-set"
+
+[patch.crates-io.proc-macro-error]
+path = "vendor/proc-macro-error"
+package = "proc-macro-error"
+
+[patch.crates-io.xfailure]
+path = "vendor/xfailure"
+package = "xfailure"
+
+[patch.crates-io.winreg]
+path = "vendor/winreg"
+package = "winreg"
+
+[patch.crates-io.memoffset]
+path = "vendor/memoffset"
+package = "memoffset"
+
+[patch.crates-io.anyhow]
+path = "vendor/anyhow"
+package = "anyhow"
+
+[patch.crates-io.digest]
+path = "vendor/digest"
+package = "digest"
+
+[patch.crates-io.gfx-backend-empty]
+path = "vendor/gfx-backend-empty"
+package = "gfx-backend-empty"
+
+[patch.crates-io.float-cmp]
+path = "vendor/float-cmp"
+package = "float-cmp"
+
+[patch.crates-io.lucet-module-wasmsbx]
+path = "vendor/lucet-module-wasmsbx"
+package = "lucet-module-wasmsbx"
+
+[patch.crates-io.phf_shared]
+path = "vendor/phf_shared"
+package = "phf_shared"
+
+[patch.crates-io.prost-derive]
+path = "vendor/prost-derive"
+package = "prost-derive"
+
+[patch.crates-io.http]
+path = "vendor/http"
+package = "http"
+
+[patch.crates-io.tokio-tcp]
+path = "vendor/tokio-tcp"
+package = "tokio-tcp"
+
+[patch.crates-io.wasmparser]
+path = "vendor/wasmparser"
+package = "wasmparser"
+
+[patch.crates-io.libc]
+path = "vendor/libc"
+package = "libc"
+
+[patch.crates-io.msdos_time]
+path = "vendor/msdos_time"
+package = "msdos_time"
+
+[patch.crates-io.cookie]
+path = "vendor/cookie"
+package = "cookie"
+
+[patch.crates-io.nss_build_common]
+path = "vendor/nss_build_common"
+package = "nss_build_common"
+
+[patch.crates-io.crossbeam-deque]
+path = "vendor/crossbeam-deque"
+package = "crossbeam-deque"
+
+[patch.crates-io.glob]
+path = "vendor/glob"
+package = "glob"
+
+[patch.crates-io.spirv-cross-internal]
+path = "vendor/spirv-cross-internal"
+package = "spirv-cross-internal"
+
+[patch.crates-io.atomic_refcell]
+path = "vendor/atomic_refcell"
+package = "atomic_refcell"
+
+[patch.crates-io.unix_path]
+path = "vendor/unix_path"
+package = "unix_path"
+
+[patch.crates-io.plist]
+path = "vendor/plist"
+package = "plist"
+
+[patch.crates-io.fake-simd]
+path = "vendor/fake-simd"
+package = "fake-simd"
+
+[patch.crates-io.rental]
+path = "vendor/rental"
+package = "rental"
+
+[patch.crates-io.httparse]
+path = "vendor/httparse"
+package = "httparse"
+
+[patch.crates-io.wio]
+path = "vendor/wio"
+package = "wio"
+
+[patch.crates-io.ppv-lite86]
+path = "vendor/ppv-lite86"
+package = "ppv-lite86"
+
+[patch.crates-io.d3d12]
+path = "vendor/d3d12"
+package = "d3d12"
+
+[patch.crates-io.hermit-abi]
+path = "vendor/hermit-abi"
+package = "hermit-abi"
+
+[patch.crates-io.inplace_it]
+path = "vendor/inplace_it"
+package = "inplace_it"
+
+[patch.crates-io.cssparser]
+path = "vendor/cssparser"
+package = "cssparser"
+
+[patch.crates-io.rustc-hash]
+path = "vendor/rustc-hash"
+package = "rustc-hash"
+
+[patch.crates-io.num-bigint]
+path = "vendor/num-bigint"
+package = "num-bigint"
+
+[patch.crates-io.core-foundation]
+path = "vendor/core-foundation"
+package = "core-foundation"
+
+[patch.crates-io.crossbeam-epoch]
+path = "vendor/crossbeam-epoch"
+package = "crossbeam-epoch"
+
+[patch.crates-io.petgraph]
+path = "vendor/petgraph"
+package = "petgraph"
+
+[patch.crates-io.unic-langid]
+path = "vendor/unic-langid"
+package = "unic-langid"
+
+[patch.crates-io.pin-project-internal]
+path = "vendor/pin-project-internal"
+package = "pin-project-internal"
+
+[patch.crates-io.clap]
+path = "vendor/clap"
+package = "clap"
+
+[patch.crates-io.thiserror-impl]
+path = "vendor/thiserror-impl"
+package = "thiserror-impl"
+
+[patch.crates-io.murmurhash3]
+path = "vendor/murmurhash3"
+package = "murmurhash3"
+
+[patch.crates-io.unicode-xid]
+path = "vendor/unicode-xid"
+package = "unicode-xid"
+
+[patch.crates-io.futures-cpupool]
+path = "vendor/futures-cpupool"
+package = "futures-cpupool"
+
+[patch.crates-io.serde_repr]
+path = "vendor/serde_repr"
+package = "serde_repr"
+
+[patch.crates-io.neqo-http3]
+path = "vendor/neqo-http3"
+package = "neqo-http3"
+
+[patch.crates-io.sql-support]
+path = "vendor/sql-support"
+package = "sql-support"
+
+[patch.crates-io.walkdir]
+path = "vendor/walkdir"
+package = "walkdir"
+
+[patch.crates-io.cubeb-backend]
+path = "vendor/cubeb-backend"
+package = "cubeb-backend"
+
+[patch.crates-io.futures-sink]
+path = "vendor/futures-sink"
+package = "futures-sink"
+
+[patch.crates-io.tempfile]
+path = "vendor/tempfile"
+package = "tempfile"
+
+[patch.crates-io.naga]
+path = "vendor/naga"
+package = "naga"
+
+[patch.crates-io.error-chain]
+path = "vendor/error-chain"
+package = "error-chain"
+
+[patch.crates-io.whatsys]
+path = "vendor/whatsys"
+package = "whatsys"
+
+[patch.crates-io.chunky-vec]
+path = "vendor/chunky-vec"
+package = "chunky-vec"
+
+[patch.crates-io.tokio-io]
+path = "vendor/tokio-io"
+package = "tokio-io"
+
+[patch.crates-io.headers]
+path = "vendor/headers"
+package = "headers"
+
+[patch.crates-io.darling]
+path = "vendor/darling"
+package = "darling"
+
+[patch.crates-io.paste]
+path = "vendor/paste"
+package = "paste"
+
+[patch.crates-io.leb128]
+path = "vendor/leb128"
+package = "leb128"
+
+[patch.crates-io.tracy-rs]
+path = "vendor/tracy-rs"
+package = "tracy-rs"
+
+[patch.crates-io.ident_case]
+path = "vendor/ident_case"
+package = "ident_case"
+
+[patch.crates-io.dwrote]
+path = "vendor/dwrote"
+package = "dwrote"
+
+[patch.crates-io.tinystr]
+path = "vendor/tinystr"
+package = "tinystr"
+
+[patch.crates-io.winapi-x86_64-pc-windows-gnu]
+path = "vendor/winapi-x86_64-pc-windows-gnu"
+package = "winapi-x86_64-pc-windows-gnu"
+
+[patch.crates-io.opaque-debug]
+path = "vendor/opaque-debug"
+package = "opaque-debug"
+
+[patch.crates-io.crc32fast]
+path = "vendor/crc32fast"
+package = "crc32fast"
+
+[patch.crates-io.zeitstempel]
+path = "vendor/zeitstempel"
+package = "zeitstempel"
+
+[patch.crates-io.lucet-wasi-wasmsbx]
+path = "vendor/lucet-wasi-wasmsbx"
+package = "lucet-wasi-wasmsbx"
+
+[patch.crates-io.guid_win]
+path = "vendor/guid_win"
+package = "guid_win"
+
+[patch.crates-io.byteorder]
+path = "vendor/byteorder"
+package = "byteorder"
+
+[patch.crates-io.oslog]
+path = "vendor/oslog"
+package = "oslog"
+
+[patch.crates-io.darling_core]
+path = "vendor/darling_core"
+package = "darling_core"
+
+[patch.crates-io.rust-argon2]
+path = "vendor/rust-argon2"
+package = "rust-argon2"
+
+[patch.crates-io.fluent-bundle]
+path = "vendor/fluent-bundle"
+package = "fluent-bundle"
+
+[patch.crates-io.want]
+path = "vendor/want"
+package = "want"
+
+[patch.crates-io.fallible-streaming-iterator]
+path = "vendor/fallible-streaming-iterator"
+package = "fallible-streaming-iterator"
+
+[patch.crates-io.rustc_version]
+path = "vendor/rustc_version"
+package = "rustc_version"
+
+[patch.crates-io.tokio-threadpool]
+path = "vendor/tokio-threadpool"
+package = "tokio-threadpool"
+
+[patch.crates-io.constant_time_eq]
+path = "vendor/constant_time_eq"
+package = "constant_time_eq"
+
+[patch.crates-io.line-wrap]
+path = "vendor/line-wrap"
+package = "line-wrap"
+
+[patch.crates-io.block]
+path = "vendor/block"
+package = "block"
+
+[patch.crates-io.cubeb-sys]
+path = "vendor/cubeb-sys"
+package = "cubeb-sys"
+
+[patch.crates-io.winapi-i686-pc-windows-gnu]
+path = "vendor/winapi-i686-pc-windows-gnu"
+package = "winapi-i686-pc-windows-gnu"
+
+[patch.crates-io.memchr]
+path = "vendor/memchr"
+package = "memchr"
+
+[patch.crates-io.quote]
+path = "vendor/quote"
+package = "quote"
+
+[patch.crates-io.build-parallel]
+path = "vendor/build-parallel"
+package = "build-parallel"
+
+[patch.crates-io.rayon-core]
+path = "vendor/rayon-core"
+package = "rayon-core"
+
+[patch.crates-io.clang-sys]
+path = "vendor/clang-sys"
+package = "clang-sys"
+
+[patch.crates-io.mp4parse_capi]
+path = "vendor/mp4parse_capi"
+package = "mp4parse_capi"
+
+[patch.crates-io.lucet-runtime-wasmsbx]
+path = "vendor/lucet-runtime-wasmsbx"
+package = "lucet-runtime-wasmsbx"
+
+[patch.crates-io.fluent]
+path = "vendor/fluent"
+package = "fluent"
+
+[patch.crates-io.winapi]
+path = "vendor/winapi"
+package = "winapi"
+
+[patch.crates-io.storage-map]
+path = "vendor/storage-map"
+package = "storage-map"
+
+[patch.crates-io.gpu-alloc]
+path = "vendor/gpu-alloc"
+package = "gpu-alloc"
+
+[patch.crates-io.smallbitvec]
+path = "vendor/smallbitvec"
+package = "smallbitvec"
+
+[patch.crates-io.static_assertions]
+path = "vendor/static_assertions"
+package = "static_assertions"
+
+[patch.crates-io.dtoa-short]
+path = "vendor/dtoa-short"
+package = "dtoa-short"
+
+[patch.crates-io.tokio-uds]
+path = "vendor/tokio-uds"
+package = "tokio-uds"
+
+[patch.crates-io.jobserver]
+path = "vendor/jobserver"
+package = "jobserver"
+
+[patch.crates-io.serde_derive]
+path = "vendor/serde_derive"
+package = "serde_derive"
+
+[patch.crates-io.hyper]
+path = "vendor/hyper"
+package = "hyper"
+
+[patch.crates-io.tokio-executor]
+path = "vendor/tokio-executor"
+package = "tokio-executor"
+
+[patch.crates-io.gfx-backend-dx12]
+path = "vendor/gfx-backend-dx12"
+package = "gfx-backend-dx12"
+
+[patch.crates-io.error-support]
+path = "vendor/error-support"
+package = "error-support"
+
+[patch.crates-io.mio]
+path = "vendor/mio"
+package = "mio"
+
+[patch.crates-io.dashmap]
+path = "vendor/dashmap"
+package = "dashmap"
+
+[patch.crates-io.dogear]
+path = "vendor/dogear"
+package = "dogear"
+
+[patch.crates-io.block-padding]
+path = "vendor/block-padding"
+package = "block-padding"
+
+[patch.crates-io.data-encoding]
+path = "vendor/data-encoding"
+package = "data-encoding"
+
+[patch.crates-io.scroll_derive]
+path = "vendor/scroll_derive"
+package = "scroll_derive"
+
+[patch.crates-io.gl_generator]
+path = "vendor/gl_generator"
+package = "gl_generator"
+
+[patch.crates-io.proc-macro-nested]
+path = "vendor/proc-macro-nested"
+package = "proc-macro-nested"
+
+[patch.crates-io.cfg_aliases]
+path = "vendor/cfg_aliases"
+package = "cfg_aliases"
+
+[patch.crates-io.owning_ref]
+path = "vendor/owning_ref"
+package = "owning_ref"
+
+[patch.crates-io.core-graphics-types]
+path = "vendor/core-graphics-types"
+package = "core-graphics-types"
+
+[patch.crates-io.thin-slice]
+path = "vendor/thin-slice"
+package = "thin-slice"
+
+[patch.crates-io.bincode]
+path = "vendor/bincode"
+package = "bincode"
+
+[patch.crates-io.bitreader]
+path = "vendor/bitreader"
+package = "bitreader"
+
+[patch.crates-io.quick-error]
+path = "vendor/quick-error"
+package = "quick-error"
+
+[patch.crates-io.miniz_oxide]
+path = "vendor/miniz_oxide"
+package = "miniz_oxide"
+
+[patch.crates-io.parking_lot]
+path = "vendor/parking_lot"
+package = "parking_lot"
+
+[patch.crates-io.nom]
+path = "vendor/nom"
+package = "nom"
+
+[patch.crates-io.rayon]
+path = "vendor/rayon"
+package = "rayon"
+
+[patch.crates-io.gpu-descriptor]
+path = "vendor/gpu-descriptor"
+package = "gpu-descriptor"
+
+[patch.crates-io.jsparagus-json-log]
+path = "vendor/jsparagus-json-log"
+package = "jsparagus-json-log"
+
+[patch.crates-io.block-buffer]
+path = "vendor/block-buffer"
+package = "block-buffer"
+
+[patch.crates-io.parity-wasm]
+path = "vendor/parity-wasm"
+package = "parity-wasm"
+
+[patch.crates-io.textwrap]
+path = "vendor/textwrap"
+package = "textwrap"
+
+[patch.crates-io.ouroboros]
+path = "vendor/ouroboros"
+package = "ouroboros"
+
+[patch.crates-io.new_debug_unreachable]
+path = "vendor/new_debug_unreachable"
+package = "new_debug_unreachable"
+
+[patch.crates-io.shlex]
+path = "vendor/shlex"
+package = "shlex"
+
+[patch.crates-io.l10nregistry]
+path = "vendor/l10nregistry"
+package = "l10nregistry"
+
+[patch.crates-io.binary-space-partition]
+path = "vendor/binary-space-partition"
+package = "binary-space-partition"
+
+[patch.crates-io.term_size]
+path = "vendor/term_size"
+package = "term_size"
+
+[patch.crates-io.redox_syscall]
+path = "vendor/redox_syscall"
+package = "redox_syscall"
+
+[patch.crates-io.serde_with_macros]
+path = "vendor/serde_with_macros"
+package = "serde_with_macros"
+
+[patch.crates-io.gleam]
+path = "vendor/gleam"
+package = "gleam"
+
+[patch.crates-io.syn]
+path = "vendor/syn"
+package = "syn"
+
+[patch.crates-io.void]
+path = "vendor/void"
+package = "void"
+
+[patch.crates-io.phf_codegen]
+path = "vendor/phf_codegen"
+package = "phf_codegen"
+
+[patch.crates-io.unic-langid-impl]
+path = "vendor/unic-langid-impl"
+package = "unic-langid-impl"
+
+[patch.crates-io.time]
+path = "vendor/time"
+package = "time"
+
+[patch.crates-io.renderdoc-sys]
+path = "vendor/renderdoc-sys"
+package = "renderdoc-sys"
+
+[patch.crates-io.metal]
+path = "vendor/metal"
+package = "metal"
+
+[patch.crates-io.thin-vec]
+path = "vendor/thin-vec"
+package = "thin-vec"
+
+[patch.crates-io.proc-macro2]
+path = "vendor/proc-macro2"
+package = "proc-macro2"
+
+[patch.crates-io.dns-parser]
+path = "vendor/dns-parser"
+package = "dns-parser"
+
+[patch.crates-io.wast]
+path = "vendor/wast"
+package = "wast"
+
+[patch.crates-io.cexpr]
+path = "vendor/cexpr"
+package = "cexpr"
+
+[patch.crates-io.rand]
+path = "vendor/rand"
+package = "rand"
+
+[patch.crates-io.mapped_hyph]
+path = "vendor/mapped_hyph"
+package = "mapped_hyph"
+
+[patch.crates-io.ron]
+path = "vendor/ron"
+package = "ron"
+
+[patch.crates-io.rand_hc]
+path = "vendor/rand_hc"
+package = "rand_hc"
+
+[patch.crates-io.itoa]
+path = "vendor/itoa"
+package = "itoa"
+
+[patch.crates-io.futures-task]
+path = "vendor/futures-task"
+package = "futures-task"
+
+[patch.crates-io.cranelift-codegen-meta]
+path = "vendor/cranelift-codegen-meta"
+package = "cranelift-codegen-meta"
+
+[patch.crates-io.pkg-config]
+path = "vendor/pkg-config"
+package = "pkg-config"
+
+[patch.crates-io.glslopt]
+path = "vendor/glslopt"
+package = "glslopt"
+
+[patch.crates-io.getrandom]
+path = "vendor/getrandom"
+package = "getrandom"
+
+[patch.crates-io.ordered-float]
+path = "vendor/ordered-float"
+package = "ordered-float"
+
+[patch.crates-io.http-body]
+path = "vendor/http-body"
+package = "http-body"
+
+[patch.crates-io.fnv]
+path = "vendor/fnv"
+package = "fnv"
+
+[patch.crates-io.app_units]
+path = "vendor/app_units"
+package = "app_units"
+
+[patch.crates-io.serde_urlencoded]
+path = "vendor/serde_urlencoded"
+package = "serde_urlencoded"

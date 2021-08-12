@@ -335,56 +335,16 @@ if __name__ == "__main__":
         exit("not implemented")
     root = os.path.join(os.getcwd(), root)
     s = State(root)
-    dirs = os.listdir(root)
-    summ_total_uses = open(os.path.join(root, SUMM_TOTAL), "w")
-    os.environ["RUSTFLAGS"] = "-Z convert-unchecked-indexing"
-    for d in dirs: 
-        print()
-        print(d)
-        curdir = os.path.join(root, d)
-        if not os.path.isdir(curdir):
-            continue
-        if "flatbuffers" in d: 
-            curdir = os.path.join(curdir, "rust", "flatbuffers")
-        elif "flux" in d: 
-            curdir = os.path.join(curdir, "libflux", "flux")
-        elif "splinter" in d:
-            curdir = os.path.join(curdir, "splinter")
-        os.chdir(curdir)
-        subprocess.run(["rustup", "override", "set", "rust-mod-mir"])
-            #stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
-        subprocess.run(["cargo", "clean"])
-        print("Vendoring")
-        v_out = open("vendor.out", "w")
-        v_err = open("vendor.err", "w")
-        subprocess.run(["cargo", "vendor", "--versioned-dirs"],
-            stdout=v_out, stderr=v_err)
-        dirs = subprocess.run(["ls", "vendor"], text=True, capture_output=True)
-        # get list of all non-dev dependencies
-        no_dev_dep_tree = subprocess.run(["cargo", "tree", "-e", "no-dev", "--prefix", "none", "--no-dedupe"], 
-                capture_output=True, text=True)
-        lines = no_dev_dep_tree.stdout.split("\n")
-        non_dev_deps = []
-        for line in lines:
-            non_dev_deps.append(line.replace(" v", "-").replace(" (*)", ""))
-        num_deps = len(dirs.stdout.split("\n")) - 1
-        f_out = open("compile.out", "w")
-        f_err = open("compile.err", "w")
-        print("Compiling")
-        subprocess.run(["cargo", "build", "--verbose", "--release"], #, apps.get(d).get("flag"), apps.get(d).get("name")], 
-            text=True, stdout=f_out, stderr=f_err)
-        f_out.close()
-        f_err.close()
-
-        fd = open("compile.out", 'r')
+    if "mozilla" in root: 
+        os.chdir(root)
+        fd = open("/exploreunsafe/mir-filelist", 'r')
         print("Counting")
         ui = findTargetFiles(fd)
-        f_out.close()
         dep_files_w_ui = []
         indirect = 0
         direct = 0
         for crate, lines in ui.items():
-            if ".cargo/registry/src/github.com" in crate: 
+            if "vendor" in crate: 
                 dep_files_w_ui.append(crate)
                 indirect += len(lines)
             else: 
@@ -392,24 +352,87 @@ if __name__ == "__main__":
 
         dep_set = set()
         for dep_file in dep_files_w_ui:
-            dep_set.add(dep_file.split("/")[7])
-        for dep in dep_set: 
-            if not dep in non_dev_deps: 
-                print("removing dev dep: {}".format(dep_file))
-
-        num_deps = len(set(non_dev_deps))
+            dep_set.add(dep_file.split("/")[1])
+        #num_deps = len(set(non_dev_deps))
         deps_w_ui = len(dep_set)
-        perc_w_ui = 100 * deps_w_ui / num_deps
+        #perc_w_ui = 100 * deps_w_ui / num_deps
+        print("direct:\t\t{}".format(direct))
+        print("indirect:\t{}".format(indirect))
+        print("deps_w_ui:\t{}".format(deps_w_ui))
 
-        summ_total_uses.write("{} & {} & {} & {} & {} ({}\%)\n".format(d, direct, indirect, num_deps, deps_w_ui, perc_w_ui))
-        summ_total_uses.flush()
-        print(direct)
-        print(indirect)
-        # total deps
-        print(num_deps)
-        # deps w ui
-        print(deps_w_ui)
-        # percent of deps w ui
-        print(perc_w_ui)
+    else: 
+        dirs = os.listdir(root)
+        summ_total_uses = open(os.path.join(root, SUMM_TOTAL), "w")
+        os.environ["RUSTFLAGS"] = "-Z convert-unchecked-indexing"
+        for d in dirs: 
+            print()
+            print(d)
+            curdir = os.path.join(root, d)
+            if not os.path.isdir(curdir):
+                continue
+            if "flatbuffers" in d: 
+                curdir = os.path.join(curdir, "rust", "flatbuffers")
+            elif "flux" in d: 
+                curdir = os.path.join(curdir, "libflux", "flux")
+            elif "splinter" in d:
+                curdir = os.path.join(curdir, "splinter")
+            os.chdir(curdir)
+            subprocess.run(["rustup", "override", "set", "rust-mod-mir"])
+                #stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'))
+            subprocess.run(["cargo", "clean"])
+            print("Vendoring")
+            v_out = open("vendor.out", "w")
+            v_err = open("vendor.err", "w")
+            subprocess.run(["cargo", "vendor", "--versioned-dirs"],
+                stdout=v_out, stderr=v_err)
+            dirs = subprocess.run(["ls", "vendor"], text=True, capture_output=True)
+            # get list of all non-dev dependencies
+            no_dev_dep_tree = subprocess.run(["cargo", "tree", "-e", "no-dev", "--prefix", "none", "--no-dedupe"], 
+                    capture_output=True, text=True)
+            lines = no_dev_dep_tree.stdout.split("\n")
+            non_dev_deps = []
+            for line in lines:
+                non_dev_deps.append(line.replace(" v", "-").replace(" (*)", ""))
+            num_deps = len(dirs.stdout.split("\n")) - 1
+            f_out = open("compile.out", "w")
+            f_err = open("compile.err", "w")
+            print("Compiling")
+            subprocess.run(["cargo", "build", "--verbose", "--release"], #, apps.get(d).get("flag"), apps.get(d).get("name")], 
+                text=True, stdout=f_out, stderr=f_err)
+            f_out.close()
+            f_err.close()
 
-    summ_total_uses.close()
+            fd = open("compile.out", 'r')
+            print("Counting")
+            ui = findTargetFiles(fd)
+            f_out.close()
+            dep_files_w_ui = []
+            indirect = 0
+            direct = 0
+            for crate, lines in ui.items():
+                if ".cargo/registry/src/github.com" in crate: 
+                    dep_files_w_ui.append(crate)
+                    indirect += len(lines)
+                else: 
+                    direct += len(lines)
+
+            dep_set = set()
+            for dep_file in dep_files_w_ui:
+                dep_set.add(dep_file.split("/")[7])
+            for dep in dep_set: 
+                if not dep in non_dev_deps: 
+                    print("removing dev dep: {}".format(dep_file))
+
+            num_deps = len(set(non_dev_deps))
+            deps_w_ui = len(dep_set)
+            perc_w_ui = 100 * deps_w_ui / num_deps
+
+            summ_total_uses.write("{} & {} & {} & {} & {} ({}\%)\n".format(d, direct, indirect, num_deps, deps_w_ui, perc_w_ui))
+            summ_total_uses.flush()
+            print(direct)
+            print(indirect)
+            print(num_deps)
+            print(deps_w_ui)
+            print(perc_w_ui)
+
+        summ_total_uses.close()
