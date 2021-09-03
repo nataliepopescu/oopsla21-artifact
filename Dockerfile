@@ -88,6 +88,8 @@ COPY --chown=${UNAME} scripts           scripts
 COPY --chown=${UNAME} locks		locks
 COPY --chown=${UNAME} COST              COST
 COPY --chown=${UNAME} bashrc            ${HOME}/.bashrc
+COPY --chown=${UNAME} README.md         README.md
+COPY --chown=${UNAME} LICENSE.txt       LICENSE.txt
 RUN mkdir -p images
 
 # Setup artifact data
