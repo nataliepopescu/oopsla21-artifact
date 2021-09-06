@@ -78,18 +78,18 @@ ENV OPENSSL_INCLUDE_DIR="/usr/include/openssl"
 RUN cargo install cargo-edit
 
 # Copy over artifact necessities
-COPY --chown=${UNAME} ExpDriver.py      ExpDriver.py
-COPY --chown=${UNAME} benchmarks        benchmarks
-COPY --chown=${UNAME} brotli-expanded   brotli-expanded
-COPY --chown=${UNAME} data              data
-COPY --chown=${UNAME} example-results   example-results
-COPY --chown=${UNAME} rust-toolchain    rust-toolchain
-COPY --chown=${UNAME} scripts           scripts
-COPY --chown=${UNAME} locks		locks
-COPY --chown=${UNAME} COST              COST
-COPY --chown=${UNAME} bashrc            ${HOME}/.bashrc
-COPY --chown=${UNAME} README.md         README.md
-COPY --chown=${UNAME} LICENSE.txt       LICENSE.txt
+COPY --chown=${UNAME} ExpDriver.py          ExpDriver.py
+COPY --chown=${UNAME} benchmarks            benchmarks
+COPY --chown=${UNAME} brotli-expanded       brotli-expanded
+COPY --chown=${UNAME} data                  data
+COPY --chown=${UNAME} example-results       example-results
+COPY --chown=${UNAME} rust-toolchain        rust-toolchain
+COPY --chown=${UNAME} scripts               scripts
+COPY --chown=${UNAME} locks		            locks
+COPY --chown=${UNAME} COST                  COST
+COPY --chown=${UNAME} bashrc                ${HOME}/.bashrc
+COPY --chown=${UNAME} README_unformatted.md README.md
+COPY --chown=${UNAME} LICENSE.txt           LICENSE.txt
 RUN mkdir -p images
 
 # Setup artifact data
