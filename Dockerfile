@@ -63,9 +63,9 @@ RUN source $HOME/.cargo/env
 # For custom Rust
 WORKDIR ${HOME}
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.20.2/cmake-3.20.2.tar.gz && \
-    tar -zxvf cmake-3.20.2.tar.gz && \
-    cd cmake-3.20.2 && \ 
-    ./bootstrap && make
+    tar -zxvf cmake-3.20.2.tar.gz
+WORKDIR ${HOME}/cmake-3.20.2
+RUN ./bootstrap && make
 USER root
 RUN make install
 USER ${UNAME}
