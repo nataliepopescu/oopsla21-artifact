@@ -16,7 +16,7 @@ $ sudo apt-get update
 $ sudo apt-get install -y docker-ce
 
 Make sure the docker daemon is running, then download the compressed artifact 
-from the provided Google Drive link and load it like so: 
+from the provided link and load it like so: 
 
 $ docker load < oopsla21ae.tar.gz
 
