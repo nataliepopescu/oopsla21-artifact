@@ -40,7 +40,7 @@ This should complete in about an hour.
 
 ## Step by Step Instructions
 
-Any commands should be run from /home/oopsla21ae/. 
+Any commands should be run from `/home/oopsla21ae/`. 
 Running all experiments fully takes almost two days to complete, so
 we have implemented a fast path that can run all experiments 
 (on fewer libraries and applications) in about three hours. 
@@ -93,7 +93,7 @@ $ python3 ExpDriver.py --figure7table3 [--full]
 
 ### Viewing results
 
-Some expected output is in /home/oopsla21ae/example-results/; you can compare your generated plots to those as a sanity check. 
+Some expected output is in `/home/oopsla21ae/example-results/`; you can compare your generated plots to those as a sanity check. 
 Our artifact generates PDFs that can be copied out of the docker container using
 [docker cp](https://docs.docker.com/engine/reference/commandline/cp/): 
 
@@ -116,7 +116,7 @@ $ docker container ps
 $ docker container ps -a
 ```
 
-Descriptions of each generated PDF file in /home/oopsla21ae/images/ are listed in the following subsections. Once the generated PDFs have been copied locally, reviewers can view them using their favorite PDF viewer.
+Descriptions of each generated PDF file in `/home/oopsla21ae/images/` are listed in the following subsections. Once the generated PDFs have been copied locally, reviewers can view them using their favorite PDF viewer.
 
 In general, the figures and tables produced here are analogous to the figures and 
 tables presented in the paper, but we describe how to interpret results in more 
@@ -229,7 +229,7 @@ times more, per application) red than blue.
 `table3.pdf` presents the results from `figure7.pdf` in a table, and also includes, 
 per application, the total number of dependencies and the number of dependencies 
 with at least one use of unchecked indexing. Please see the `table3.pdf` in 
-/home/oopsla21ae/example-results/ for approximate expectations. We use `Cargo.lock` files in effort to keep dependency versions constant but they are not always respected; reviewers may thus observe some slight variation in these results due to different dependency versions. 
+`/home/oopsla21ae/example-results/` for approximate expectations. We use `Cargo.lock` files in effort to keep dependency versions constant but they are not always respected; reviewers may thus observe some slight variation in these results due to different dependency versions. 
 
 #### Table 4 Expectations
 
@@ -296,7 +296,7 @@ Deviations:
 
 - Future researchers can run this artifact on more libraries and applications by cloning their source code
 - Future researchers building off this artifact can do so by adding new benchmarks and their arguments
-- Future researchers can directly modify /home/oopsla21ae/scripts/Nader.py to improve its exploration algorithm
+- Future researchers can directly modify `/home/oopsla21ae/scripts/Nader.py` to improve its exploration algorithm
 - Artifact source code can be reused as separate components much in the same way as the individual plots are generated 
 - Others can learn about our benchmarking and large-scale application analysis techniques
-- Others can extend the artifact beyond bounds checks to other code patterns by modifying /home/oopsla21ae/scripts/regexify.py
+- Others can extend the artifact beyond bounds checks to other code patterns by modifying `/home/oopsla21ae/scripts/regexify.py`
