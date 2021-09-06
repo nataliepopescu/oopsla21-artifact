@@ -1,12 +1,12 @@
 # OOPSLA 2021 Artifact
 
-## Sytem Requirements
+## System Requirements
 
 Linux OS (we've tested on Ubuntu 18.04 STD)
 
 Docker version 20+
 
-35GB memory
+40GB memory
 
 ## Getting Started
 
