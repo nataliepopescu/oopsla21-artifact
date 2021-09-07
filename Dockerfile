@@ -96,7 +96,7 @@ RUN mkdir -p images
 WORKDIR ${WD}/data
 RUN ./create_silesia.sh
 RUN ./get_LiveJournal.sh
-RUN ./setup_rust.sh
+#RUN ./setup_rust.sh
 RUN ./setup_figure1.sh
 RUN ./setup_figure7.sh
 RUN ./setup_table4.sh

@@ -196,7 +196,9 @@ times more, per application) red than blue.
 table3.pdf presents the results from figure7.pdf in a table, and also includes, 
 per application, the total number of dependencies and the number of dependencies 
 with at least one use of unchecked indexing. Please see the table3.pdf in 
-/home/oopsla21ae/example-results/ for approximate expectations. We use Cargo.lock files in effort to keep dependency versions constant but they are not always respected; reviewers may thus observe some slight variation in these results due to different dependency versions. 
+/home/oopsla21ae/example-results/ for approximate expectations. 
+Reviewers may observe some slight variation in these results due to 
+different dependency versions. 
 
 #### Table 4 Expectations
 
